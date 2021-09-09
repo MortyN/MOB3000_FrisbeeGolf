@@ -15,7 +15,12 @@ import com.google.android.material.navigation.NavigationView
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     //lateinit will allow to skip the otherwise required initializer and will make the property access fail with exception until some meaningful value is assigned to it https://stackoverflow.com/questions/33849811/property-must-be-initialized-or-be-abstract
     private lateinit var drawer: DrawerLayout
+    private var isAuth: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -38,9 +43,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setCheckedItem(R.id.nav_message)
         navigationView.setCheckedItem(R.id.nav_message)
         }
-
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
     }
 
     override fun onBackPressed() {
