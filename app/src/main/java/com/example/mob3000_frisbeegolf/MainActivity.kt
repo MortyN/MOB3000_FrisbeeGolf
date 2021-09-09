@@ -1,5 +1,7 @@
 package com.example.mob3000_frisbeegolf
 
+import android.app.ActivityOptions
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationView.setCheckedItem(R.id.nav_message)
         navigationView.setCheckedItem(R.id.nav_message)
         }
+
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onBackPressed() {
