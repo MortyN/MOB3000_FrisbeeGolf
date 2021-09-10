@@ -12,17 +12,16 @@
         <activity android:name=".LoginActivity"
             android:theme="@style/Theme.Design.NoActionBar"
             >
-        </activity>
-<!--        android:noHistory makes loginactivity not going into mainactivity on backpress-->
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+<!--        android:noHistory makes loginactivity not going into mainactivity on backpress-->
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
         </activity>
     </application>
 
