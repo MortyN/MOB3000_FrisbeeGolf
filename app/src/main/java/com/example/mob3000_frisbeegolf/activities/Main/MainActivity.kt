@@ -1,4 +1,4 @@
-package com.example.mob3000_frisbeegolf
+package com.example.mob3000_frisbeegolf.activities.Main
 
 import android.os.Bundle
 import android.view.MenuItem
@@ -8,6 +8,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.example.mob3000_frisbeegolf.*
+import com.example.mob3000_frisbeegolf.activities.Feed.Feed
+import com.example.mob3000_frisbeegolf.activities.AddRound.AddRound
+import com.example.mob3000_frisbeegolf.activities.MyProfile.MyProfile
+import com.example.mob3000_frisbeegolf.activities.MyRounds.MyRounds
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 

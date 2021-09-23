@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MOB3000_FrisbeeGolf">
-        <activity android:name=".LoginActivity"
+        <activity android:name=".activities.Login.LoginActivity"
             android:theme="@style/Theme.Design.NoActionBar"
             >
             <intent-filter>
@@ -20,7 +20,7 @@
         </activity>
 <!--        android:noHistory makes loginactivity not going into mainactivity on backpress-->
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.Main.MainActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
         </activity>
     </application>

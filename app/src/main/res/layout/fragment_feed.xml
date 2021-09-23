@@ -4,13 +4,20 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/holo_red_dark">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="344dp"
+        android:layout_marginEnd="59dp"
+        android:layout_marginBottom="347dp"
         android:text="MESSAGE FRAGMENT"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"/>
-
+        android:textSize="30sp" />
 
 
 </RelativeLayout>

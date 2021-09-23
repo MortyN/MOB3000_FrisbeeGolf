@@ -6,15 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity"
+    tools:context=".activities.Main.MainActivity"
     tools:openDrawer="start"
     android:background="@color/white">
 
     <RelativeLayout
-        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_medium"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="527dp"
+            android:layout_above="@+id/bottom_nav"
+            android:layout_below="@+id/toolbar"
+            android:layout_margin="@dimen/margin_medium"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp" />
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"

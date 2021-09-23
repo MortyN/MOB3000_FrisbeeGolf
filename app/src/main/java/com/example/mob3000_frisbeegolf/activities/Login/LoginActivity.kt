@@ -1,4 +1,4 @@
-package com.example.mob3000_frisbeegolf
+package com.example.mob3000_frisbeegolf.activities.Login
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mob3000_frisbeegolf.activities.Main.MainActivity
+import com.example.mob3000_frisbeegolf.R
 
 
 class LoginActivity : AppCompatActivity() {
