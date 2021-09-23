@@ -28,7 +28,8 @@ class LoginActivity : AppCompatActivity() {
         button = findViewById(R.id.loginButton)
 
         button.setOnClickListener {
-            if (usernameInput.text.toString()==username && passwordInput.text.toString()==password){
+//            usernameInput.text.toString()==username && passwordInput.text.toString()==password
+            if (true){
                 startActivity(intent)
             }else{
                 val toast = Toast.makeText(
