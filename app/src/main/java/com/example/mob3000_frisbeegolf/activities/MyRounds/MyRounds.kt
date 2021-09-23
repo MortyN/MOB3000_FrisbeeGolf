@@ -27,7 +27,6 @@ class MyRounds : Fragment() {
         val adapter = RecyclerViewAdapter(itemList)
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
-        recyclerView.apply { addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL)) }
         recyclerView.adapter = adapter
     }
 }
