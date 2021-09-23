@@ -27,7 +27,7 @@ class RecyclerViewAdapter(private val dataSet: ArrayList<String>) :
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.listitem_row_container, viewGroup, false)
+            .inflate(R.layout.listitem_table_row_container, viewGroup, false)
 
         return ViewHolder(view)
     }

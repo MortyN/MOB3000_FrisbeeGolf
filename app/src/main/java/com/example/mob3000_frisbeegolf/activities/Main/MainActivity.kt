@@ -46,8 +46,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             supportFragmentManager.beginTransaction().replace(R.id.fragment_container, Feed())
                 .commit()
-            navigationView.setCheckedItem(R.id.nav_message)
-            navigationView.setCheckedItem(R.id.nav_message)
+            navigationView.setCheckedItem(R.id.nav_myprofile)
+            navigationView.setCheckedItem(R.id.nav_myprofile)
         }
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
@@ -93,24 +93,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+//        when (item.itemId) {
+//            R.id.nav_myprofile -> supportFragmentManager.beginTransaction().replace(
+//                R.id.fragment_container,
+//                MyProfile()
+//            ).addToBackStack(null).commit()
+//            R.id.nav_friends -> supportFragmentManager.beginTransaction().replace(
+//                R.id.fragment_container,
+//                MyRounds()
+//            ).addToBackStack(null).commit()
+//            R.id.nav_arenarecords -> supportFragmentManager.beginTransaction().replace(
+//                R.id.fragment_container,
+//                AddRound()
+//            ).addToBackStack(null).commit()
+//            R.id.feed_navbtn -> supportFragmentManager.beginTransaction().replace(
+//                R.id.fragment_container,
+//                MyProfile()
+//            ).addToBackStack(null).commit()
+//        }
+        // the selected fragment
+        // by using there id.
+        var selectedFragment: Fragment? = null
         when (item.itemId) {
-            R.id.nav_message -> supportFragmentManager.beginTransaction().replace(
-                R.id.fragment_container,
-                Feed()
-            ).addToBackStack(null).commit()
-            R.id.nav_chat -> supportFragmentManager.beginTransaction().replace(
-                R.id.fragment_container,
-                MyRounds()
-            ).addToBackStack(null).commit()
-            R.id.nav_profile -> supportFragmentManager.beginTransaction().replace(
-                R.id.fragment_container,
-                AddRound()
-            ).addToBackStack(null).commit()
-            R.id.feed_navbtn -> supportFragmentManager.beginTransaction().replace(
-                R.id.fragment_container,
-                MyProfile()
-            ).addToBackStack(null).commit()
+            R.id.nav_myprofile -> selectedFragment = Feed()
+            R.id.nav_friends -> selectedFragment = MyRounds()
+            R.id.nav_arenarecords -> selectedFragment = AddRound()
+            R.id.nav_addarena -> selectedFragment = MyProfile()
+            R.id.nav_yourarenas -> selectedFragment = MyProfile()
+            R.id.nav_settings -> selectedFragment = MyProfile()
         }
+        // It will help to replace the
+        // one fragment to other.
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, selectedFragment!!)
+            .commit()
+        true
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
