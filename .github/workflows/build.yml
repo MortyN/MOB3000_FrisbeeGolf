@@ -61,8 +61,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: $NEWTAG
-          release_name: Release $NEWTAG
+          tag_name: ${{env.NEWTAG}}
+          release_name: Release ${{env.NEWTAG}}
       - name: Upload Release APK
         id: upload_release_asset
         uses: actions/upload-release-asset@v1.0.1
