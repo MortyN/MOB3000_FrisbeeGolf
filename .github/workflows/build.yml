@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Generate new tag
         run: |
+          echo `expr ${CURRENT_TAG: -1} + 1`
           NEWVERSION=`expr ${CURRENT_TAG: -1} + 1`
           NEWTAG=${CURRENT_TAG%?}$NEWVERSION
       - name: Checkout
