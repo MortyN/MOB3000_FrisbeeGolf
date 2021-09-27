@@ -22,7 +22,7 @@ jobs:
           NEWTAG=${CURRENT_TAG%?}$NEWVERSION
       - name: Checkout
         uses: actions/checkout@v1
-      - name: Setup JDK
+      - name: Setup JDK 
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
