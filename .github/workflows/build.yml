@@ -1,4 +1,4 @@
-name: Minimal Android CI Workflow
+name: Android CI Workflow
 
 on:
   push:
@@ -41,7 +41,8 @@ jobs:
   release:
     name: Release APK
     needs: apk
-    if: startsWith(github.ref, 'refs/tags/v')
+    # add semantic tagging strategy later
+    # if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Download APK from build
