@@ -11,14 +11,15 @@ jobs:
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
-    env:
-      CURRENT_TAG: ${{ github.ref }}
     steps:
       - name: Generate new tag
         run: |
-          curl --silent "https://api.github.com/repos/MortyN/MOB3000_FrisbeeGolf/releases/latest" | # Get latest release from GitHub api
+          CURRENT_TAG=curl --silent "https://api.github.com/repos/MortyN/MOB3000_FrisbeeGolf/releases/latest" | # Get latest release from GitHub api
           grep '"tag_name":' |                                            # Get tag line
           sed -E 's/.*"([^"]+)".*/\1/'
+          NEWVERSION=`expr ${CURRENT_TAG: -1} + 1`
+          NEWTAG=${CURRENT_TAG%?}$NEWVERSION
+          echo $NEWTAG
       - name: Checkout
         uses: actions/checkout@v1
       - name: Setup JDK 
