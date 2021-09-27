@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: Run Units Tests
+    name: Run Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,12 +53,14 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.36.0
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
+          CURRENT_TAG: ${{ github.ref }}
+        run: |
+          NEWVERSION=$(expr ${CURRENT_TAG: -1} + 1)
+          NEWTAG=${CURRENT_TAG%?}$NEWVERSION
+        with:
+          tag_name: ${{ NEWTAG }}
+          release_name: Release ${{ NEWTAG }} 
       - name: Upload Release APK
         id: upload_release_asset
         uses: actions/upload-release-asset@v1.0.1
