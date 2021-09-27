@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Generate new tag
         run: |
-          echo curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
+          echo curl --silent "https://api.github.com/repos/MortyN/MOB3000_FrisbeeGolf/releases/latest" | # Get latest release from GitHub api
           grep '"tag_name":' |                                            # Get tag line
           sed -E 's/.*"([^"]+)".*/\1/'
           echo $CURRENT_TAG
