@@ -19,8 +19,8 @@ jobs:
           sed -E 's/.*"([^"]+)".*/\1/')
           NEWVERSION=`expr ${CURRENT_TAG: -1} + 1`
           NEWTAG=${CURRENT_TAG%?}$NEWVERSION
-          echo $NEWTAG
-      - name: Checkout
+          echo "::set-env name=NEWTAG::${CURRENT_TAG%?}$NEWVERSION"
+      - name: Checkout {{env.NEWTAG}}
         uses: actions/checkout@v1
       - name: Setup JDK 
         uses: actions/setup-java@v1
@@ -65,7 +65,7 @@ jobs:
           grep '"tag_name":' |                                            # Get tag line
           sed -E 's/.*"([^"]+)".*/\1/')
           NEWVERSION=`expr ${CURRENT_TAG: -1} + 1`
-          NEWTAG=${CURRENT_TAG%?}$NEWVERSION
+          echo "::set-env name=NEWTAG::${CURRENT_TAG%?}$NEWVERSION"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
