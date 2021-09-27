@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: New Tag Generator test
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         run: |
           CURRENT_TAG=$(curl --silent "https://api.github.com/repos/MortyN/MOB3000_FrisbeeGolf/releases/latest" | # Get latest release from GitHub api
           grep '"tag_name":' |                                            # Get tag line
@@ -53,7 +55,7 @@ jobs:
     # if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     env:
-      CURRENT_TAG: ${{ github.ref }}
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
     steps:
       - name: Download APK from build
         uses: actions/download-artifact@v1
