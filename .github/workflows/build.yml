@@ -22,7 +22,7 @@ jobs:
           NEWVERSION=`expr ${CURRENT_TAG: -1} + 1`
           NEWTAG=${CURRENT_TAG%?}$NEWVERSION
           echo "::set-env name=NEWTAG::${CURRENT_TAG%?}$NEWVERSION"
-      - name: Checkout {{env.NEWTAG}}
+      - name: Checkout ${{env.NEWTAG}}
         uses: actions/checkout@v1
       - name: Setup JDK 
         uses: actions/setup-java@v1
