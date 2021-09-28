@@ -5,7 +5,11 @@
     <string name="feed">Feed</string>
     <string name="myprofile">Min profil</string>
     <string name="addround">Ny runde</string>
+<!--    MyRounds-->
     <string name="myrounds">Mine runder</string>
+    <string name="myrounds_table_col1">Hull</string>
+    <string name="myrounds_table_col2">Antall kast</string>
+
     <string name="settings">Innstillinger</string>
     <string name="friends">Venner</string>
     <string name="arenarecords">Bane rekorder</string>

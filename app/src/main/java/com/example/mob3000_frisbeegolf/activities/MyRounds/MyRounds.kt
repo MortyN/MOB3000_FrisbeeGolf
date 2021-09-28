@@ -4,13 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mob3000_frisbeegolf.R
-import com.example.mob3000_frisbeegolf.activities.Feed.adapters.RecyclerViewAdapter
+import com.example.mob3000_frisbeegolf.activities.MyRounds.adapters.MyRoundsAdapter
+import com.example.mob3000_frisbeegolf.models.HoleList
+import com.example.mob3000_frisbeegolf.models.Round
+import kotlin.random.Random
 
 class MyRounds : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -23,8 +23,14 @@ class MyRounds : Fragment() {
     }
 
     private fun initRecyclerView(view: View) {
-        val itemList = arrayListOf<String>("first", "sec", "third", "first", "sec", "third")
-        val adapter = RecyclerViewAdapter(itemList)
+        var holeList : MutableList<HoleList> = mutableListOf()
+
+        for (i in 1..20) {
+            holeList.add(HoleList(i, Random.nextInt(2, 10)))
+        }
+
+        val itemList = arrayListOf<Round>(Round("Vear Disc Golf", holeList as ArrayList<HoleList>, "Gamerboi69"))
+        val adapter = MyRoundsAdapter(itemList)
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.adapter = adapter
