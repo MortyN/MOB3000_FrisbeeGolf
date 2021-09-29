@@ -10,7 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.mob3000_frisbeegolf.*
 import com.example.mob3000_frisbeegolf.activities.Feed.Feed
-import com.example.mob3000_frisbeegolf.activities.AddRound.AddRound
+import com.example.mob3000_frisbeegolf.activities.AddRound.view.AddRound
 import com.example.mob3000_frisbeegolf.activities.MyProfile.MyProfile
 import com.example.mob3000_frisbeegolf.activities.MyRounds.MyRounds
 import com.google.android.material.bottomnavigation.BottomNavigationView
