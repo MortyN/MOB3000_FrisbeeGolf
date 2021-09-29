@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TableLayout
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mob3000_frisbeegolf.R
@@ -19,6 +22,7 @@ class MyRounds : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         return inflater.inflate(R.layout.fragment_myrounds, container, false)
     }
 
@@ -29,8 +33,8 @@ class MyRounds : Fragment() {
             holeList.add(HoleList(i, Random.nextInt(2, 10)))
         }
 
-        val itemList = arrayListOf<Round>(Round("Vear Disc Golf", holeList as ArrayList<HoleList>, "Gamerboi69"))
-        val adapter = MyRoundsAdapter(itemList)
+        val itemList = arrayListOf<Round>(Round("Vear Disc Golf", holeList as ArrayList<HoleList>, "Gamerboi69"), Round("Tønsberg Disc Golf", holeList as ArrayList<HoleList>, "EpiskgaimrxX"))
+        val adapter =  MyRoundsAdapter(itemList)
 
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.adapter = adapter
