@@ -32,7 +32,7 @@ class MyRoundsAdapter(private val dataSet: ArrayList<Round>) :
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.myrounds_tablelayout_container, viewGroup, false)
+MyProfile.inflate(R.layout.myrounds_tablelayout_container, viewGroup, false)
         return ViewHolder(view)
     }
 
