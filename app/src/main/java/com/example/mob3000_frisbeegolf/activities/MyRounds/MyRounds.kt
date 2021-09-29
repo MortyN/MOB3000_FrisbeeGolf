@@ -33,11 +33,6 @@ class MyRounds : Fragment() {
             holeList.add(HoleList(i, Random.nextInt(2, 10)))
         }
 
-
-
-
-
-
         val itemList = arrayListOf<Round>(Round("Vear Disc Golf", holeList as ArrayList<HoleList>, "Gamerboi69"), Round("Tønsberg Disc Golf", holeList as ArrayList<HoleList>, "EpiskgaimrxX"))
         val adapter =  MyRoundsAdapter(itemList)
 

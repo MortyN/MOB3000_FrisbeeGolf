@@ -1,6 +1,5 @@
 package com.example.mob3000_frisbeegolf.activities.MyRounds.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,9 +28,6 @@ class MyRoundsAdapter(private val dataSet: ArrayList<Round>) :
         }
     }
 
-
-
-
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
@@ -44,9 +40,8 @@ class MyRoundsAdapter(private val dataSet: ArrayList<Round>) :
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         val inflater: LayoutInflater = LayoutInflater.from(viewHolder.view.context)
-
-
         val holeList: ArrayList<HoleList> = dataSet[position].HoleList
+
         holeList.forEach { e ->
             run {
                 val tableRow = inflater.inflate(
@@ -60,10 +55,8 @@ class MyRoundsAdapter(private val dataSet: ArrayList<Round>) :
             }
         }
 
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
+        // Get element from your dataset at this position
         viewHolder.arenaNameTextView.text = dataSet[position].ArenaName
-
 
     }
 
