@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -13,11 +14,11 @@ import com.example.mob3000_frisbeegolf.activities.MyProfile.adapters.RecyclerVie
 class MyProfile : Fragment() {
 
     lateinit var userPostField: EditText
+    lateinit var postButton: Button
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView(view)
-        super.onViewCreated(view, savedInstanceState)
     }
 
 
@@ -26,18 +27,22 @@ class MyProfile : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //userPostField = findViewById(R.id.userInputField)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return inflater.inflate(R.layout.fragment_myprofile, container, false)
     }
 
     private fun initRecyclerView(view: View) {
+
+        userPostField = view.findViewById(R.id.myprofile_post_input_field)
         val itemList: MutableList<Post> = ArrayList()
 
-        val post1 = Post("Hello 1")
-        val post2 = Post("Hello 2")
-        val post3 = Post("Hello 3")
-        val post4 = Post("Hello 4")
-        val post5 = Post("Hello 5")
+        postButton = view.findViewById(R.id.myprofile_post_button)
+
+
+        val post1 = Post("Nei vettuva, Vaer egt ikke såbra allikavel")
+        val post2 = Post("Fantastisk vær på Vaer discogolfbane i dag, bygger hotell her neste uke!")
+        val post3 = Post("Ræva bane!")
+        val post4 = Post("Tilbake i norge. Blir gøy med litt frisbeegolf på vestlandet")
+        val post5 = Post("Empire state building var spesielt morsomt!")
 
         itemList.add(post1)
         itemList.add(post2)
