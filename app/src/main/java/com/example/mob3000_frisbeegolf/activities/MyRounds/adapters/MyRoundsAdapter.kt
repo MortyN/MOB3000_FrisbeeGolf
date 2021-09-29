@@ -8,6 +8,7 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mob3000_frisbeegolf.R
+import com.example.mob3000_frisbeegolf.activities.MyRounds.MyRounds
 import com.example.mob3000_frisbeegolf.models.HoleList
 import com.example.mob3000_frisbeegolf.models.Round
 
@@ -32,7 +33,7 @@ class MyRoundsAdapter(private val dataSet: ArrayList<Round>) :
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-MyProfile.inflate(R.layout.myrounds_tablelayout_container, viewGroup, false)
+            .inflate(R.layout.myrounds_tablelayout_container, viewGroup, false)
         return ViewHolder(view)
     }
 
