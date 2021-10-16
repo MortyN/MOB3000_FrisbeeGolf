@@ -5,7 +5,7 @@
     <string name="feed">Feed</string>
     <string name="myprofile">Min profil</string>
     <string name="addround">Ny runde</string>
-<!--    MyRounds-->
+    <!--    MyRounds-->
     <string name="myrounds">Mine runder</string>
     <string name="myrounds_table_col1">Hull</string>
     <string name="myrounds_table_col2">Antall kast</string>
@@ -15,5 +15,7 @@
     <string name="arenarecords">Bane rekorder</string>
     <string name="addarena">Opprett bane</string>
     <string name="yourarenas">Dine baner</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

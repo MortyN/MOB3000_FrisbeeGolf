@@ -7,7 +7,7 @@
         android:id="@+id/nav_topgroup"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_myprofile"
+            android:id="@+id/fragment_myprofile"
             android:title="@string/myprofile" />
         <item
             android:id="@+id/nav_friends"
@@ -25,7 +25,7 @@
 
     <group>
         <item
-            android:id="@+id/nav_settings"
+            android:id="@+id/fragment_settings"
             android:title="@string/settings" />
     </group>
 
