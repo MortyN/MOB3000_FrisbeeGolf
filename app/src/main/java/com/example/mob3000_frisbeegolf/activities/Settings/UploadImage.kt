@@ -26,7 +26,6 @@ public interface UploadClient{
     @Multipart
     @POST("upload")
     fun uploadsImage(
-        @Part("description") description: RequestBody,
         @Part photo: MultipartBody.Part
     ): Call<ResponseBody>
 }

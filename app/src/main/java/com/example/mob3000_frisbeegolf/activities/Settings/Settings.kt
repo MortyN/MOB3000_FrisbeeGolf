@@ -1,17 +1,24 @@
 package com.example.mob3000_frisbeegolf.activities.Settings
 
 import android.app.Activity.RESULT_OK
+import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.os.FileUtils
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import com.example.mob3000_frisbeegolf.R
 import okhttp3.MediaType
@@ -23,7 +30,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.File
+import java.io.*
+import java.lang.Exception
 import java.util.*
 
 
@@ -42,89 +50,128 @@ class Settings : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var button: Button
+    private lateinit var imageView: ImageView
+    private val FILE_NAME = "photo.jpg"
+    private lateinit var filePhoto: File
+
     //gallery intent code
-    private val PICK_IMAGE_FROM_GALLERY = 100
+    private val PICK_IMAGE_FROM_GALLERY = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         button = view.findViewById(R.id.settings_btn)
-
+        imageView = view.findViewById(R.id.imageViewSettings)
         button.setOnClickListener {
-//            val intent: Intent = Intent()
-//            intent.type = "image/*"
-//            intent.action = Intent.ACTION_GET_CONTENT
 
-            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-            startActivityForResult(gallery, PICK_IMAGE_FROM_GALLERY)
-
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, PICK_IMAGE_FROM_GALLERY)
 
         }
 
         super.onViewCreated(view, savedInstanceState)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if(requestCode == PICK_IMAGE_FROM_GALLERY && resultCode == RESULT_OK && data != null && data.data != null){
-            val uri: Uri = data.data as Uri
-            uploadFile(uri)
+    private fun savebitmap(bmp: Bitmap): File? {
+        val extStorageDirectory = Environment.getExternalStorageDirectory().toString()
+        val outStream: OutputStream?
+        // String temp = null;
+        var file = File(extStorageDirectory, "temp.png")
+        if (file.exists()) {
+            file.delete()
+            file = File(extStorageDirectory, "temp.png")
         }
-        super.onActivityResult(requestCode, resultCode, data)
+        try {
+            outStream = FileOutputStream(file)
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream)
+            outStream.flush()
+            outStream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
+        return file
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_FROM_GALLERY && resultCode == RESULT_OK && data != null && data.data != null) {
+
+
+//            imageView.setImageURI(data.data)
+
+//            val bitmap = data.extras?.get("data")
+//            val file: File? = savebitmap(bitmap)
+
+            uploadFile(data.data!!)
+        }
+
+    }
+
 
     private fun uploadFile(uri: Uri) {
 
+        val file = File(uri.path!!)
 
+        val body = MultipartBody.Part.createFormData("photo",
+            file.name, RequestBody.create(MediaType.parse("image/*"), file))
 
-        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
-        // use the FileUtils to get the actual file by uri
-
-
-
-        // create RequestBody instance from file
-        val requestFile: RequestBody = RequestBody.create(
-            MediaType.parse(context?.contentResolver?.getType(uri) as String),
-            uri.toFile()
-        )
-
-        // MultipartBody.Part is used to send also the actual file name
-        val body = MultipartBody.Part.createFormData("picture", uri.toFile().name, requestFile)
-
-        // add another part within the multipart request
-        val descriptionString = "hello, this is description speaking"
-        val description = RequestBody.create(
-            MultipartBody.FORM, descriptionString
-        )
-
-        val builder: Retrofit.Builder = Retrofit.Builder()
-        builder.baseUrl("localhost:8080/api/").addConverterFactory(GsonConverterFactory.create())
+                val builder: Retrofit.Builder = Retrofit.Builder()
+        builder.baseUrl("http://192.168.50.240:8080/")
+            .addConverterFactory(GsonConverterFactory.create())
         val retrofit: Retrofit = builder.build()
         // create upload service client
         val client: UploadClient = retrofit.create(UploadClient::class.java)
 
-        // finally, execute the request
-        val call: Call<ResponseBody> = client.uploadsImage(description, body)
+        val call: Call<ResponseBody> = client.uploadsImage(body)
+
         call.enqueue(object : Callback<ResponseBody?> {
-            override fun onResponse(
-                call: Call<ResponseBody?>,
-                response: Response<ResponseBody?>
-            ) {
-                Log.v("Upload", "success")
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                print(response.code())
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                t.message?.let { Log.e("Upload error:", it) }
+                print(t.cause)
             }
+
         })
+
+
+//        // MultipartBody.Part is used to send also the actual file name
+//        val body = MultipartBody.Part.createFormData("photo",
+//            file?.name, RequestBody.create(MediaType.parse("image/*"), file!!))
+//
+//        // add another part within the multipart request
+//        val descriptionString = "hello, this is description speaking"
+//        val description = RequestBody.create(MultipartBody.FORM, descriptionString)
+//
+//        val builder: Retrofit.Builder = Retrofit.Builder()
+//        builder.baseUrl("http://192.168.50.240:8080/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//        val retrofit: Retrofit = builder.build()
+//        // create upload service client
+//        val client: UploadClient = retrofit.create(UploadClient::class.java)
+//
+//        // finally, execute the request
+//        val call: Call<ResponseBody> = client.uploadsImage(description, body)
+//        call.enqueue(object : Callback<ResponseBody?> {
+//            override fun onResponse(
+//                call: Call<ResponseBody?>,
+//                response: Response<ResponseBody?>
+//            ) {
+//                Log.v("Upload", "success")
+//            }
+//
+//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+//                t.message?.let { Log.e("Upload error:", it) }
+//            }
+//        })
 //        val builder: Retrofit.Builder = Retrofit.Builder()
 //
 //        var descPart: RequestBody = RequestBody.create(MultipartBody.FORM, "NOE GREIER")
@@ -153,7 +200,6 @@ class Settings : Fragment() {
 //        })
 
     }
-
 
 
     override fun onCreateView(

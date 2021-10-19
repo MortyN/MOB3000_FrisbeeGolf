@@ -1,6 +1,7 @@
 package com.example.mob3000_frisbeegolf.activities.Main
 
 import android.os.Bundle
+import android.os.Debug
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //disable night mode color theme
