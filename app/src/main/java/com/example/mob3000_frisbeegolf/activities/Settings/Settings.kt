@@ -1,14 +1,10 @@
 package com.example.mob3000_frisbeegolf.activities.Settings
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.os.FileUtils
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,9 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.net.toFile
-import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import com.example.mob3000_frisbeegolf.R
 import okhttp3.MediaType
@@ -31,8 +24,14 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.*
-import java.lang.Exception
 import java.util.*
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -54,7 +53,7 @@ class Settings : Fragment() {
     private val FILE_NAME = "photo.jpg"
     private lateinit var filePhoto: File
 
-    //gallery intent code
+    //gallery request code
     private val PICK_IMAGE_FROM_GALLERY = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,42 +65,93 @@ class Settings : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         button = view.findViewById(R.id.settings_btn)
         imageView = view.findViewById(R.id.imageViewSettings)
-        button.setOnClickListener {
 
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            startActivityForResult(intent, PICK_IMAGE_FROM_GALLERY)
+        button.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                showImageChooser(this@Settings)
+            } else {
+                /*Requests permissions to be granted to this application. These permissions
+                 must be requested in your manifest, they should not be granted to your app,
+                 and they should have protection level*/
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    3
+                )
+            }
 
         }
 
         super.onViewCreated(view, savedInstanceState)
     }
 
-    private fun savebitmap(bmp: Bitmap): File? {
-        val extStorageDirectory = Environment.getExternalStorageDirectory().toString()
-        val outStream: OutputStream?
-        // String temp = null;
-        var file = File(extStorageDirectory, "temp.png")
-        if (file.exists()) {
-            file.delete()
-            file = File(extStorageDirectory, "temp.png")
-        }
-        try {
-            outStream = FileOutputStream(file)
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream)
-            outStream.flush()
-            outStream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
-        return file
+    private fun showImageChooser(activity: Fragment?) {
+        // An intent for launching the image selection of phone storage.
+        val galleryIntent = Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        )
+        // Launches the image selection of phone storage using the constant code.
+        activity?.startActivityForResult(galleryIntent, PICK_IMAGE_FROM_GALLERY)
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+println("HGRIHGR")
         if (requestCode == PICK_IMAGE_FROM_GALLERY && resultCode == RESULT_OK && data != null && data.data != null) {
+
+
+try {
+    val mSelectedImageUri = data.data!!
+
+    Log.d("MainActivity", mSelectedImageUri.toString())
+
+    val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+
+    val cursor = this@Settings.activity?.contentResolver?.query(
+        mSelectedImageUri,
+        filePathColumn, null, null, null
+    )
+
+    cursor!!.moveToFirst()
+
+    val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+    val picturePath = cursor.getString(columnIndex)
+    cursor.close()
+
+//    val input = this@Settings.activity?.contentResolver?.openInputStream(data.data!!)
+
+    val imageFile = File(picturePath)
+    val reqFile = RequestBody.create(MediaType.parse("image/*"),imageFile)
+    val body = MultipartBody.Part.createFormData("upload", "name", reqFile)
+
+    val builder: Retrofit.Builder = Retrofit.Builder()
+    builder.baseUrl("http://192.168.50.240:8080/")
+        .addConverterFactory(GsonConverterFactory.create())
+    val retrofit: Retrofit = builder.build()
+    // create upload service client
+    val client: UploadClient = retrofit.create(UploadClient::class.java)
+
+    val req: Call<ResponseBody> = client.uploadsImage(body)
+    req.enqueue(object : Callback<ResponseBody?> {
+        override fun onResponse(
+            call: Call<ResponseBody?>,
+            response: Response<ResponseBody?>
+        ) {
+        }
+
+        override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+            t.printStackTrace()
+        }
+    })
+} catch (e: IOException){
+    e.printStackTrace()
+    Toast.makeText(this@Settings.context, "Could not select image", Toast.LENGTH_LONG).show()
+}
 
 
 //            imageView.setImageURI(data.data)
@@ -109,20 +159,26 @@ class Settings : Fragment() {
 //            val bitmap = data.extras?.get("data")
 //            val file: File? = savebitmap(bitmap)
 
-            uploadFile(data.data!!)
+//            uploadFile(data.data!!)
         }
+        super.onActivityResult(requestCode, resultCode, data)
 
     }
 
 
     private fun uploadFile(uri: Uri) {
 
-        val file = File(uri.path!!)
+        val fileName = uri.path
+        val completePath = requireContext().filesDir.toString() + "/" + fileName
 
-        val body = MultipartBody.Part.createFormData("photo",
-            file.name, RequestBody.create(MediaType.parse("image/*"), file))
+        val file: File = File(completePath)
 
-                val builder: Retrofit.Builder = Retrofit.Builder()
+        val body = MultipartBody.Part.createFormData(
+            "photo",
+            file.name, RequestBody.create(MediaType.parse("image/*"), file)
+        )
+
+        val builder: Retrofit.Builder = Retrofit.Builder()
         builder.baseUrl("http://192.168.50.240:8080/")
             .addConverterFactory(GsonConverterFactory.create())
         val retrofit: Retrofit = builder.build()
