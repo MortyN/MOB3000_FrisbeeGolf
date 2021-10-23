@@ -1,6 +1,19 @@
 package com.example.mob3000_frisbeegolf.model
 
+import com.example.mob3000_frisbeegolf.api.model.User
 import com.google.gson.annotations.SerializedName
+
+data class Posttest (
+
+    @SerializedName("postId") var postId : Int,
+    @SerializedName("user") var user : User,
+    @SerializedName("message") var message : String,
+    @SerializedName("type") var type : Int,
+    @SerializedName("scoreCard") var scoreCard : String,
+    @SerializedName("postedTs") var postedTs : String,
+    @SerializedName("updatedTs") var updatedTs : String
+
+)
 
 data class Usertest (
     @SerializedName("userId") val userId : Int,

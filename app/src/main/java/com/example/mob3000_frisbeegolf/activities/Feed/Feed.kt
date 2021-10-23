@@ -19,6 +19,7 @@ import com.example.mob3000_frisbeegolf.api.model.Post
 import com.example.mob3000_frisbeegolf.api.model.User
 import com.example.mob3000_frisbeegolf.databinding.FragmentFeedBinding
 import com.example.mob3000_frisbeegolf.model.FeedPost
+import com.example.mob3000_frisbeegolf.model.Posttest
 import com.example.mob3000_frisbeegolf.model.Usertest
 import com.google.gson.annotations.SerializedName
 import okhttp3.ResponseBody
@@ -76,15 +77,15 @@ class Feed : Fragment() {
 
         val retrofit: Retrofit = builder.build()
         val feed: FeedClient = retrofit.create(FeedClient::class.java)
-        val call: Call<List<Usertest>> = feed.user(user)
+        val call: Call<List<Posttest>> = feed.user(user)
 
-        call.enqueue(object : Callback<List<Usertest>>{
-            override fun onResponse(call: Call<List<Usertest>>, response: Response<List<Usertest>>) {
+        call.enqueue(object : Callback<List<Posttest>>{
+            override fun onResponse(call: Call<List<Posttest>>, response: Response<List<Posttest>>) {
                val res = response.body()
                 print(res)
             }
 
-            override fun onFailure(call: Call<List<Usertest>>, t: Throwable) {
+            override fun onFailure(call: Call<List<Posttest>>, t: Throwable) {
                 t.printStackTrace()
                 Toast.makeText(this@Feed.context, "Failed", Toast.LENGTH_LONG).show()
             }
