@@ -42,5 +42,10 @@
         android:name="com.example.mob3000_frisbeegolf.activities.MyProfile.MyProfile"
         android:label="fragment_myprofile_screen"
         tools:layout="@layout/fragment_myprofile"/>
+    <fragment
+        android:id="@+id/fragment_settings"
+        android:name="com.example.mob3000_frisbeegolf.activities.Settings.Settings"
+        android:label="fragment_settings_screen"
+        tools:layout="@layout/fragment_settings"/>
 
 </navigation>
