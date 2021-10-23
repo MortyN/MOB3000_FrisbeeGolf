@@ -73,7 +73,7 @@
             app:layout_constraintVertical_bias="0.179" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/fragment_feed_postcontent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Login"
