@@ -27,7 +27,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mob3000_frisbeegolf.api.constants.ApiConstants
-import com.example.mob3000_frisbeegolf.api.endpoints.FeedClient
+import com.example.mob3000_frisbeegolf.api.endpoints.APIUserInterface
 import com.example.mob3000_frisbeegolf.api.model.User
 import com.google.gson.Gson
 import okhttp3.MultipartBody
@@ -108,7 +108,7 @@ class Settings : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
 
         val retrofit: Retrofit = builder.build()
-        val feed: FeedClient = retrofit.create(FeedClient::class.java)
+        val feed: APIUserInterface = retrofit.create(APIUserInterface::class.java)
         val call: Call<User> = feed.createUser(user,finImage)
 
         call.enqueue(object : Callback<User> {

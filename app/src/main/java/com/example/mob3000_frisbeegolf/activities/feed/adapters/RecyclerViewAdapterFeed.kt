@@ -1,4 +1,4 @@
-package com.example.mob3000_frisbeegolf.activities.Feed.adapters
+package com.example.mob3000_frisbeegolf.activities.feed.adapters
 
 import android.view.LayoutInflater
 import android.view.View;
