@@ -1,4 +1,4 @@
-package com.example.mob3000_frisbeegolf.activities.Feed.adapters
+package com.example.mob3000_frisbeegolf.activities.feed.adapters
 
 import android.view.LayoutInflater
 import android.view.View;
@@ -6,10 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mob3000_frisbeegolf.R
-import com.example.mob3000_frisbeegolf.activities.Feed.Post
-import java.util.*
+import com.example.mob3000_frisbeegolf.model.FeedPost
 
-class RecyclerViewAdapterFeed(private val dataSet: MutableList<Post>) :
+class RecyclerViewAdapterFeed(private val dataSet: MutableList<FeedPost>) :
     RecyclerView.Adapter<RecyclerViewAdapterFeed.ViewHolder>() {
 
     /**
@@ -21,7 +20,7 @@ class RecyclerViewAdapterFeed(private val dataSet: MutableList<Post>) :
 
         init {
             // Define click listener for the ViewHolder's View.
-            textView = view.findViewById(R.id.textView)
+            textView = view.findViewById(R.id.fragment_feed_postcontent)
         }
     }
 

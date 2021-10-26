@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/morte/AndroidStudioProjects/MOB3000_FrisbeeGolfs/app/src/main/res/drawable-v24/listitem_row_bg.xml" value="0.5703125" />
+        <entry key="..\:/Users/morte/AndroidStudioProjects/MOB3000_FrisbeeGolfs/app/src/main/res/layout/activity_main.xml" value="0.2617753623188406" />
+        <entry key="..\:/Users/morte/AndroidStudioProjects/MOB3000_FrisbeeGolfs/app/src/main/res/layout/fragment_feed.xml" value="0.25" />
         <entry key="..\:/Users/morte/AndroidStudioProjects/MOB3000_FrisbeeGolfs/app/src/main/res/layout/fragment_settings.xml" value="0.16084093211752787" />
+        <entry key="..\:/Users/morte/AndroidStudioProjects/MOB3000_FrisbeeGolfs/app/src/main/res/layout/listitem_row_container.xml" value="0.5" />
+        <entry key="..\:/Users/morte/AndroidStudioProjects/MOB3000_FrisbeeGolfs/app/src/main/res/layout/nav_header.xml" value="0.29270833333333335" />
       </map>
     </option>
   </component>
