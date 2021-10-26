@@ -1,10 +1,11 @@
-package com.example.mob3000_frisbeegolf.activities.feed
+package com.example.mob3000_frisbeegolf.activities.myprofile
 
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mob3000_frisbeegolf.activities.feed.adapters.FeedAdapter
+import com.example.mob3000_frisbeegolf.activities.myprofile.adapters.MyProfileAdapter
 import com.example.mob3000_frisbeegolf.api.constants.ApiConstants
 import com.example.mob3000_frisbeegolf.api.endpoints.APIFeedInterface
 import com.example.mob3000_frisbeegolf.api.filter.PostFilterByUser
@@ -16,17 +17,17 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class FeedViewModel: ViewModel() {
+class MyProfileViewModel: ViewModel() {
     var emptyList: List<PostResponse> = emptyList()
     lateinit var recyclerListData: MutableLiveData<List<PostResponse>>
-    lateinit var recyclerViewAdapter: FeedAdapter
+    lateinit var recyclerViewAdapter: MyProfileAdapter
 
     init {
         recyclerListData = MutableLiveData()
-        recyclerViewAdapter = FeedAdapter()
+        recyclerViewAdapter = MyProfileAdapter()
     }
 
-    fun getAdapter(): FeedAdapter{
+    fun getAdapter(): MyProfileAdapter{
         return recyclerViewAdapter
     }
 
@@ -46,7 +47,6 @@ class FeedViewModel: ViewModel() {
 
         val retrofit: Retrofit = builder.build()
         val feed: APIFeedInterface = retrofit.create(APIFeedInterface::class.java)
-
         val call: Call<List<PostResponse>> = feed.getFeed(user)
 
         call.enqueue(object : Callback<List<PostResponse>> {

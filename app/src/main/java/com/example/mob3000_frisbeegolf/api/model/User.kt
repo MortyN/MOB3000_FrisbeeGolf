@@ -19,4 +19,5 @@ data class UserResponse(val userId: Long,
                         val lastName: String,
                         val phoneNumber: String,
                         val password: String,
+                        val imgKey: String?,
                         val userLinks: MutableList<UserLink>)

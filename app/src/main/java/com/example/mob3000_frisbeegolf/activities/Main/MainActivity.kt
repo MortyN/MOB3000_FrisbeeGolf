@@ -51,9 +51,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setupWithNavController(navController)
         navView.setupWithNavController(navController)
 
-
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -1,19 +1,17 @@
-package com.example.mob3000_frisbeegolf.activities.feed.adapters
+package com.example.mob3000_frisbeegolf.activities.myprofile.adapters
 
 import android.R
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mob3000_frisbeegolf.api.model.PostResponse
 import com.example.mob3000_frisbeegolf.databinding.ListitemRowContainerBinding
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 
-class FeedAdapter : RecyclerView.Adapter<FeedAdapter.MyViewHolder>() {
+
+class MyProfileAdapter : RecyclerView.Adapter<MyProfileAdapter.MyViewHolder>() {
 
     private var items = emptyList<PostResponse>()
 
@@ -37,6 +35,7 @@ class FeedAdapter : RecyclerView.Adapter<FeedAdapter.MyViewHolder>() {
             binding.post = p
             binding.executePendingBindings()
         }
+
     }
 
     override fun getItemCount(): Int {
@@ -45,9 +44,8 @@ class FeedAdapter : RecyclerView.Adapter<FeedAdapter.MyViewHolder>() {
 
     companion object {
         @JvmStatic
-        @BindingAdapter("loadImage")
-        fun loadImage(fragment_feed_profileImg: ImageView, imgKey: String?) {
-            if (imgKey == null) return
+        @BindingAdapter("loadMyProfileImage")
+        fun loadMyProfileImage(fragment_feed_profileImg: ImageView, imgKey: String) {
             Glide.with(fragment_feed_profileImg)
                 .load("https://prod-disky-images.s3.eu-north-1.amazonaws.com/$imgKey.jpeg")
                 .circleCrop().placeholder(R.mipmap.sym_def_app_icon)
@@ -55,4 +53,5 @@ class FeedAdapter : RecyclerView.Adapter<FeedAdapter.MyViewHolder>() {
                 .into(fragment_feed_profileImg)
         }
     }
+
 }

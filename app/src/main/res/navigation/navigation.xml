@@ -39,7 +39,7 @@
         tools:layout="@layout/fragment_addround"/>
     <fragment
         android:id="@+id/fragment_myprofile"
-        android:name="com.example.mob3000_frisbeegolf.activities.MyProfile.MyProfile"
+        android:name="com.example.mob3000_frisbeegolf.activities.myprofile.MyProfile"
         android:label="fragment_myprofile_screen"
         tools:layout="@layout/fragment_myprofile"/>
     <fragment
