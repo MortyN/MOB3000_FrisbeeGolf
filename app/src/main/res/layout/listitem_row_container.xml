@@ -20,18 +20,18 @@
         android:id="@+id/list_row_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_medium"
-        android:layout_marginRight="@dimen/margin_medium"
         android:layout_marginBottom="@dimen/margin_medium"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_medium"
         android:background="@drawable/listitem_row_bg"
         android:elevation="8dp"
         android:paddingBottom="16dp">
 
         <RelativeLayout
-            android:id="@+id/relativeLayout3"
+            android:id="@+id/imagewusername"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -50,6 +50,7 @@
                     android:layout_height="70dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_profileimg"
+                    app:loadImage="@{`https://prod-disky-images.s3.eu-north-1.amazonaws.com/4687.jpeg`}"
                     />
 
             </androidx.cardview.widget.CardView>
@@ -57,32 +58,50 @@
         </RelativeLayout>
 
 
-        <TextView
-
-            android:id="@+id/fragment_feed_postcontent"
+        <RelativeLayout
+            android:id="@+id/relativeLayout2"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="11dp"
-            android:text="@{post.message, default=teoijewoigjowiegjiogjwoewijgoewigj}"
-            android:textSize="14sp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
+
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/relativeLayout3"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/imagewusername">
+
+            <TextView
+                android:id="@+id/fragment_feed_postcontent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{post.message, default=`Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.`}"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </RelativeLayout>
 
 
         <TextView
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{post.user.userName, default=Navn_navnesen}"
+            android:layout_marginStart="12dp"
+            android:text="@{post.user.firstName +` `+ post.user.lastName, default=Navn_navnesen}"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/relativeLayout2"
+            app:layout_constraintStart_toEndOf="@+id/imagewusername"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.37" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{post.postedTs, default=01_01_21}"
+            android:textColor="@color/divider_gray"
             android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.581"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/relativeLayout3"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
