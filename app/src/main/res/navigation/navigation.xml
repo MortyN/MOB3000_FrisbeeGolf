@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/fragment_feed"
         android:name="com.example.mob3000_frisbeegolf.activities.feed.Feed"
-        android:label="fragment_feed_screen"
+        android:label="Feed"
         tools:layout="@layout/fragment_feed"/>
 
 <!--EXAMPLE OF ACTIONS-->
@@ -30,22 +30,22 @@
     <fragment
         android:id="@+id/fragment_myrounds"
         android:name="com.example.mob3000_frisbeegolf.activities.MyRounds.MyRounds"
-        android:label="fragment_myrounds_screen"
+        android:label="Mine runder"
         tools:layout="@layout/fragment_myrounds"/>
     <fragment
         android:id="@+id/fragment_addround"
         android:name="com.example.mob3000_frisbeegolf.activities.AddRound.AddRound"
-        android:label="fragment_addround_screen"
+        android:label="Ny runde"
         tools:layout="@layout/fragment_addround"/>
     <fragment
         android:id="@+id/fragment_myprofile"
         android:name="com.example.mob3000_frisbeegolf.activities.myprofile.MyProfile"
-        android:label="fragment_myprofile_screen"
+        android:label="Min profil"
         tools:layout="@layout/fragment_myprofile"/>
     <fragment
         android:id="@+id/fragment_settings"
         android:name="com.example.mob3000_frisbeegolf.activities.Settings.Settings"
-        android:label="fragment_settings_screen"
+        android:label="Innstillinger"
         tools:layout="@layout/fragment_settings"/>
 
 </navigation>

@@ -47,6 +47,10 @@ class Post {
         this.updatedTs = updatedTs
     }
 
+    companion object{
+        val item = listOf(Post(110))
+    }
+
 }
 
 data class PostResponse(
@@ -54,7 +58,10 @@ data class PostResponse(
     @SerializedName("user") var user : UserResponse,
     @SerializedName("message") var message : String,
     @SerializedName("type") var type : Int,
-    @SerializedName("scoreCard") var scoreCard : String,
+    @SerializedName("scoreCard") var scoreCard : String?,
     @SerializedName("postedTs") var postedTs : String,
-    @SerializedName("updatedTs") var updatedTs : String
+    @SerializedName("updatedTs") var updatedTs : String,
+
+
+
 )

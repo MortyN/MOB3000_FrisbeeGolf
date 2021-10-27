@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mob3000_frisbeegolf.BR
 import com.example.mob3000_frisbeegolf.api.filter.PostFilterByUser
+import com.example.mob3000_frisbeegolf.api.model.PostResponse
 import com.example.mob3000_frisbeegolf.api.model.User
 import com.example.mob3000_frisbeegolf.databinding.FragmentFeedBinding
 import java.util.*
@@ -54,7 +55,7 @@ class Feed : Fragment() {
         binding.recyclerView.apply {
               layoutManager = FadeInLinearLayoutManager(this@Feed.context)
         }
-
+        feeditems = getFeedItemsTEST()
         return binding.root
     }
 
@@ -72,7 +73,30 @@ class Feed : Fragment() {
             }
         })
         viewModel.sendRequest(user, this@Feed.context)
+
         return viewModel
+    }
+
+    fun getFeedItemsTEST(): List<PostResponse>{
+        val user = PostFilterByUser(User(110), null, null, true)
+        var arr: List<PostResponse> = emptyList()
+        val viewModel = ViewModelProviders.of(this).get(FeedViewModel::class.java)
+        viewModel.getRecyclerListDataObserver().observe(viewLifecycleOwner, {
+            if (it != null){
+                binding.progressbar.visibility = GONE
+                binding.loadinglogo.visibility = GONE
+                arr = it
+            }else{
+                Toast.makeText(this@Feed.context, "Error fetching data", Toast.LENGTH_LONG).show()
+            }
+        })
+        viewModel.sendRequest(user, this@Feed.context)
+
+        return arr
+    }
+
+    companion object{
+        lateinit var feeditems: List<PostResponse>
     }
 
 }

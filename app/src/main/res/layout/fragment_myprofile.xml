@@ -93,28 +93,28 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/myprofile_loadinglogo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_launcher_round"
-                app:layout_constraintBottom_toTopOf="@+id/progressbar"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/recyclerView"
-                app:layout_constraintVertical_bias="0.962" />
+<!--            <ImageView-->
+<!--                android:id="@+id/myprofile_loadinglogo"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:src="@mipmap/ic_launcher_round"-->
+<!--                app:layout_constraintBottom_toTopOf="@+id/progressbar"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/recyclerView"-->
+<!--                app:layout_constraintVertical_bias="0.962" />-->
 
-            <ProgressBar
-                android:id="@+id/myprofile_progressbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminateTint="@color/loginbtnblue"
-                app:layout_constraintBaseline_toBottomOf="parent"
-                app:layout_constraintBaseline_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/recyclerView" />
+<!--            <ProgressBar-->
+<!--                android:id="@+id/myprofile_progressbar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:indeterminateTint="@color/loginbtnblue"-->
+<!--                app:layout_constraintBaseline_toBottomOf="parent"-->
+<!--                app:layout_constraintBaseline_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/recyclerView"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/recyclerView" />-->
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/myProfile_recyclerview"
@@ -126,7 +126,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:setAdapter="@{viewModel.getAdapter()}" />
+                />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
