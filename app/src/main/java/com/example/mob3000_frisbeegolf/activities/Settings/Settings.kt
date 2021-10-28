@@ -98,7 +98,6 @@ class Settings : Fragment() {
 
         val json: String = Gson().toJson(user)
 
-        val userbody = RequestBody.create(MultipartBody.FORM, json)
         val imagebody = RequestBody.create(MediaType.parse("image/jpeg"), imageFile)
 
         val finImage = MultipartBody.Part.createFormData("image", (0..10000).random().toString(), imagebody)

@@ -41,7 +41,6 @@ class MyProfileViewModel: ViewModel() {
         viewModelScope.launch {
             loading.value = true
 
-
             val apiService = APIFeedInterface.getInstance()
             try {
                 val res = apiService.getProfileFeed(PostFilterByUser(User(110), null, null, false))

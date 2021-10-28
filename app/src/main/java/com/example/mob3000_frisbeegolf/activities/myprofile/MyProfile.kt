@@ -103,16 +103,7 @@ fun MyProfileComposable(mainViewModel: MyProfileViewModel, loggedInUser: UserRes
                 onClick = {
                     mainViewModel.createPost(
                         PostResponse(
-                            null,
-                            UserResponse(
-                                110,
-                                "",
-                                "",
-                                "",
-                                "",
-                                "",
-                                null,
-                                null),
+                            null, loggedInUser,
                             textState.value.text,
                             1,
                             null,
@@ -241,7 +232,6 @@ class MyProfile : Fragment() {
                 imgKey = "763c6pojd20mgm54m4j4fctkkp",
                 userLinks = null
             )
-
             setContent {
                 MyProfileComposable(mainViewModel, user)
 //                CircularIndterminateProgressBar(isDisplayed = isLoading)
