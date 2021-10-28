@@ -21,3 +21,15 @@ data class UserResponse(val userId: Long,
                         val password: String,
                         val imgKey: String?,
                         val userLinks: MutableList<UserLink>?)
+
+//data class User(val userId: Long){
+//    constructor(userId: Long,
+//                userName: String,
+//                firstName: String,
+//                lastName: String,
+//                phoneNumber: String,
+//                password: String,
+//                imgKey: String?,
+//                userLinks: MutableList<UserLink>?) : this(userId)
+//}
+

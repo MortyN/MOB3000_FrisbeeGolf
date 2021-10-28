@@ -54,14 +54,12 @@ class Post {
 }
 
 data class PostResponse(
-    @SerializedName("postId") var postId : Int,
+    @SerializedName("postId") var postId : Int?,
     @SerializedName("user") var user : UserResponse,
     @SerializedName("message") var message : String,
     @SerializedName("type") var type : Int,
     @SerializedName("scoreCard") var scoreCard : String?,
     @SerializedName("postedTs") var postedTs : String,
     @SerializedName("updatedTs") var updatedTs : String,
-
-
 
 )

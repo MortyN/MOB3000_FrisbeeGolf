@@ -3,6 +3,7 @@ package com.example.mob3000_frisbeegolf.api.endpoints
 
 import com.example.mob3000_frisbeegolf.api.constants.ApiConstants
 import com.example.mob3000_frisbeegolf.api.filter.PostFilterByUser
+import com.example.mob3000_frisbeegolf.api.model.Post
 import com.example.mob3000_frisbeegolf.api.model.PostResponse
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -17,6 +18,9 @@ interface APIFeedInterface {
 
     @POST("get")
     suspend fun getProfileFeed(@Body user: PostFilterByUser): List<PostResponse>
+
+    @POST("create")
+    suspend fun createFeedPost(@Body post: PostResponse): PostResponse
 
     companion object {
         var apiService: APIFeedInterface? = null
