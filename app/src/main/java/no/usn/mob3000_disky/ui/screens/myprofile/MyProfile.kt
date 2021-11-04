@@ -40,8 +40,10 @@ fun MyProfile(
 
 val results = mainViewModel.postList.value
 
-if(results.isEmpty()){
-    mainViewModel.getPosts(loggedInUser)
+remember {
+    if(results.isEmpty()){
+        mainViewModel.getPosts(loggedInUser)
+    }
 }
 
 println("MAINACTIVITY: $results")

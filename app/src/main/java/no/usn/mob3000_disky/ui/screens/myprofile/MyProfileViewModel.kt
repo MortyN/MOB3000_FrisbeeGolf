@@ -1,7 +1,9 @@
 package no.usn.mob3000_disky.ui.screens.myprofile
 
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.internal.liveLiteral
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
@@ -24,47 +26,7 @@ import javax.inject.Inject
 
 //https://www.youtube.com/watch?v=gaa8KcyJqCU
 
-
-//    override suspend fun getProfileFeed(user: PostFilterByUser): List<Post> {
-//        viewModelScope.launch {
-//            loading.value = true
-//
-//            val apiService = MyProfileAPIService.getInstance()
-//            try {
-//                val res = apiService.getProfileFeed(PostFilterByUser(User(110), null, null, false))
-//                feedListResponse = res
-//            }
-//            catch (e: Exception) {
-//                errorMessage = e.message.toString()
-//            }
-//            delay(2000)
-//            loading.value = false
-//
-//        }
-//
-//        return feedListResponse
-//    }
-//
-//    override suspend fun createFeedPost(post: Post): Post {
-//        viewModelScope.launch {
-//            loading.value = true
-//
-//            val apiService = MyProfileAPIService.getInstance()
-//            try {
-//                val res = apiService.createFeedPost(post)
-//                createPostResponse = res
-//            }
-//            catch (e: Exception) {
-//                errorMessage = e.message.toString()
-//            }
-//            delay(2000)
-//            loading.value = false
-//
-//        }
-//
-//        return createPostResponse
-//    }
-
+//https://github.com/ahmedeltaher/MVVM-Kotlin-Android-Architecture/blob/master/app/src/main/java/com/task/ui/component/recipes/RecipesListViewModel.kt
 
 @HiltViewModel
 class MyProfileViewModel @Inject constructor(
@@ -82,6 +44,17 @@ class MyProfileViewModel @Inject constructor(
         ""
     ))
 
+    //https://developer.android.com/reference/androidx/annotation/VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val postListLiveDataPrivate = MutableLiveData<List<Post>>()
+    val postListLiveData: LiveData<List<Post>> get() = postListLiveDataPrivate
+
+//    fun getPostListLive(user: User){
+//        viewModelScope.launch {
+//            repository.getProfileFeed(user = user).coll
+//        }
+//    }
+
     init {
         println("VIEWMODEL: $repository")
 
@@ -96,6 +69,7 @@ class MyProfileViewModel @Inject constructor(
         }
     }
 
+
     fun createPost(post: Post){
         viewModelScope.launch {
             val result = repository.createFeedPost(post)
@@ -104,25 +78,3 @@ class MyProfileViewModel @Inject constructor(
     }
 
 }
-
-//class MyProfileViewModel: ViewModel() {
-//
-//    var feedListResponse:List<Post> by mutableStateOf(listOf())
-//    var createPostResponse:Post by mutableStateOf(Post(
-//        null,
-//        User(0),
-//        "",
-//        0,
-//        null,
-//        "",
-//        ""
-//    ))
-//    var errorMessage: String by mutableStateOf("")
-//
-//    val loading = mutableStateOf(false)
-//
-//
-//
-//
-//
-//}
