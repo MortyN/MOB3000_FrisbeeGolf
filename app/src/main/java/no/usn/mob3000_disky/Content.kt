@@ -32,7 +32,7 @@ fun HomeScreen(loggedinUser: User ,myProfileViewModel: MyProfileViewModel) {
         Button(onClick = {
 
             myProfileViewModel.viewModelScope.launch {
-                val result = myProfileViewModel.getRepo().getProfileFeed(loggedinUser)
+                val result = myProfileViewModel.getRepo().getFeed(loggedinUser)
             }
 
         }) {

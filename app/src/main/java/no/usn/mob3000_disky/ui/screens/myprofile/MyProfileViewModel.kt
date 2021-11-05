@@ -2,22 +2,17 @@ package no.usn.mob3000_disky.ui.screens.myprofile
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.internal.liveLiteral
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import no.usn.mob3000_disky.endpoints.MyProfileAPIService
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.repository.myprofile.MyProfileRepository
+import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import javax.inject.Inject
 
 //https://dagger.dev/hilt/view-model.html
@@ -30,10 +25,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyProfileViewModel @Inject constructor(
-    private val repository: MyProfileRepository
+    private val repository: PostRepository
 ): ViewModel(){
 
     val postList: MutableState<List<Post>> = mutableStateOf(ArrayList())
+
     val createPostResult: MutableState<Post> = mutableStateOf(Post(
         null,
         User(0),
@@ -45,9 +41,9 @@ class MyProfileViewModel @Inject constructor(
     ))
 
     //https://developer.android.com/reference/androidx/annotation/VisibleForTesting
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val postListLiveDataPrivate = MutableLiveData<List<Post>>()
-    val postListLiveData: LiveData<List<Post>> get() = postListLiveDataPrivate
+//    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+//    val postListLiveDataPrivate = MutableLiveData<List<Post>>()
+//    val postListLiveData: LiveData<List<Post>> get() = postListLiveDataPrivate
 
 //    fun getPostListLive(user: User){
 //        viewModelScope.launch {
@@ -64,7 +60,7 @@ class MyProfileViewModel @Inject constructor(
 
     fun getPosts(user: User){
         viewModelScope.launch {
-            val result = repository.getProfileFeed(user)
+            val result = repository.getFeed(user)
             postList.value = result
         }
     }
@@ -72,7 +68,7 @@ class MyProfileViewModel @Inject constructor(
 
     fun createPost(post: Post){
         viewModelScope.launch {
-            val result = repository.createFeedPost(post)
+            val result = repository.createPost(post)
             createPostResult.value = result
         }
     }

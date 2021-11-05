@@ -40,8 +40,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.NavItem
+import no.usn.mob3000_disky.ui.screens.feed.Feed
+import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
+import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
 import javax.inject.Inject
@@ -55,6 +58,7 @@ class MainActivity : ComponentActivity() {
     lateinit var someRandomString: String
 
     private val myProfileViewModel: MyProfileViewModel by viewModels()
+    private val feedViewModel: FeedViewModel by viewModels()
 
     val loggedInUser = User(
         userId = 110,
@@ -64,7 +68,8 @@ class MainActivity : ComponentActivity() {
         phoneNumber = "+4741527570",
         password = "***********",
         imgKey = "763c6pojd20mgm54m4j4fctkkp",
-        userLinks = null
+        userLinks = null,
+        getFromConnections = true,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,8 +92,11 @@ class MainActivity : ComponentActivity() {
             ) {
                 Navigation(
                     navController = navController,
+                    loggedInUser = loggedInUser,
+
                     myProfileViewModel = myProfileViewModel,
-                    loggedInUser = loggedInUser)
+                    feedViewModel = feedViewModel,
+                    )
             }
             // }
         }
@@ -109,7 +117,7 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
                 Icon(Icons.Filled.Menu, "")
             }
         },
-        backgroundColor = Color(0xFFE4E4E4),
+        backgroundColor = HeaderBlue,
         contentColor = Color.White
     )
 }
@@ -130,7 +138,6 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
         NavItem.TrackRecords,
         NavItem.AddArena,
         NavItem.MyTracks
-
     )
     Column(
         modifier = Modifier.padding(16.dp,16.dp,16.dp,0.dp),
@@ -319,9 +326,6 @@ fun BottomNavigationBar(navController: NavHostController){
                         //restore state when reselecting previous navigation item
                         restoreState = true
                     }
-
-
-
                 }
             )
         }
@@ -338,6 +342,7 @@ fun BottomNavigationBarPreview() {
 fun Navigation(
     navController: NavHostController,
     myProfileViewModel: MyProfileViewModel,
+    feedViewModel: FeedViewModel,
     loggedInUser: User
 ) {
 
@@ -345,7 +350,10 @@ fun Navigation(
 
     NavHost(navController, startDestination = NavItem.Feed.route) {
         composable(NavItem.Feed.route) {
-            HomeScreen(loggedInUser,myProfileViewModel)
+            Feed(
+                loggedInUser,
+                feedViewModel
+            )
         }
         composable(NavItem.MyRounds.route) {
             MusicScreen()
