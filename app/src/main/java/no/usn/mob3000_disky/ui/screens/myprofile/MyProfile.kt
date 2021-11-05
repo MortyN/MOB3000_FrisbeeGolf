@@ -46,9 +46,9 @@ val results = mainViewModel.postList.value
 //    }
 
 
-//    if(results.isEmpty()){
-//        mainViewModel.getPosts(loggedInUser)
-//    }
+    if(results.isEmpty()){
+        mainViewModel.getPosts(loggedInUser)
+    }
 
 
 println("MAINACTIVITY: $results")
@@ -58,7 +58,6 @@ Log.d(TAG, "MYPROFILE: $results !!!!!")
 //
     val textState = remember { mutableStateOf(TextFieldValue()) }
 //    val data: List<Post> =  mainViewModel.feedListResponse
-
 
     Column(
         modifier = Modifier
@@ -160,6 +159,7 @@ fun PostListItem(post: Post, index: Int, selectedIndex: Int,
 ) {
     val backgroundColor =
         if (index == selectedIndex) colors.background else colors.background
+
     Card(
         modifier = Modifier
             .padding(16.dp, 16.dp)
@@ -229,7 +229,7 @@ fun CircularIndterminateProgressBar(
 
 @Preview(showBackground = true)
 @Composable
-fun Testclass() {
+fun Test() {
     var textState = remember { mutableStateOf("") }
     Column(
         modifier = Modifier.wrapContentHeight(),

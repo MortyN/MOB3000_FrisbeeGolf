@@ -7,6 +7,8 @@
         - https://developer.android.com/jetpack/compose/mental-model
     - Compose cheat sheet
         - https://foso.github.io/Jetpack-Compose-Playground
+    - Layout
+        - https://developer.android.com/jetpack/compose/layouts/basics
     - Navigation
         - https://developer.android.com/jetpack/compose/navigation
     - Lifecycle

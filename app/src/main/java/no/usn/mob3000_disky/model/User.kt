@@ -11,49 +11,15 @@ class User(
     val phoneNumber: String,
     val password: String,
     val imgKey: String?,
+    var getFromConnections: Boolean?,
     val userLinks: MutableList<UserLink>?){
 
-    constructor (userId: Long) : this(userId, "", "", "", "", "", "", null) {
+    constructor (userId: Long) : this(userId, "", "", "", "", "", "", null, null) {
         this.userId = userId
     }
 
 
 }
-
-//class User {
-//    private var cardId: Long
-//    private var arenaRound: ArenaRound? = null
-//    private var startTs: Date? = null
-//    private var endTs: Date? = null
-//    private var createdBy: User? = null
-//
-//    val userId: Long = null
-//    val userName: String = null
-//    val firstName: String = null
-//    val lastName: String = null
-//    val phoneNumber: String = null
-//    val password: String = null
-//    val imgKey: String? = null
-//    val userLinks: MutableList<UserLink>?
-//
-//    constructor(cardId: Long) {
-//        this.cardId = cardId
-//    }
-//
-//    constructor(
-//        cardId: Long,
-//        arenaRound: ArenaRound?,
-//        startTs: Date?,
-//        endTs: Date?,
-//        createdBy: User?
-//    ) {
-//        this.cardId = cardId
-//        this.arenaRound = arenaRound
-//        this.startTs = startTs
-//        this.endTs = endTs
-//        this.createdBy = createdBy
-//    }
-//}
 
 class PostFilter(val user: User,
                  val type: Long?,

@@ -4,9 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import no.usn.mob3000_disky.endpoints.MyProfileAPIService
-import no.usn.mob3000_disky.repository.myprofile.MyProfile_Impl
-import no.usn.mob3000_disky.repository.myprofile.MyProfileRepository
+import no.usn.mob3000_disky.endpoints.PostAPIService
+import no.usn.mob3000_disky.repository.myprofile.PostImplementation
+import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import javax.inject.Singleton
 
 
@@ -16,10 +16,10 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideMyProfileRepository(
-        myProfileAPI: MyProfileAPIService
-    ): MyProfileRepository {
-        return MyProfile_Impl(myProfileAPI)
+    fun providePostRepository(
+        postAPI: PostAPIService
+    ): PostRepository {
+        return PostImplementation(postAPI)
     }
 
 }
