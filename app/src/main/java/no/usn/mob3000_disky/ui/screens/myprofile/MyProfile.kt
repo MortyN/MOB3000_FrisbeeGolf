@@ -35,16 +35,21 @@ import no.usn.mob3000_disky.model.User
 @Composable
 fun MyProfile(
     mainViewModel: MyProfileViewModel,
-    loggedInUser: User
+    loggedInUser: User,
+    scaffoldState: ScaffoldState = rememberScaffoldState()
 ) {
 
 val results = mainViewModel.postList.value
 
-remember {
-    if(results.isEmpty()){
-        mainViewModel.getPosts(loggedInUser)
-    }
-}
+//    LaunchedEffect(scaffoldState) {
+//        mainViewModel.getPosts(loggedInUser)
+//    }
+
+
+//    if(results.isEmpty()){
+//        mainViewModel.getPosts(loggedInUser)
+//    }
+
 
 println("MAINACTIVITY: $results")
 
