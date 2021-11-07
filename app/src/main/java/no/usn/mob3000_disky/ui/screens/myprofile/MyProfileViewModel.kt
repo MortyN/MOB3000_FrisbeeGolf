@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.Interaction
+import no.usn.mob3000_disky.model.Interactions
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
@@ -41,7 +42,7 @@ class MyProfileViewModel @Inject constructor(
         null,
         "",
         "",
-        ArrayList<Interaction>()
+        Interactions()
     ))
 
     private val exceptionHandler = CoroutineExceptionHandler{ _, throwable->
@@ -57,12 +58,10 @@ class MyProfileViewModel @Inject constructor(
         }
     }
 
-
     fun createPost(post: Post){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val result = repository.createPost(post)
             createPostResult.value = result
         }
     }
-
 }

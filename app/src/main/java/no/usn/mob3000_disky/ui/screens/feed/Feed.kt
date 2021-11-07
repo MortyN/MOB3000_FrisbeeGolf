@@ -1,5 +1,6 @@
 package no.usn.mob3000_disky.ui.screens.feed
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,9 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +39,7 @@ fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
     val results = mainViewModel.feedList.value
     val loading = mainViewModel.loading.value
 
-    if(results.isEmpty() && !loading){
+    if (results.isEmpty() && !loading) {
         mainViewModel.getPosts(loggedInUser)
     }
 
@@ -55,7 +55,14 @@ fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(results) { p ->
-                PostFeedListItem(post = p, 0, 0, {i -> print("CLICKED: $i")}, mainViewModel, loggedInUser)
+                PostFeedListItem(
+                    post = p,
+                    0,
+                    0,
+                    { i -> print("CLICKED: $i") },
+                    mainViewModel,
+                    loggedInUser
+                )
             }
 
         }
@@ -64,7 +71,7 @@ fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
 
 @Preview(showBackground = true)
 @Composable
-fun PostFeedListItemPreview(){
+fun PostFeedListItemPreview() {
 
     val loggedInUser = User(
         userId = 110,
@@ -78,23 +85,23 @@ fun PostFeedListItemPreview(){
         getFromConnections = true,
     )
 
-    val post = Post(
-        postId = 101,
-        user = loggedInUser,
-        message = """
-    Vær så snill å rydd opp søppla etter dere. 
-    Vi har nå hatt dugnad og plukket 3 søppelsekker med søppel.
-    Hvis vi skal fortsette å få lov til å ha kurvene der, må vi bli
-    flinkere på dette.
-        """.trimIndent(),
-        postedTs = "grij",
-        scoreCard = null,
-        type = 2,
-        updatedTs = "rgrg",
-        interactions = ArrayList<Interaction>()
-    )
+//    val post = Post(
+//        postId = 101,
+//        user = loggedInUser,
+//        message = """
+//    Vær så snill å rydd opp søppla etter dere.
+//    Vi har nå hatt dugnad og plukket 3 søppelsekker med søppel.
+//    Hvis vi skal fortsette å få lov til å ha kurvene der, må vi bli
+//    flinkere på dette.
+//        """.trimIndent(),
+//        postedTs = "grij",
+//        scoreCard = null,
+//        type = 2,
+//        updatedTs = "rgrg",
+//        interactions = ArrayList<Interaction>()
+//    )
 
-    PostFeedListItem(post, 0, 0, onClick = { print("hei")}, null, loggedInUser)
+//    PostFeedListItem(post, 0, 0, onClick = { print("hei") }, null, loggedInUser)
 }
 
 @Composable
@@ -104,13 +111,26 @@ fun PostFeedListItem(
     mainViewModel: FeedViewModel?,
     loggedInUser: User
 ) {
+
+    var likes by remember {
+        mutableStateOf(post.interactions.interactions?.size)
+    }
+
     val backgroundColor =
         if (index == selectedIndex) MaterialTheme.colors.background else MaterialTheme.colors.background
 
+
+    var likedByUser by remember {
+        mutableStateOf(post.interactions.likedByUser)
+    }
+
+
     val padding = 16.dp
-    Card(elevation = 4.dp,
+    Card(
+        elevation = 4.dp,
         modifier = Modifier
-         .padding(16.dp, 16.dp) ){
+            .padding(16.dp, 16.dp)
+    ) {
         Column(
             Modifier
                 .clickable(onClick = { print("HEI") })
@@ -127,7 +147,7 @@ fun PostFeedListItem(
                                     scale(Scale.FILL)
                                     transformations(CircleCropTransformation())
                                 })
-                        } else{
+                        } else {
                             painterResource(R.drawable.logo)
                         },
                         contentDescription = post.message,
@@ -144,32 +164,34 @@ fun PostFeedListItem(
             Column() {
                 Text(text = post.message)
             }
-            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()){
-                Row(verticalAlignment = Alignment.CenterVertically){
+            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = {
-                        mainViewModel?.interactPost(Interaction(
-                        post = post,
-                        user = loggedInUser,
-                        type = 1
-                    ))
-                    print(post)
+                        mainViewModel?.interactPost(
+                            Interaction(
+                                post = post,
+                                user = loggedInUser,
+                                type = 1
+                            )
+                        )
+                        print(post)
                     }) {
-                        if(post.interactions.find { interaction ->  interaction.user.userId == loggedInUser.userId} != null) {
-                            Icon(
-                                Icons.Filled.Favorite,
-                                contentDescription = "Like",
-                                tint = Color.Black
-                            )
+                        IconButton(
+                            onClick = {
+                                likes = if(likedByUser){
+                                    likes?.minus(1)
+                                }else{
+                                    likes?.plus(1)
+                                }
+
+                                likedByUser = !likedByUser
+                            }
+                        ) {
+                            Icon(imageVector = if(likedByUser){Icons.Outlined.Favorite}else{Icons.Outlined.FavoriteBorder}, contentDescription = "bæsj")
                         }
-                        else{
-                            Icon(
-                                Icons.Outlined.Favorite,
-                                contentDescription = "Like",
-                                tint = Color.Black
-                            )
-                        }
+
                     }
-                    Text(text = post.interactions.size.toString(), Modifier.padding(2.dp))
+                    Text(text = likes.toString(), Modifier.padding(2.dp))
                 }
             }
         }

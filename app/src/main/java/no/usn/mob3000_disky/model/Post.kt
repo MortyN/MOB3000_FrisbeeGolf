@@ -10,8 +10,13 @@ data class Post(
     @SerializedName("scoreCard") var scoreCard : ScoreCard?,
     @SerializedName("postedTs") var postedTs : String,
     @SerializedName("updatedTs") var updatedTs : String,
-    @SerializedName("interactions") var interactions : List<Interaction> = ArrayList<Interaction>()
+    @SerializedName("interactions") var interactions : Interactions,
 )
+
+class Interactions (
+    var likedByUser: Boolean = false,
+    var interactions: List<Interactions>? = ArrayList(),
+        )
 
 class Interaction (
     var user: User,

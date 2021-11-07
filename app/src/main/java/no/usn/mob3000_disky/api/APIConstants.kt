@@ -5,6 +5,6 @@ class APIConstants {
         val APIPOSTPREFIX = "/api/v1/post/"
         val APIUSERPREFIX = "/api/v1/user/"
         val APIPORT = ":8080"
-        val APIHOST = "http://192.168.86.178"
+        val APIHOST = "http://192.168.50.240"
     }
 }
