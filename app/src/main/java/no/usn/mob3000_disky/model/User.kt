@@ -18,7 +18,6 @@ class User(
         this.userId = userId
     }
 
-
 }
 
 class PostFilter(val user: User,

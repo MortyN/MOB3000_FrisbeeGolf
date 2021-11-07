@@ -1,10 +1,10 @@
 package no.usn.mob3000_disky
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,15 +35,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.ui.NavItem
+import no.usn.mob3000_disky.ui.ROOT_ROUTE
+import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.screens.round.AddRound
 import no.usn.mob3000_disky.ui.screens.feed.Feed
 import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
+import no.usn.mob3000_disky.ui.screens.round.ChooseTrack
+import no.usn.mob3000_disky.ui.screens.round.nav.AddRoundNavItem
+import no.usn.mob3000_disky.ui.screens.round.nav.CURRENTROUND_ROUTE
+import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
@@ -72,8 +79,10 @@ class MainActivity : ComponentActivity() {
         getFromConnections = true,
     )
 
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
             val scope = rememberCoroutineScope()
@@ -84,6 +93,7 @@ class MainActivity : ComponentActivity() {
                 scaffoldState = scaffoldState,
                 topBar = { TopBar(scope = scope, scaffoldState = scaffoldState) },
                 drawerBackgroundColor = Color(0xFFF5F5F5),
+                drawerGesturesEnabled = true,
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
                     Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
@@ -93,7 +103,7 @@ class MainActivity : ComponentActivity() {
                 Navigation(
                     navController = navController,
                     loggedInUser = loggedInUser,
-
+                    scaffoldState = scaffoldState,
                     myProfileViewModel = myProfileViewModel,
                     feedViewModel = feedViewModel,
                     )
@@ -133,11 +143,11 @@ fun TopBarPreview() {
 @Composable
 fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
     val items = listOf(
-        NavItem.MyProfile,
-        NavItem.Friends,
-        NavItem.TrackRecords,
-        NavItem.AddArena,
-        NavItem.MyTracks
+        RootNavItem.MyProfile,
+        RootNavItem.Friends,
+        RootNavItem.TrackRecords,
+        RootNavItem.AddArena,
+        RootNavItem.MyTracks
     )
     Column(
         modifier = Modifier.padding(16.dp,16.dp,16.dp,0.dp),
@@ -211,8 +221,8 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                 .fillMaxWidth()
                 .height(16.dp)
         )
-        DrawerItem(item = NavItem.Settings, selected = currentRoute == NavItem.Settings.route, onItemClick = {
-            navController.navigate(NavItem.Settings.route) {
+        DrawerItem(item = RootNavItem.Settings, selected = currentRoute == RootNavItem.Settings.route, onItemClick = {
+            navController.navigate(RootNavItem.Settings.route) {
                 navController.graph.startDestinationRoute?.let { route ->
                     popUpTo(route) {
                         saveState = true
@@ -250,7 +260,7 @@ fun DrawerPreview() {
 }
 
 @Composable
-fun DrawerItem(item: NavItem, selected: Boolean, onItemClick: (NavItem) -> Unit) {
+fun DrawerItem(item: RootNavItem, selected: Boolean, onItemClick: (RootNavItem) -> Unit) {
     val background = if (selected) R.color.teal_200 else android.R.color.transparent
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -283,7 +293,7 @@ fun DrawerItem(item: NavItem, selected: Boolean, onItemClick: (NavItem) -> Unit)
 @Preview(showBackground = true)
 @Composable
 fun DrawerItemPreview() {
-    DrawerItem(item = NavItem.Feed, selected = true, onItemClick = {})
+    DrawerItem(item = RootNavItem.Feed, selected = true, onItemClick = {})
 }
 
 @Composable
@@ -291,10 +301,10 @@ fun BottomNavigationBar(navController: NavHostController){
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
-        NavItem.Feed,
-        NavItem.MyRounds,
-        NavItem.AddRound,
-        NavItem.MyProfile
+        RootNavItem.Feed,
+        RootNavItem.MyRounds,
+        RootNavItem.AddRound,
+        RootNavItem.MyProfile
     )
 
     BottomNavigation(
@@ -338,34 +348,44 @@ fun BottomNavigationBarPreview() {
     //BottomNavigationBar()
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun Navigation(
     navController: NavHostController,
     myProfileViewModel: MyProfileViewModel,
     feedViewModel: FeedViewModel,
-    loggedInUser: User
+    loggedInUser: User,
+    scaffoldState: ScaffoldState
 ) {
 
     //https://proandroiddev.com/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
 
-    NavHost(navController, startDestination = NavItem.Feed.route) {
-        composable(NavItem.Feed.route) {
+    NavHost(
+        navController,
+        startDestination = RootNavItem.Feed.route,
+        route = ROOT_ROUTE) {
+
+        composable(RootNavItem.Feed.route) {
             Feed(
                 loggedInUser,
                 feedViewModel
             )
         }
-        composable(NavItem.MyRounds.route) {
+        composable(RootNavItem.MyRounds.route) {
             MusicScreen()
         }
-        composable(NavItem.AddRound.route) {
-            MoviesScreen()
-        }
-        composable(NavItem.MyProfile.route) {
+//        composable(RootNavItem.AddRound.route) {
+//            scaffoldState.drawerState.isOpen
+//            AddRound()
+//
+//        }
+        composable(RootNavItem.MyProfile.route) {
             MyProfile(
                 loggedInUser = loggedInUser,
                 mainViewModel = myProfileViewModel
             )
+
         }
+        addRoundNavGraph(navController = navController)
     }
 }

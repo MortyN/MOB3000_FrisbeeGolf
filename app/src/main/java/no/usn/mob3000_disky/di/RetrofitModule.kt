@@ -24,5 +24,4 @@ object RetrofitModule {
             .create(PostAPIService::class.java)
     }
 
-
 }

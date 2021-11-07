@@ -1,9 +1,14 @@
 package no.usn.mob3000_disky.repository.myprofile
 
+import android.util.Log
+import android.widget.Toast
 import no.usn.mob3000_disky.endpoints.PostAPIService
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
 import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PostImplementation
     constructor(
