@@ -1,6 +1,7 @@
 package no.usn.mob3000_disky.repository.myprofile
 
 import no.usn.mob3000_disky.endpoints.PostAPIService
+import no.usn.mob3000_disky.model.Interaction
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
 import okhttp3.ResponseBody
@@ -20,6 +21,10 @@ class PostImplementation
 
     override suspend fun deletePost(postid: Long): ResponseBody {
         return postAPI.deleteFeedPost(postId = postid)
+    }
+
+    override suspend fun interactPost(interaction: Interaction): Interaction{
+        return postAPI.interactPost(interaction = interaction)
     }
 
 }

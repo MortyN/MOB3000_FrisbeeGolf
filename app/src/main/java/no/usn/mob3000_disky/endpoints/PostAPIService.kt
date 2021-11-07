@@ -1,7 +1,7 @@
 package no.usn.mob3000_disky.endpoints
 
 import no.usn.mob3000_disky.api.APIConstants
-import no.usn.mob3000_disky.api.filter.PostFilterByUser
+import no.usn.mob3000_disky.model.Interaction
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
 import okhttp3.ResponseBody
@@ -21,5 +21,8 @@ interface PostAPIService {
 
     @POST("delete")
     suspend fun deleteFeedPost(@Body postId: Long): ResponseBody
+
+    @POST("interact")
+    suspend fun interactPost(@Body interaction: Interaction): Interaction
 
 }

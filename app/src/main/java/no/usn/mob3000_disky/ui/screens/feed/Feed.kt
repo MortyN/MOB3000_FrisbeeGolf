@@ -1,7 +1,6 @@
 package no.usn.mob3000_disky.ui.screens.feed
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,40 +8,29 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
+import no.usn.mob3000_disky.model.Interaction
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
-import no.usn.mob3000_disky.ui.screens.myprofile.PostListItem
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
-
-@Preview(showBackground = true)
-@Composable
-fun FeedPreview() {
-    Column() {
-        Text(text = "hei")
-    }
-}
 
 @Composable
 fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
@@ -67,7 +55,7 @@ fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
             modifier = Modifier.fillMaxWidth()
         ) {
             items(results) { p ->
-                PostFeedListItem(post = p, 0, 0){i -> print("CLICKED: $i")}
+                PostFeedListItem(post = p, 0, 0, {i -> print("CLICKED: $i")}, mainViewModel, loggedInUser)
             }
 
         }
@@ -85,7 +73,7 @@ fun PostFeedListItemPreview(){
         lastName = "Miehpo",
         phoneNumber = "+4741527570",
         password = "***********",
-        imgKey = "763c6pojd20mgm54m4j4fctkkp",
+        imgKey = null,
         userLinks = null,
         getFromConnections = true,
     )
@@ -102,39 +90,90 @@ fun PostFeedListItemPreview(){
         postedTs = "grij",
         scoreCard = null,
         type = 2,
-        updatedTs = "rgrg"
-
+        updatedTs = "rgrg",
+        interactions = ArrayList<Interaction>()
     )
 
-    PostFeedListItem(post, 0, 0, onClick = { print("hei")})
+    PostFeedListItem(post, 0, 0, onClick = { print("hei")}, null, loggedInUser)
 }
 
 @Composable
-fun PostFeedListItem(post: Post, index: Int, selectedIndex: Int,
-                 onClick: (Int) -> Unit
+fun PostFeedListItem(
+    post: Post, index: Int, selectedIndex: Int,
+    onClick: (Int) -> Unit,
+    mainViewModel: FeedViewModel?,
+    loggedInUser: User
 ) {
     val backgroundColor =
         if (index == selectedIndex) MaterialTheme.colors.background else MaterialTheme.colors.background
 
     val padding = 16.dp
-    Column(
-        Modifier
-            .clickable(onClick = { print("HEI") })
-            .padding(padding)
-            .fillMaxWidth()
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            //add default image
-            Image(painterResource(id = R.drawable.logo), contentDescription = "hei", modifier = Modifier.requiredSize(70.dp))
-            Column {
-                Text("Alfred Sisley")
-                Text("3 minutes ago")
+    Card(elevation = 4.dp,
+        modifier = Modifier
+         .padding(16.dp, 16.dp) ){
+        Column(
+            Modifier
+                .clickable(onClick = { print("HEI") })
+                .padding(padding)
+                .fillMaxWidth()
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                //add default image
+                Box() {
+                    Image(
+                        painter = if (post.user.imgKey != null) {
+                            rememberImagePainter(APIUtils.s3LinkParser(post.user.imgKey),
+                                builder = {
+                                    scale(Scale.FILL)
+                                    transformations(CircleCropTransformation())
+                                })
+                        } else{
+                            painterResource(R.drawable.logo)
+                        },
+                        contentDescription = post.message,
+                        modifier = Modifier
+                            .size(60.dp),
+                    )
+                }
+
+                Column(Modifier.padding(padding)) {
+                    Text(post.user.firstName + " " + post.user.lastName)
+                    Text(post.postedTs)
+                }
+            }
+            Column() {
+                Text(text = post.message)
+            }
+            Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()){
+                Row(verticalAlignment = Alignment.CenterVertically){
+                    IconButton(onClick = {
+                        mainViewModel?.interactPost(Interaction(
+                        post = post,
+                        user = loggedInUser,
+                        type = 1
+                    ))
+                    print(post)
+                    }) {
+                        if(post.interactions.find { interaction ->  interaction.user.userId == loggedInUser.userId} != null) {
+                            Icon(
+                                Icons.Filled.Favorite,
+                                contentDescription = "Like",
+                                tint = Color.Black
+                            )
+                        }
+                        else{
+                            Icon(
+                                Icons.Outlined.Favorite,
+                                contentDescription = "Like",
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                    Text(text = post.interactions.size.toString(), Modifier.padding(2.dp))
+                }
             }
         }
-        Spacer(Modifier.size(padding))
-        Card(elevation = 4.dp) {
-            Text(text = post.message)
-        }
     }
+
 }
 

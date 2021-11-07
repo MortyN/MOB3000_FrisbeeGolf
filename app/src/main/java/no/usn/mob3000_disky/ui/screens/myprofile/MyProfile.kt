@@ -29,6 +29,7 @@ import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import dagger.hilt.android.AndroidEntryPoint
 import no.usn.mob3000_disky.api.APIUtils
+import no.usn.mob3000_disky.model.Interaction
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
 
@@ -121,7 +122,8 @@ Log.d(TAG, "MYPROFILE: $results !!!!!")
                             1,
                             null,
                             "",
-                            ""
+                            "",
+                            ArrayList<Interaction>()
                         )
                     )
                 }, modifier = Modifier

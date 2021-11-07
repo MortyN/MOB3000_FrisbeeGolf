@@ -10,5 +10,16 @@ data class Post(
     @SerializedName("scoreCard") var scoreCard : ScoreCard?,
     @SerializedName("postedTs") var postedTs : String,
     @SerializedName("updatedTs") var updatedTs : String,
+    @SerializedName("interactions") var interactions : List<Interaction> = ArrayList<Interaction>()
+)
 
-    )
+class Interaction (
+    var user: User,
+    var post: Post,
+    var type: Int
+)
+
+
+
+
+

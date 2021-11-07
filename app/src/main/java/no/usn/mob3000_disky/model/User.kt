@@ -12,7 +12,7 @@ class User(
     val password: String,
     val imgKey: String?,
     var getFromConnections: Boolean?,
-    val userLinks: MutableList<UserLink>?){
+    val userLinks: List<UserLink>?){
 
     constructor (userId: Long) : this(userId, "", "", "", "", "", "", null, null) {
         this.userId = userId
