@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/main/java/no/usn/mob3000_disky/api/APIConstants.kt

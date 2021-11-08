@@ -8,10 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 
 import kotlinx.coroutines.launch
-import no.usn.mob3000_disky.model.Post
-import no.usn.mob3000_disky.model.User
+import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import javax.inject.Inject
 
@@ -37,40 +38,27 @@ class MyProfileViewModel @Inject constructor(
         0,
         null,
         "",
-        ""
+        "",
+        Interactions()
     ))
 
-    //https://developer.android.com/reference/androidx/annotation/VisibleForTesting
-//    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-//    val postListLiveDataPrivate = MutableLiveData<List<Post>>()
-//    val postListLiveData: LiveData<List<Post>> get() = postListLiveDataPrivate
-
-//    fun getPostListLive(user: User){
-//        viewModelScope.launch {
-//            repository.getProfileFeed(user = user).coll
-//        }
-//    }
-
-    init {
-        println("VIEWMODEL: $repository")
-
+    private val exceptionHandler = CoroutineExceptionHandler{ _, throwable->
+        throwable.printStackTrace()
     }
 
     fun getRepo() = repository
 
     fun getPosts(user: User){
-        viewModelScope.launch {
-            val result = repository.getFeed(user)
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val result = repository.getFeed(PostFilter(user, false))
             postList.value = result
         }
     }
 
-
     fun createPost(post: Post){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val result = repository.createPost(post)
             createPostResult.value = result
         }
     }
-
 }
