@@ -3,8 +3,7 @@ package no.usn.mob3000_disky.repository.myprofile
 import android.util.Log
 import android.widget.Toast
 import no.usn.mob3000_disky.endpoints.PostAPIService
-import no.usn.mob3000_disky.model.Post
-import no.usn.mob3000_disky.model.User
+import no.usn.mob3000_disky.model.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -15,7 +14,7 @@ class PostImplementation
         private val postAPI: PostAPIService
     ): PostRepository {
 
-    override suspend fun getFeed(user: User): List<Post> {
+    override suspend fun getFeed(user: PostFilter): List<Post> {
         return postAPI.getProfileFeed(user = user)
     }
 
@@ -25,6 +24,10 @@ class PostImplementation
 
     override suspend fun deletePost(postid: Long): ResponseBody {
         return postAPI.deleteFeedPost(postId = postid)
+    }
+
+    override suspend fun interactPost(interaction: Interaction): Interaction{
+        return postAPI.interactPost(interaction = interaction)
     }
 
 }
