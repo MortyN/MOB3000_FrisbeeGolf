@@ -13,6 +13,11 @@ data class Post(
     @SerializedName("interactions") var interactions : Interactions,
 )
 
+data class PostFilter(
+    @SerializedName("user") var user : User,
+    @SerializedName("getFromConnections") var getFromConnections : Boolean,
+)
+
 class Interactions (
     var likedByUser: Boolean = false,
     var interactions: List<Interactions>? = ArrayList(),

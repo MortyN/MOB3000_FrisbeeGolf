@@ -167,23 +167,22 @@ fun PostFeedListItem(
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = {
-                        mainViewModel?.interactPost(
-                            Interaction(
-                                post = post,
-                                user = loggedInUser,
-                                type = 1
-                            )
-                        )
+
                         print(post)
                     }) {
                         IconButton(
                             onClick = {
+                                mainViewModel?.interactPost(Interaction(
+                                    post = post,
+                                    user = loggedInUser,
+                                    type = 1
+                                ))
+
                                 likes = if(likedByUser){
                                     likes?.minus(1)
                                 }else{
                                     likes?.plus(1)
                                 }
-
                                 likedByUser = !likedByUser
                             }
                         ) {

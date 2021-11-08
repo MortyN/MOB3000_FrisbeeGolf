@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.usn.mob3000_disky.model.PostFilter
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
 
@@ -32,7 +33,7 @@ fun HomeScreen(loggedinUser: User ,myProfileViewModel: MyProfileViewModel) {
         Button(onClick = {
 
             myProfileViewModel.viewModelScope.launch {
-                val result = myProfileViewModel.getRepo().getFeed(loggedinUser)
+                val result = myProfileViewModel.getRepo().getFeed(PostFilter(loggedinUser,true))
             }
 
         }) {

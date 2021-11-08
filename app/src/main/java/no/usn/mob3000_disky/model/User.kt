@@ -18,13 +18,7 @@ class User(
         this.userId = userId
     }
 
-
 }
-
-class PostFilter(val user: User,
-                 val type: Long?,
-                 val scoreCardId: ScoreCard?,
-                 val getFromConnections: Boolean)
 
 class UserLink(
     private val userLink1: User,

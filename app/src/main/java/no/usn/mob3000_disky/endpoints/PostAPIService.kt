@@ -1,9 +1,7 @@
 package no.usn.mob3000_disky.endpoints
 
 import no.usn.mob3000_disky.api.APIConstants
-import no.usn.mob3000_disky.model.Interaction
-import no.usn.mob3000_disky.model.Post
-import no.usn.mob3000_disky.model.User
+import no.usn.mob3000_disky.model.*
 import okhttp3.ResponseBody
 
 import retrofit2.Retrofit
@@ -14,7 +12,7 @@ import retrofit2.http.POST
 interface PostAPIService {
 
     @POST("get")
-    suspend fun getProfileFeed(@Body user: User): List<Post>
+    suspend fun getProfileFeed(@Body user: PostFilter): List<Post>
 
     @POST("create")
     suspend fun createFeedPost(@Body post: Post): Post

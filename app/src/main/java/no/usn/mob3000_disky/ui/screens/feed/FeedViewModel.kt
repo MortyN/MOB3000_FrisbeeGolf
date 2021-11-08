@@ -9,9 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import no.usn.mob3000_disky.model.Interaction
-import no.usn.mob3000_disky.model.Post
-import no.usn.mob3000_disky.model.User
+import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import javax.inject.Inject
 
@@ -27,10 +25,12 @@ class FeedViewModel @Inject constructor(private val repository: PostRepository):
     }
 
     fun getPosts(user: User){
-        user.getFromConnections = true
+        val testvalue = PostFilter(User(110), true)
+        user.getFromConnections = false
+
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             loading.value = true
-            val result = repository.getFeed(user)
+            val result = repository.getFeed(testvalue)
             feedList.value = result
             loading.value = false
         }
