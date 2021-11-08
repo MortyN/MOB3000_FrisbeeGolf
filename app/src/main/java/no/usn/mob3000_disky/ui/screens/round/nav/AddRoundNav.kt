@@ -7,17 +7,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.screens.round.AddRound
+import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 
 @ExperimentalAnimationApi
 fun NavGraphBuilder.addRoundNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    roundViewModel: RoundViewModel
 ){
     navigation(
         startDestination = RootNavItem.AddRound.route,
         route = CURRENTROUND_ROUTE
     ){
         composable(AddRoundNavItem.AddRound.route) {
-            AddRound()
+            AddRound(roundViewModel)
         }
     }
 }

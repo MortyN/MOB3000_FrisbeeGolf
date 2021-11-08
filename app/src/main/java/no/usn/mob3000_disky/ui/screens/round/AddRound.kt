@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import no.usn.mob3000_disky.model.ArenaFilter
+import no.usn.mob3000_disky.model.PostFilter
 import no.usn.mob3000_disky.ui.components.searchbar.ArenaSearchBox
 
 
@@ -36,20 +38,31 @@ fun AddRoundPreview() {
 
 @ExperimentalAnimationApi
 @Composable
-fun AddRound() {
+fun AddRound(mainViewModel: RoundViewModel) {
 
-    val names = listOf("hei","hedsadsai","hedgsdgi","hesdasdsa","heigrehreh","heifwefwwfw","sadsadhei","heiasdgs")
+    val resultsArenaList = mainViewModel.arenaList.value
+    val results = mainViewModel.arenaStrList.value
+    val loading = mainViewModel.loading.value
 
+    if (resultsArenaList.isEmpty() && !loading) {
+        mainViewModel.getArena(ArenaFilter(null))
+    }
 
-        Column(modifier = Modifier.fillMaxSize()){
-            Column(modifier = Modifier.fillMaxWidth().padding(0.dp,0.dp,0.dp,8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                ArenaSearchBox(items = names)
-            }
-            GoogleMap(modifier = Modifier
-                .background(Color.Yellow)
-                .fillMaxWidth()
-                .fillMaxHeight())
+    val names = mainViewModel.arenaStrList.value
 
+if (!loading && results.isNotEmpty()){
+    Column(modifier = Modifier.fillMaxSize()){
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 0.dp, 0.dp, 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            ArenaSearchBox(items = results)
         }
+        GoogleMap(modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight())
+
+    }
+}
+
 
 }

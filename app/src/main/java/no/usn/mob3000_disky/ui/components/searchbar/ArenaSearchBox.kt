@@ -21,16 +21,10 @@ import java.util.*
 @Composable
 fun ArenaSearchBox(items: List<String>) {
 
-    val items = listOf(
-        "Paulo Pereira",
-        "Daenerys Targaryen",
-        "Jon Snow",
-        "Sansa Stark",
-    )
     val autoCompleteEntities = items.asAutoCompleteEntities(
         filter = { item, query ->
-            item.toLowerCase(Locale.getDefault())
-                .startsWith(query.toLowerCase(Locale.getDefault()))
+            item.lowercase(Locale.getDefault())
+                .startsWith(query.lowercase(Locale.getDefault()))
         }
     )
 

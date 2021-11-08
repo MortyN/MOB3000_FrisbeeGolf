@@ -24,13 +24,12 @@ class FeedViewModel @Inject constructor(private val repository: PostRepository):
         throwable.printStackTrace()
     }
 
-    fun getPosts(user: User){
-        val testvalue = PostFilter(User(110), true)
+    fun getPosts(user: PostFilter){
         user.getFromConnections = false
 
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             loading.value = true
-            val result = repository.getFeed(testvalue)
+            val result = repository.getFeed(user)
             feedList.value = result
             loading.value = false
         }

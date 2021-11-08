@@ -48,6 +48,7 @@ import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
 import no.usn.mob3000_disky.ui.screens.round.ChooseTrack
+import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.AddRoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.CURRENTROUND_ROUTE
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
 
     private val myProfileViewModel: MyProfileViewModel by viewModels()
     private val feedViewModel: FeedViewModel by viewModels()
+    private val roundViewModel: RoundViewModel by viewModels()
 
     val loggedInUser = User(
         userId = 110,
@@ -106,6 +108,7 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState,
                     myProfileViewModel = myProfileViewModel,
                     feedViewModel = feedViewModel,
+                    roundViewModel = roundViewModel,
                     )
             }
             // }
@@ -353,6 +356,7 @@ fun BottomNavigationBarPreview() {
 fun Navigation(
     navController: NavHostController,
     myProfileViewModel: MyProfileViewModel,
+    roundViewModel: RoundViewModel,
     feedViewModel: FeedViewModel,
     loggedInUser: User,
     scaffoldState: ScaffoldState
@@ -386,6 +390,6 @@ fun Navigation(
             )
 
         }
-        addRoundNavGraph(navController = navController)
+        addRoundNavGraph(navController = navController, roundViewModel = roundViewModel)
     }
 }
