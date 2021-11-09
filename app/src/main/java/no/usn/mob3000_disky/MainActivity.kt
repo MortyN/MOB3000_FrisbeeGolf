@@ -35,22 +35,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.ROOT_ROUTE
 import no.usn.mob3000_disky.ui.RootNavItem
-import no.usn.mob3000_disky.ui.screens.round.AddRound
 import no.usn.mob3000_disky.ui.screens.feed.Feed
 import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
-import no.usn.mob3000_disky.ui.screens.round.ChooseTrack
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.AddRoundNavItem
-import no.usn.mob3000_disky.ui.screens.round.nav.CURRENTROUND_ROUTE
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
@@ -81,6 +77,11 @@ class MainActivity : ComponentActivity() {
         getFromConnections = true,
     )
 
+    val ignoreTopBarRoutes = listOf(
+        RootNavItem.AddRound.route,
+        AddRoundNavItem.ChooseTrack.route
+    )
+
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,13 +90,17 @@ class MainActivity : ComponentActivity() {
             val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
             val scope = rememberCoroutineScope()
             val navController = rememberNavController()
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
             // If you want the drawer from the right side, uncomment the following
             // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             Scaffold(
                 scaffoldState = scaffoldState,
-                topBar = { TopBar(scope = scope, scaffoldState = scaffoldState) },
+                topBar ={
+                    if(!ignoreTopBarRoutes.contains(currentRoute(navController = navController))){
+                        TopBar(scope = scope, scaffoldState = scaffoldState) }
+                },
                 drawerBackgroundColor = Color(0xFFF5F5F5),
-                drawerGesturesEnabled = true,
+                drawerGesturesEnabled = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
                     Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
@@ -118,7 +123,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun currentRoute(navController: NavHostController): String? {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return navBackStackEntry?.destination?.route
+}
+
+@Composable
 fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
+
     TopAppBar(
         title = { Text(text = appName, fontSize = 18.sp) },
         navigationIcon = {
@@ -132,7 +144,9 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
         },
         backgroundColor = HeaderBlue,
         contentColor = Color.White
+
     )
+
 }
 
 @Preview(showBackground = false)
@@ -140,7 +154,8 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
 fun TopBarPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    TopBar(scope = scope, scaffoldState = scaffoldState)
+
+//    TopBar(scope = scope, scaffoldState = scaffoldState)
 }
 
 @Composable
@@ -324,7 +339,7 @@ fun BottomNavigationBar(navController: NavHostController){
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route){
-
+                            navController.popBackStack()
                         /*
                         using pop up to avoid building up large stack of destinations on users backstack
                          */
@@ -359,7 +374,7 @@ fun Navigation(
     roundViewModel: RoundViewModel,
     feedViewModel: FeedViewModel,
     loggedInUser: User,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
 ) {
 
     //https://proandroiddev.com/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
@@ -377,6 +392,7 @@ fun Navigation(
         }
         composable(RootNavItem.MyRounds.route) {
             MusicScreen()
+
         }
 //        composable(RootNavItem.AddRound.route) {
 //            scaffoldState.drawerState.isOpen

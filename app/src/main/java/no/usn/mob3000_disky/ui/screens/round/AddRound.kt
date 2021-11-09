@@ -3,6 +3,7 @@ package no.usn.mob3000_disky.ui.screens.round
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,9 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaFilter
-import no.usn.mob3000_disky.model.PostFilter
-import no.usn.mob3000_disky.ui.components.searchbar.ArenaSearchBox
+import no.usn.mob3000_disky.ui.components.searchbar.AutoCompleteArena
 
 
 @ExperimentalAnimationApi
@@ -38,31 +40,50 @@ fun AddRoundPreview() {
 
 @ExperimentalAnimationApi
 @Composable
-fun AddRound(mainViewModel: RoundViewModel) {
+fun AddRound(mainViewModel: RoundViewModel, navController: NavHostController) {
 
     val resultsArenaList = mainViewModel.arenaList.value
     val results = mainViewModel.arenaStrList.value
     val loading = mainViewModel.loading.value
 
     if (resultsArenaList.isEmpty() && !loading) {
-        mainViewModel.getArena(ArenaFilter(null))
+        mainViewModel.getArena(
+            ArenaFilter(
+                null,
+                null,
+                null,
+                getArenaRounds = true,
+                isActive = true
+            )
+        )
     }
 
-    val names = mainViewModel.arenaStrList.value
+    if (!loading && results.isNotEmpty()){
+        Column(modifier = Modifier.fillMaxSize()){
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 0.dp, 0.dp, 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                AutoCompleteArena(arenas = resultsArenaList, navController = navController)
+//                ArenaSearchBox(items = results, navController = navController)
+            }
+            GoogleMap(modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight())
 
-if (!loading && results.isNotEmpty()){
-    Column(modifier = Modifier.fillMaxSize()){
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 0.dp, 0.dp, 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            ArenaSearchBox(items = results)
         }
-        GoogleMap(modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight())
-
     }
+
+
 }
 
-
+@Composable
+fun ArenaAutoCompleteItem(arena: Arena) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        arena.arenaName?.let { Text(text = it, style = MaterialTheme.typography.subtitle2) }
+    }
 }

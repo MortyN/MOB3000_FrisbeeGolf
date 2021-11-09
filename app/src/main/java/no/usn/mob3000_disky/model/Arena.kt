@@ -1,43 +1,9 @@
 package no.usn.mob3000_disky.model
 
 import com.google.gson.annotations.SerializedName
+import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteEntity
 import java.sql.Timestamp
 import java.util.*
-
-//class Arena {
-//    private var arenaId: Long
-//    private var arenaName: String? = null
-//    private var description: String? = null
-//    private var established: Int? = null
-//    private var createdBy: User? = null
-//    private var createdTs: Date? = null
-//    private var updateTs: Date? = null
-//    private var active = false
-//
-//    constructor(arenaId: Long) {
-//        this.arenaId = arenaId
-//    }
-//
-//    constructor(
-//        arenaId: Long,
-//        arenaName: String?,
-//        description: String?,
-//        established: Int?,
-//        createdBy: User?,
-//        createdTs: Date?,
-//        updateTs: Date?,
-//        active: Boolean
-//    ) {
-//        this.arenaId = arenaId
-//        this.arenaName = arenaName
-//        this.description = description
-//        this.established = established
-//        this.createdBy = createdBy
-//        this.createdTs = createdTs
-//        this.updateTs = updateTs
-//        this.active = active
-//    }
-//}
 
 class Arena (
     var arenaId: Long? = null,
@@ -51,10 +17,15 @@ class Arena (
     var longitude: String? = null,
     var rounds: List<ArenaRound>? = null,
     var active: Boolean = false
-        ){
+        ):AutoCompleteEntity {
 
     constructor (arenaId: Long) : this(arenaId, null, null, null, null, null, null, null, null) {
         this.arenaId = arenaId
+    }
+
+    override fun filter(query: String): Boolean {
+        return arenaName?.lowercase(Locale.getDefault())
+            ?.startsWith(query.toLowerCase(Locale.getDefault()))!!
     }
 
 }
@@ -62,9 +33,12 @@ class Arena (
 data class ArenaFilter(
     @SerializedName("arenaIds")var arenaIds: List<Long>?,
     @SerializedName("names")var names: List<String>?,
-    @SerializedName("createdBy")var createdBy: List<Long>?
+    @SerializedName("createdBy")var createdBy: List<Long>?,
+    @SerializedName("getArenaRounds")var getArenaRounds: Boolean?,
+    @SerializedName("isActive")var isActive: Boolean?
+
 ){
-    constructor (arenaIds: List<Long>?) : this(listOf(0), null, null) {
+    constructor (arenaIds: List<Long>?) : this(listOf(0), null, null, null, null) {
         this.arenaIds = arenaIds
     }
 }

@@ -12,44 +12,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
+import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteBox
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteSearchBarTag
-import no.usn.mob3000_disky.ui.components.autocomplete.asAutoCompleteEntities
-import java.util.*
+import no.usn.mob3000_disky.ui.screens.round.nav.AddRoundNavItem
 
 @ExperimentalAnimationApi
 @Composable
-fun ArenaSearchBox(items: List<String>, navController: NavHostController) {
-
-    val autoCompleteEntities = items.asAutoCompleteEntities(
-        filter = { item, query ->
-            item.lowercase(Locale.getDefault())
-                .startsWith(query.lowercase(Locale.getDefault()))
-        }
-    )
-
+fun AutoCompleteArena(arenas: List<Arena>, navController: NavHostController) {
     AutoCompleteBox(
-        items = autoCompleteEntities,
-        itemContent = { item ->
-            ValueAutoCompleteItem(item.value)
+        items = arenas,
+        itemContent = { arena ->
+            ArenaAutoCompleteItem(arena)
         }
     ) {
         var value by remember { mutableStateOf("") }
         val view = LocalView.current
 
-        onItemSelected { item ->
-            value = item.value
+        onItemSelected { arena ->
+            value = arena.arenaName.toString()
             filter(value)
-            navController.navigate("")
+            val arenaJson = Gson().toJson(arena)
             view.clearFocus()
+            navController.navigate(AddRoundNavItem.ChooseTrack.route.plus("/$arenaJson"))
         }
 
         TextSearchBar(
             modifier = Modifier.testTag(AutoCompleteSearchBarTag),
             value = value,
-            label = "Search by value",
+            label = "Search with objects",
             onDoneActionClick = {
                 view.clearFocus()
             },
@@ -70,13 +63,13 @@ fun ArenaSearchBox(items: List<String>, navController: NavHostController) {
 }
 
 @Composable
-fun ValueAutoCompleteItem(item: String) {
+fun ArenaAutoCompleteItem(arena: Arena) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(text = item, style = MaterialTheme.typography.subtitle2)
+        arena.arenaName?.let { Text(text = it, style = MaterialTheme.typography.subtitle2) }
     }
 }

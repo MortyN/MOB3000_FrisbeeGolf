@@ -14,6 +14,8 @@
         - Nested navigation
             - https://github.dev/stevdza-san/NestedNavigationDemo
             - https://www.youtube.com/watch?v=2sKnGloDJf0
+        - Pass parameters to nav backstack
+            - https://www.youtube.com/watch?v=OgYfQNbl0ts
     - Lifecycle
         - https://developer.android.com/jetpack/compose/lifecycle
     - State (values that change over time)
