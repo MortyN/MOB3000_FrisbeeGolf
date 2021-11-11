@@ -1,6 +1,7 @@
 package no.usn.mob3000_disky.ui.screens.feed
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,19 +18,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
+import com.google.gson.Gson
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.Interaction
 import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
+import no.usn.mob3000_disky.ui.NavItem
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 
 @Composable
@@ -123,7 +128,7 @@ fun PostFeedListItem(
     var likedByUser by remember {
         mutableStateOf(post.interactions.likedByUser)
     }
-
+    val navController = rememberNavController()
 
     val padding = 16.dp
     Card(
@@ -152,7 +157,23 @@ fun PostFeedListItem(
                         },
                         contentDescription = post.message,
                         modifier = Modifier
-                            .size(60.dp),
+                            .size(60.dp)
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    val postJson = Gson().toJson(post)
+                                    navController.navigate(NavItem.Profile.route.plus("/$postJson")){
+                                        navController.graph.startDestinationRoute?.let { route ->
+                                            popUpTo(route){
+                                                saveState = true
+                                            }
+                                        }
+                                        //restore state when reselecting previous navigation item
+                                        restoreState = true
+                                    }
+                                }
+                    )
+
                     )
                 }
 

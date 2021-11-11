@@ -25,7 +25,7 @@ import javax.inject.Inject
 //https://github.com/ahmedeltaher/MVVM-Kotlin-Android-Architecture/blob/master/app/src/main/java/com/task/ui/component/recipes/RecipesListViewModel.kt
 
 @HiltViewModel
-class MyProfileViewModel @Inject constructor(
+class ProfileViewModel @Inject constructor(
     private val repository: PostRepository
 ): ViewModel(){
 
@@ -59,6 +59,20 @@ class MyProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val result = repository.createPost(post)
             createPostResult.value = result
+
+            postList.value += result;
         }
     }
+
+    fun interactPost(interaction: Interaction){
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            repository.interactPost(interaction)
+        }
+    }
+    //    fun deletePost(postId: Long){
+//        viewModelScope.launch {
+//            val result = repository.deletePost(postId)
+//            feedList.value = result
+//        }
+//    }
 }

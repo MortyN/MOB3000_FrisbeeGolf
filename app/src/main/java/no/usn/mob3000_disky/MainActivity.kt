@@ -1,7 +1,6 @@
 package no.usn.mob3000_disky
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -31,19 +30,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import no.usn.mob3000_disky.model.Post
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.NavItem
 import no.usn.mob3000_disky.ui.screens.feed.Feed
 import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
-import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
+import no.usn.mob3000_disky.ui.screens.myprofile.ProfileViewModel
+import no.usn.mob3000_disky.ui.screens.profile.Profile
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
@@ -57,7 +61,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var someRandomString: String
 
-    private val myProfileViewModel: MyProfileViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
     private val feedViewModel: FeedViewModel by viewModels()
 
     val loggedInUser = User(
@@ -94,7 +98,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     loggedInUser = loggedInUser,
 
-                    myProfileViewModel = myProfileViewModel,
+                    profileViewModel = profileViewModel,
                     feedViewModel = feedViewModel,
                     )
             }
@@ -341,10 +345,11 @@ fun BottomNavigationBarPreview() {
 @Composable
 fun Navigation(
     navController: NavHostController,
-    myProfileViewModel: MyProfileViewModel,
+    profileViewModel: ProfileViewModel,
     feedViewModel: FeedViewModel,
     loggedInUser: User
 ) {
+
 
     //https://proandroiddev.com/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
 
@@ -364,8 +369,27 @@ fun Navigation(
         composable(NavItem.MyProfile.route) {
             MyProfile(
                 loggedInUser = loggedInUser,
-                mainViewModel = myProfileViewModel
+                mainViewModel = profileViewModel
             )
+        }
+        composable(
+                NavItem.Profile.route.plus("/{post}"),
+                arguments = listOf(navArgument("post"){
+                    type = NavType.StringType
+                })
+            ) {
+            backStackEntry ->
+            backStackEntry?.arguments?.getString("post")?.let { json ->
+                val post = Gson().fromJson(json, Post::class.java)
+
+                Profile(
+                    loggedInUser = loggedInUser,
+                    mainViewModel = profileViewModel,
+                    post = post
+                )
+            }
+
+
         }
     }
 }
