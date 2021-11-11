@@ -2,6 +2,7 @@ package no.usn.mob3000_disky.ui.screens.round
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,9 +18,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaRound
-import no.usn.mob3000_disky.ui.screens.feed.PostFeedListItem
+import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 
 @Preview(showBackground = true)
 @Composable
@@ -68,15 +70,18 @@ fun ChooseTrack(navController: NavHostController, arena: Arena) {
 
     LazyColumn(){
         items(arena.rounds.orEmpty()) { track ->
-            TrackListItem(track = track)
+            TrackListItem(track = track, navController = navController)
         }
     }
 }
 
 
 @Composable
-fun TrackListItem(track: ArenaRound){
-    Column {
+fun TrackListItem(track: ArenaRound, navController: NavHostController){
+    Column(modifier = Modifier.clickable {
+        val trackJson = Gson().toJson(track)
+        navController.navigate(RoundNavItem.ChoosePlayers.route.plus("/$trackJson"))
+    }) {
         Spacer(modifier = Modifier.height(4.dp))
         Divider(color = Color.Gray,modifier = Modifier
             .fillMaxWidth()

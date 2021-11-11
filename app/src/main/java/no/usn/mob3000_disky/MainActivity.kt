@@ -46,7 +46,7 @@ import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
-import no.usn.mob3000_disky.ui.screens.round.nav.AddRoundNavItem
+import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
@@ -78,8 +78,9 @@ class MainActivity : ComponentActivity() {
     )
 
     val ignoreTopBarRoutes = listOf(
-        RootNavItem.AddRound.route,
-        AddRoundNavItem.ChooseTrack.route
+        RoundNavItem.ChooseTrack.route,
+        RoundNavItem.ChooseTrack.route.plus("/{arena}"),
+        RoundNavItem.ChoosePlayers.route.plus("/{track}")
     )
 
     @ExperimentalAnimationApi

@@ -17,7 +17,7 @@ import com.google.gson.Gson
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteBox
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteSearchBarTag
-import no.usn.mob3000_disky.ui.screens.round.nav.AddRoundNavItem
+import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 
 @ExperimentalAnimationApi
 @Composable
@@ -36,7 +36,7 @@ fun AutoCompleteArena(arenas: List<Arena>, navController: NavHostController) {
             filter(value)
             val arenaJson = Gson().toJson(arena)
             view.clearFocus()
-            navController.navigate(AddRoundNavItem.ChooseTrack.route.plus("/$arenaJson"))
+            navController.navigate(RoundNavItem.ChooseTrack.route.plus("/$arenaJson"))
         }
 
         TextSearchBar(

@@ -1,5 +1,9 @@
 package no.usn.mob3000_disky.api
 
+import android.provider.Settings.Global.getString
+import no.usn.mob3000_disky.BuildConfig
+import no.usn.mob3000_disky.R
+
 class APIConstants {
     companion object {
         const val APIVERSIONPREFIX = "/api/v1"
@@ -7,6 +11,6 @@ class APIConstants {
         const val APIARENAPREFIX = "$APIVERSIONPREFIX/arena/"
         const val APIUSERPREFIX = "$APIVERSIONPREFIX/user/"
         const val APIPORT = ":8080"
-        const val APIHOST = "http://192.168.50.240"
+        val APIHOST = "http://${BuildConfig.API_IP_ADDRESS}"
     }
 }
