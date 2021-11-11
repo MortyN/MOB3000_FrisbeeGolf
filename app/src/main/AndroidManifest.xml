@@ -1,35 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="no.usn.mob3000_disky">
+    package="no.usn.mob3000_disky" >
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <queries>
+
         <!-- Camera -->
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
     </queries>
 
-
     <application
-        android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MOB3000_Disky">
+        android:theme="@style/Theme.MOB3000_Disky"
+        android:usesCleartextTraffic="true" >
+        <activity
+            android:name=".ui.screens.round.MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.MOB3000_Disky.NoActionBar" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyASsIBjuVC-8B4qQOMtmG91yoNmVXIs9W0" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MOB3000_Disky.NoActionBar">
+            android:theme="@style/Theme.MOB3000_Disky.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
