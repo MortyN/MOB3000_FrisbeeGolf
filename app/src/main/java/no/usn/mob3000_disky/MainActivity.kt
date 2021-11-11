@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
         getFromConnections = true,
     )
 
-    val ignoreTopBarRoutes = listOf(
+    var ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}")
@@ -94,17 +95,34 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             // If you want the drawer from the right side, uncomment the following
             // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+
             Scaffold(
                 scaffoldState = scaffoldState,
-                topBar ={
-                    if(!ignoreTopBarRoutes.contains(currentRoute(navController = navController))){
-                        TopBar(scope = scope, scaffoldState = scaffoldState) }
+                topBar = {
+//                    if(!ignoreTopBarRoutes.contains(currentRoute(navController = navController))){
+//                        TopBar(scope = scope, scaffoldState = scaffoldState) }
+                    TopBarBackBtn(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        isMenu = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
+                        navController = navController
+                    )
+//                    else{
+//                        TopBarBackBtn(scope = scope, scaffoldState = scaffoldState)
+//                    }
                 },
                 drawerBackgroundColor = Color(0xFFF5F5F5),
-                drawerGesturesEnabled = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
+                drawerGesturesEnabled =
+                !ignoreTopBarRoutes
+                    .contains(currentRoute(navController = navController))
+                    .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
-                    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+                    Drawer(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        navController = navController
+                    )
                 },
                 bottomBar = { BottomNavigationBar(navController) }
             ) {
@@ -115,7 +133,7 @@ class MainActivity : ComponentActivity() {
                     myProfileViewModel = myProfileViewModel,
                     feedViewModel = feedViewModel,
                     roundViewModel = roundViewModel,
-                    )
+                )
             }
             // }
         }
@@ -130,17 +148,33 @@ fun currentRoute(navController: NavHostController): String? {
 }
 
 @Composable
-fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
+fun TopBarBackBtn(
+    scope: CoroutineScope,
+    scaffoldState: ScaffoldState,
+    isMenu: Boolean,
+    navController: NavHostController
+) {
 
     TopAppBar(
         title = { Text(text = appName, fontSize = 18.sp) },
         navigationIcon = {
             IconButton(onClick = {
                 scope.launch {
-                    scaffoldState.drawerState.open()
+                    if (isMenu) {
+                        scaffoldState.drawerState.open()
+                    } else {
+                        navController.popBackStack()
+                    }
+
                 }
             }) {
-                Icon(Icons.Filled.Menu, "")
+                Icon(
+                    if (isMenu) {
+                        Icons.Filled.Menu
+                    } else {
+                        Icons.Filled.ArrowBack
+                    }, ""
+                )
             }
         },
         backgroundColor = HeaderBlue,
@@ -161,6 +195,7 @@ fun TopBarPreview() {
 
 @Composable
 fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
+
     val items = listOf(
         RootNavItem.MyProfile,
         RootNavItem.Friends,
@@ -169,14 +204,15 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
         RootNavItem.MyTracks
     )
     Column(
-        modifier = Modifier.padding(16.dp,16.dp,16.dp,0.dp),
+        modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 0.dp),
         horizontalAlignment = Alignment.Start
     ) {
         // Header
         Row(
             modifier = Modifier.wrapContentHeight(),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically) {
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = R.drawable.logo.toString(),
@@ -185,7 +221,12 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                     .padding(10.dp)
                     .clip(CircleShape)
             )
-            Text(text = "Hei, Petter Stordalen", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(
+                text = "Hei, Petter Stordalen",
+                fontSize = 20.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
         }
         // Space between
         Spacer(
@@ -193,9 +234,11 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                 .fillMaxWidth()
                 .height(16.dp)
         )
-        Divider(color = Color.Gray,modifier = Modifier
-            .fillMaxWidth()
-            .width(2.dp))
+        Divider(
+            color = Color.Gray, modifier = Modifier
+                .fillMaxWidth()
+                .width(2.dp)
+        )
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -232,30 +275,35 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                 .fillMaxWidth()
                 .height(16.dp)
         )
-        Divider(color = Color.Gray,modifier = Modifier
-            .fillMaxWidth()
-            .width(2.dp))
+        Divider(
+            color = Color.Gray, modifier = Modifier
+                .fillMaxWidth()
+                .width(2.dp)
+        )
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(16.dp)
         )
-        DrawerItem(item = RootNavItem.Settings, selected = currentRoute == RootNavItem.Settings.route, onItemClick = {
-            navController.navigate(RootNavItem.Settings.route) {
-                navController.graph.startDestinationRoute?.let { route ->
-                    popUpTo(route) {
-                        saveState = true
+        DrawerItem(
+            item = RootNavItem.Settings,
+            selected = currentRoute == RootNavItem.Settings.route,
+            onItemClick = {
+                navController.navigate(RootNavItem.Settings.route) {
+                    navController.graph.startDestinationRoute?.let { route ->
+                        popUpTo(route) {
+                            saveState = true
+                        }
                     }
+                    launchSingleTop = true
+                    restoreState = true
                 }
-                launchSingleTop = true
-                restoreState = true
-            }
-            // Close drawer
-            scope.launch {
-                scaffoldState.drawerState.close()
-            }
+                // Close drawer
+                scope.launch {
+                    scaffoldState.drawerState.close()
+                }
 
-        })
+            })
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = "The frisbee golf app you need",
@@ -316,7 +364,7 @@ fun DrawerItemPreview() {
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController){
+fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val items = listOf(
@@ -339,14 +387,14 @@ fun BottomNavigationBar(navController: NavHostController){
                 alwaysShowLabel = false,
                 selected = currentRoute == item.route,
                 onClick = {
-                    navController.navigate(item.route){
-                            navController.popBackStack()
+                    navController.navigate(item.route) {
+                        navController.popBackStack()
                         /*
                         using pop up to avoid building up large stack of destinations on users backstack
                          */
 
                         navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route){
+                            popUpTo(route) {
                                 saveState = true
                             }
                         }
@@ -383,7 +431,8 @@ fun Navigation(
     NavHost(
         navController,
         startDestination = RootNavItem.Feed.route,
-        route = ROOT_ROUTE) {
+        route = ROOT_ROUTE
+    ) {
 
         composable(RootNavItem.Feed.route) {
             Feed(

@@ -13,13 +13,13 @@ class Arena (
     var createdBy: User? = null,
     var createdTs: Timestamp? = null,
     var updateTs: Timestamp? = null,
-    var latitude: String? = null,
-    var longitude: String? = null,
+    var latitude: String,
+    var longitude: String,
     var rounds: List<ArenaRound>? = null,
     var active: Boolean = false
         ):AutoCompleteEntity {
 
-    constructor (arenaId: Long) : this(arenaId, null, null, null, null, null, null, null, null) {
+    constructor (arenaId: Long) : this(arenaId, null, null, null, null, null, null, "", "") {
         this.arenaId = arenaId
     }
 

@@ -66,9 +66,12 @@ fun AddRound(mainViewModel: RoundViewModel, navController: NavHostController) {
                 AutoCompleteArena(arenas = resultsArenaList, navController = navController)
 //                ArenaSearchBox(items = results, navController = navController)
             }
-            GoogleMap(modifier = Modifier
+            AddArenaMap(modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight())
+                .fillMaxHeight(),
+                arenas = resultsArenaList,
+                navController = navController
+                )
 
         }
     }

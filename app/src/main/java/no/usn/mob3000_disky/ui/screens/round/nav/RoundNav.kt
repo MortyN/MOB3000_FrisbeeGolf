@@ -8,10 +8,7 @@ import com.google.gson.Gson
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaRound
 import no.usn.mob3000_disky.ui.RootNavItem
-import no.usn.mob3000_disky.ui.screens.round.AddRound
-import no.usn.mob3000_disky.ui.screens.round.ChoosePlayers
-import no.usn.mob3000_disky.ui.screens.round.ChooseTrack
-import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
+import no.usn.mob3000_disky.ui.screens.round.*
 
 
 @ExperimentalAnimationApi
@@ -37,14 +34,14 @@ fun NavGraphBuilder.addRoundNavGraph(
                 ChooseTrack(navController = navController, arena = arena)
             }
         }
-        composable(RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        composable(RoundNavItem.PreCurrentRound.route.plus("/{track}"),
             arguments = listOf(
                 navArgument("track") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             backStackEntry?.arguments?.getString("track")?.let { json ->
                 val track = Gson().fromJson(json, ArenaRound::class.java)
-                ChoosePlayers(navController = navController, track = track)
+                PreCurrentRound(navHostController = navController, track = track)
             }
         }
     }

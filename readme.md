@@ -23,6 +23,10 @@
     - Recomposition
         - https://medium.com/mobile-app-development-publication/android-jetpack-compose-recomposition-made-easy-527ecc9bcbaf
 
+ - Google Maps SDK
+    - https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java
+    - https://developers.google.com/maps/documentation/android-sdk/marker
+
  - Architecture
     - https://developer.android.com/jetpack/guide
 

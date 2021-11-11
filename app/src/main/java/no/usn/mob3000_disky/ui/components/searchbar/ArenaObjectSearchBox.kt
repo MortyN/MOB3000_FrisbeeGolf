@@ -42,7 +42,7 @@ fun AutoCompleteArena(arenas: List<Arena>, navController: NavHostController) {
         TextSearchBar(
             modifier = Modifier.testTag(AutoCompleteSearchBarTag),
             value = value,
-            label = "Search with objects",
+            label = "Søk etter arena",
             onDoneActionClick = {
                 view.clearFocus()
             },
