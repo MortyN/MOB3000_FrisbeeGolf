@@ -33,6 +33,7 @@ import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.Interaction
 import no.usn.mob3000_disky.model.Post
+import no.usn.mob3000_disky.model.PostFilter
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.NavItem
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
@@ -45,7 +46,7 @@ fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
     val loading = mainViewModel.loading.value
 
     if (results.isEmpty() && !loading) {
-        mainViewModel.getPosts(loggedInUser)
+        mainViewModel.getPosts(PostFilter(loggedInUser, true))
     }
 
     Column(
