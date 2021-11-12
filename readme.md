@@ -18,10 +18,14 @@
             - https://www.youtube.com/watch?v=OgYfQNbl0ts
     - Lifecycle
         - https://developer.android.com/jetpack/compose/lifecycle
+    - SideEffects
+        - https://developer.android.com/jetpack/compose/side-effects
     - State (values that change over time)
         - https://developer.android.com/jetpack/compose/state
     - Recomposition
         - https://medium.com/mobile-app-development-publication/android-jetpack-compose-recomposition-made-easy-527ecc9bcbaf
+    - Coil (ImageView HTTP client)
+        - https://coil-kt.github.io/coil/
 
  - Google Maps SDK
     - https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java

@@ -1,5 +1,7 @@
 package no.usn.mob3000_disky.model
 
+import com.google.gson.annotations.SerializedName
+import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteEntity
 import java.sql.Timestamp
 import java.util.*
 
@@ -12,13 +14,23 @@ class User(
     val password: String,
     val imgKey: String?,
     var getFromConnections: Boolean?,
-    val userLinks: List<UserLink>?){
+    val userLinks: List<UserLink>?): AutoCompleteEntity {
 
     constructor (userId: Long) : this(userId, "", "", "", "", "", "", null, null) {
         this.userId = userId
     }
 
+    override fun filter(query: String): Boolean {
+        return firstName.lowercase(Locale.getDefault())
+            .startsWith(query.lowercase(Locale.getDefault()))
+    }
+
 }
+
+class UserFilter(
+    @SerializedName("userId")
+    var userId: Long?
+)
 
 class UserLink(
     private val userLink1: User,

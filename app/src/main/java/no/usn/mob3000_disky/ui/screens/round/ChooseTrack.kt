@@ -31,26 +31,39 @@ fun ChooseTrackPreview() {
 
     Column(modifier = Modifier
         .fillMaxSize()
+        .fillMaxWidth()
         .background(Color.White)) {
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+            , horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(text = "Velg Bane", fontSize = 40.sp, fontWeight = FontWeight.Bold)
         }
-        LazyColumn(){
+        LazyColumn(modifier = Modifier.fillMaxWidth()){
             items(itemsIndexedList) { p ->
-                Column() {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Divider(color = Color.Gray,modifier = Modifier
                         .fillMaxWidth()
                         .width(2.dp))
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = p,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(38.dp,8.dp,8.dp,8.dp)
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            text = p,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.DarkGray,
+                            )
+                        Text(
+                            text = "18 hull",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Light,
+                            color = Color.DarkGray,
                         )
-
-                    // TODO
+                    }
                 }
             }
         }
@@ -66,32 +79,51 @@ fun ChooseTrackPreview() {
 @Composable
 fun ChooseTrack(navController: NavHostController, arena: Arena) {
 
-    val itemsIndexedList = listOf("A", "B", "C")
-
-    LazyColumn(){
-        items(arena.rounds.orEmpty()) { track ->
-            TrackListItem(track = track, navController = navController)
+    Column {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+            , horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Velg Bane", fontSize = 40.sp, fontWeight = FontWeight.Bold)
+        }
+        LazyColumn{
+            items(arena.rounds.orEmpty()) { track ->
+                TrackListItem(arena = arena,track = track, navController = navController)
+            }
         }
     }
+
+
 }
 
-
 @Composable
-fun TrackListItem(track: ArenaRound, navController: NavHostController){
+fun TrackListItem(arena: Arena,track: ArenaRound, navController: NavHostController){
     Column(modifier = Modifier.clickable {
         val trackJson = Gson().toJson(track)
-        navController.navigate(RoundNavItem.ChoosePlayers.route.plus("/$trackJson"))
+        val arenaJson = Gson().toJson(arena)
+        navController.navigate(RoundNavItem.PreCurrentRound.route.plus("/$arenaJson/$trackJson"))
     }) {
         Spacer(modifier = Modifier.height(4.dp))
         Divider(color = Color.Gray,modifier = Modifier
             .fillMaxWidth()
             .width(2.dp))
         Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = track.description.orEmpty(),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(38.dp,8.dp,8.dp,8.dp)
-        )
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text = track.description.orEmpty(),
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.DarkGray,
+            )
+            Text(
+                text = "${track.holeAmount.toString()} hull",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.DarkGray,
+            )
+        }
     }
 }

@@ -78,13 +78,15 @@ fun ShowArenaMap(modifier: Modifier = Modifier, arena: Arena, navController: Nav
                 val map = mapView.awaitMap()
                 map.uiSettings.isZoomControlsEnabled = false
                 val latLngNorway = LatLng(arena.latitude.toDouble(), arena.longitude.toDouble())
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngNorway, 3f))
-
+                val markerOptions = MarkerOptions()
+                    .title(arena.arenaName)
+                    .position(latLngNorway)
+                map.addMarker(markerOptions)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngNorway, 15f))
             }
         }
     }
 }
-
 
 @Composable
 fun rememberMapViewWithLifeCycle(): MapView {

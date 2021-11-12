@@ -47,6 +47,7 @@ import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
+import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
@@ -59,12 +60,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var someRandomString: String
-
     private val myProfileViewModel: MyProfileViewModel by viewModels()
     private val feedViewModel: FeedViewModel by viewModels()
     private val roundViewModel: RoundViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
 
     val loggedInUser = User(
         userId = 110,
@@ -81,7 +80,8 @@ class MainActivity : ComponentActivity() {
     var ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
-        RoundNavItem.ChoosePlayers.route.plus("/{track}")
+        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}")
     )
 
     @ExperimentalAnimationApi
@@ -133,6 +133,7 @@ class MainActivity : ComponentActivity() {
                     myProfileViewModel = myProfileViewModel,
                     feedViewModel = feedViewModel,
                     roundViewModel = roundViewModel,
+                    userViewModel = userViewModel
                 )
             }
             // }
@@ -422,6 +423,7 @@ fun Navigation(
     myProfileViewModel: MyProfileViewModel,
     roundViewModel: RoundViewModel,
     feedViewModel: FeedViewModel,
+    userViewModel: UserViewModel,
     loggedInUser: User,
     scaffoldState: ScaffoldState,
 ) {
@@ -456,6 +458,6 @@ fun Navigation(
             )
 
         }
-        addRoundNavGraph(navController = navController, roundViewModel = roundViewModel)
+        addRoundNavGraph(navController = navController, roundViewModel = roundViewModel, loggedInUser = loggedInUser, userViewModel = userViewModel)
     }
 }
