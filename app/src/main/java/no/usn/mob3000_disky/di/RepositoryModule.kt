@@ -5,7 +5,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import no.usn.mob3000_disky.endpoints.ArenaAPIService
+import no.usn.mob3000_disky.endpoints.AuthAPIService
 import no.usn.mob3000_disky.endpoints.PostAPIService
+import no.usn.mob3000_disky.repository.auth.AuthImplementation
+import no.usn.mob3000_disky.repository.auth.AuthRepository
 import no.usn.mob3000_disky.repository.myprofile.PostImplementation
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.round.ArenaImplementation
@@ -31,6 +34,14 @@ object RepositoryModule {
         arenaApi: ArenaAPIService
     ): ArenaRepository {
         return ArenaImplementation(arenaApi)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAuthRepository(
+        authAPI: AuthAPIService
+    ): AuthRepository {
+        return AuthImplementation(authAPI)
     }
 
 }

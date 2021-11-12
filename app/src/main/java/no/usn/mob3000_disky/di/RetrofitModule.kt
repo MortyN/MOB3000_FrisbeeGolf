@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import no.usn.mob3000_disky.api.APIConstants
 import no.usn.mob3000_disky.endpoints.ArenaAPIService
+import no.usn.mob3000_disky.endpoints.AuthAPIService
 import no.usn.mob3000_disky.endpoints.PostAPIService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -34,6 +35,17 @@ object RetrofitModule {
             .build()
             .create(ArenaAPIService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideAuthService(): AuthAPIService {
+        return Retrofit.Builder()
+            .baseUrl(APIConstants.APIHOST + APIConstants.APIPORT + APIConstants.APIUSERPREFIX)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AuthAPIService::class.java)
+    }
+
 
 
 }

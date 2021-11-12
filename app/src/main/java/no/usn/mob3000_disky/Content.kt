@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Button
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,10 +19,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.PostFilter
 import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
+import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 
 @Composable
-fun HomeScreen(loggedinUser: User ,myProfileViewModel: MyProfileViewModel) {
+fun HomeScreen(loggedinUser: User, profileViewModel: ProfileViewModel) {
 
     Column(
         modifier = Modifier
@@ -33,8 +32,8 @@ fun HomeScreen(loggedinUser: User ,myProfileViewModel: MyProfileViewModel) {
     ) {
         Button(onClick = {
 
-            myProfileViewModel.viewModelScope.launch {
-                val result = myProfileViewModel.getRepo().getFeed(PostFilter(loggedinUser,true))
+            profileViewModel.viewModelScope.launch {
+                val result = profileViewModel.getRepo().getFeed(PostFilter(loggedinUser,true))
             }
 
         }) {
