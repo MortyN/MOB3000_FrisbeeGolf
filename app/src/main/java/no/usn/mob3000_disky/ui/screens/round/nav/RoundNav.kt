@@ -44,14 +44,13 @@ fun NavGraphBuilder.addRoundNavGraph(
                 navArgument("track") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            backStackEntry?.arguments?.getString("track")?.let { json ->
                 PreCurrentRound(
                     navHostController = navController,
                     track = Gson().fromJson(backStackEntry?.arguments?.getString("track"),
                         ArenaRound::class.java),
                     selectedArena = Gson().fromJson(backStackEntry?.arguments?.getString("arena"),
                         Arena::class.java), loggedInUser, userViewModel)
-            }
+
 
         }
     }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +51,7 @@ import no.usn.mob3000_disky.ui.screens.feed.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
+import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
     private val myProfileViewModel: ProfileViewModel by viewModels()
     private val roundViewModel: RoundViewModel by viewModels()
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
 
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
@@ -90,15 +93,31 @@ class MainActivity : ComponentActivity() {
             }
             Scaffold(
                 scaffoldState = scaffoldState,
-                topBar ={
-                    if(!ignoreTopBarRoutes.contains(currentRoute(navController = navController))){
-                        TopBar(scope = scope, scaffoldState = scaffoldState) }
+                topBar = {
+//                    if(!ignoreTopBarRoutes.contains(currentRoute(navController = navController))){
+//                        TopBar(scope = scope, scaffoldState = scaffoldState) }
+                    TopBarBackBtn(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        isMenu = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
+                        navController = navController
+                    )
+//                    else{
+//                        TopBarBackBtn(scope = scope, scaffoldState = scaffoldState)
+//                    }
                 },
                 drawerBackgroundColor = Color(0xFFF5F5F5),
-                drawerGesturesEnabled = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
+                drawerGesturesEnabled =
+                !ignoreTopBarRoutes
+                    .contains(currentRoute(navController = navController))
+                    .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
-                    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+                    Drawer(
+                        scope = scope,
+                        scaffoldState = scaffoldState,
+                        navController = navController
+                    )
                 },
                 bottomBar = { BottomNavigationBar(navController) }
             ) {
@@ -108,6 +127,7 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState,
                     profileViewModel = myProfileViewModel,
                     roundViewModel = roundViewModel,
+                    userViewModel = userViewModel
                     )
             }
             // }
@@ -123,24 +143,38 @@ fun currentRoute(navController: NavHostController): String? {
 }
 
 @Composable
-fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
+fun TopBarBackBtn(
+    scope: CoroutineScope,
+    scaffoldState: ScaffoldState,
+    isMenu: Boolean,
+    navController: NavHostController
+) {
 
     TopAppBar(
         title = { Text(text = appName, fontSize = 18.sp) },
         navigationIcon = {
             IconButton(onClick = {
                 scope.launch {
-                    scaffoldState.drawerState.open()
+                    if (isMenu) {
+                        scaffoldState.drawerState.open()
+                    } else {
+                        navController.popBackStack()
+                    }
+
                 }
             }) {
-                Icon(Icons.Filled.Menu, "")
+                Icon(
+                    if (isMenu) {
+                        Icons.Filled.Menu
+                    } else {
+                        Icons.Filled.ArrowBack
+                    }, ""
+                )
             }
         },
         backgroundColor = HeaderBlue,
         contentColor = Color.White
-
     )
-
 }
 
 @Preview(showBackground = false)
@@ -366,6 +400,7 @@ fun Navigation(
     navController: NavHostController,
     profileViewModel: ProfileViewModel,
     roundViewModel: RoundViewModel,
+    userViewModel: UserViewModel,
     loggedInUser: User,
     scaffoldState: ScaffoldState,
 ) {
@@ -399,7 +434,7 @@ fun Navigation(
                 mainViewModel = profileViewModel
             )
         }
-        addRoundNavGraph(navController = navController, roundViewModel = roundViewModel)
+        addRoundNavGraph(navController = navController, roundViewModel = roundViewModel, userViewModel = userViewModel, loggedInUser = loggedInUser)
 
         composable(RootNavItem.Profile.route.plus("/{user}"),
             arguments = listOf(
