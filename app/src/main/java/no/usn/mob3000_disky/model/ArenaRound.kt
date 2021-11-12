@@ -15,7 +15,7 @@ import java.util.*
 
 class ArenaRound (
             val arenaRoundId: Long?,
-            val arena: Arena?,
+            val arena: Arena,
             val holeAmount: Int?,
             val payment: Boolean?,
             val description: String?,

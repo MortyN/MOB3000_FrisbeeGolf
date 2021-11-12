@@ -26,11 +26,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MOB3000_Disky"
         android:usesCleartextTraffic="true" >
-        <activity
-            android:name=".ui.screens.round.MainActivity"
-            android:exported="false"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.MOB3000_Disky.NoActionBar" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

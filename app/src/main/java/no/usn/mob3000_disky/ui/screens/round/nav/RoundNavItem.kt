@@ -11,5 +11,6 @@ sealed class RoundNavItem(var route: String, var icon: ImageVector, var title: S
     object ChooseTrack : RoundNavItem("choosetrack", Icons.Outlined.Analytics, "Velg Bane")
     object ChoosePlayers : RoundNavItem("chooseplayers", Icons.Outlined.ControlPoint, "Velg Spillere")
     object CurrentRound : RoundNavItem("currentround", Icons.Outlined.AccountCircle, "Nåværende Runde")
+    object PreCurrentRound : RoundNavItem("precurrentround", Icons.Outlined.AccountCircle, "Nåværende Runde")
 
 }
