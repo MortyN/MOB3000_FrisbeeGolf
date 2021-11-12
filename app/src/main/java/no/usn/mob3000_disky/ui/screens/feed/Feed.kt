@@ -1,29 +1,20 @@
 package no.usn.mob3000_disky.ui.screens.feed
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
@@ -31,22 +22,23 @@ import coil.transform.CircleCropTransformation
 import com.google.gson.Gson
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
-import no.usn.mob3000_disky.model.Interaction
-import no.usn.mob3000_disky.model.Post
-import no.usn.mob3000_disky.model.PostFilter
-import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.ui.NavItem
-import no.usn.mob3000_disky.ui.theme.HeaderBlue
+import no.usn.mob3000_disky.model.*
+import no.usn.mob3000_disky.ui.RootNavItem
 
 @Composable
-fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
+fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController) {
 
-    val textState = remember { mutableStateOf(TextFieldValue()) }
-    val results = mainViewModel.feedList.value
+    val results = mainViewModel.postList.value
     val loading = mainViewModel.loading.value
 
-    if (results.isEmpty() && !loading) {
-        mainViewModel.getPosts(PostFilter(loggedInUser, true))
+    val filter = PostFilter(loggedInUser, true)
+    val previousFilter = mainViewModel.postFilter.value;
+
+    LaunchedEffect(key1 = Unit) {
+        if(previousFilter.user.userId != filter.user.userId || previousFilter.getFromConnections !== filter.getFromConnections)
+        {
+            mainViewModel.getPosts(filter)
+        }
     }
 
     Column(
@@ -67,10 +59,10 @@ fun Feed(loggedInUser: User, mainViewModel: FeedViewModel) {
                     0,
                     { i -> print("CLICKED: $i") },
                     mainViewModel,
-                    loggedInUser
+                    loggedInUser,
+                    navController
                 )
             }
-
         }
     }
 }
@@ -87,35 +79,36 @@ fun PostFeedListItemPreview() {
         phoneNumber = "+4741527570",
         password = "***********",
         imgKey = null,
-        userLinks = null,
-        getFromConnections = true,
+        userLinks = ArrayList()
     )
 
-//    val post = Post(
-//        postId = 101,
-//        user = loggedInUser,
-//        message = """
-//    Vær så snill å rydd opp søppla etter dere.
-//    Vi har nå hatt dugnad og plukket 3 søppelsekker med søppel.
-//    Hvis vi skal fortsette å få lov til å ha kurvene der, må vi bli
-//    flinkere på dette.
-//        """.trimIndent(),
-//        postedTs = "grij",
-//        scoreCard = null,
-//        type = 2,
-//        updatedTs = "rgrg",
-//        interactions = ArrayList<Interaction>()
-//    )
+    val post = Post(
+        postId = 101,
+        user = loggedInUser,
+        message = """
+    Vær så snill å rydd opp søppla etter dere.
+    Vi har nå hatt dugnad og plukket 3 søppelsekker med søppel.
+    Hvis vi skal fortsette å få lov til å ha kurvene der, må vi bli
+    flinkere på dette.
+        """.trimIndent(),
+        postedTs = "grij",
+        scoreCard = null,
+        type = 2,
+        updatedTs = "rgrg",
+        interactions = Interactions()
+    )
+    val navController = rememberNavController()
 
-//    PostFeedListItem(post, 0, 0, onClick = { print("hei") }, null, loggedInUser)
+    PostFeedListItem(post, 0, 0, onClick = { print("hei") }, null, loggedInUser, navController)
 }
 
 @Composable
 fun PostFeedListItem(
     post: Post, index: Int, selectedIndex: Int,
     onClick: (Int) -> Unit,
-    mainViewModel: FeedViewModel?,
-    loggedInUser: User
+    mainViewModel: ProfileViewModel?,
+    loggedInUser: User,
+    navController: NavHostController
 ) {
 
     var likes by remember {
@@ -129,7 +122,6 @@ fun PostFeedListItem(
     var likedByUser by remember {
         mutableStateOf(post.interactions.likedByUser)
     }
-    val navController = rememberNavController()
 
     val padding = 16.dp
     Card(
@@ -147,33 +139,30 @@ fun PostFeedListItem(
                 //add default image
                 Box() {
                     Image(
-                        painter = if (post.user.imgKey != null) {
-                            rememberImagePainter(APIUtils.s3LinkParser(post.user.imgKey),
+                        painter =
+                            rememberImagePainter(
+                                APIUtils.s3LinkParser(post.user.imgKey),
                                 builder = {
                                     scale(Scale.FILL)
                                     transformations(CircleCropTransformation())
-                                })
-                        } else {
-                            painterResource(R.drawable.logo)
-                        },
+                                    crossfade(true)
+                                    placeholder(R.drawable.ic_profile)
+                                    error(R.drawable.ic_profile)
+                                }),
                         contentDescription = post.message,
                         modifier = Modifier
                             .size(60.dp)
                             .clickable(
                                 enabled = true,
                                 onClick = {
-                                    val postJson = Gson().toJson(post)
-                                    navController.navigate(NavItem.Profile.route.plus("/$postJson")){
-                                        navController.graph.startDestinationRoute?.let { route ->
-                                            popUpTo(route){
-                                                saveState = true
-                                            }
-                                        }
-                                        //restore state when reselecting previous navigation item
-                                        restoreState = true
+                                    if (post.user.userId != loggedInUser.userId) {
+                                        val userJson = Gson().toJson(post.user)
+                                        navController.navigate(RootNavItem.Profile.route.plus("/$userJson"))
+                                    } else {
+                                        navController.navigate(RootNavItem.MyProfile.route)
                                     }
                                 }
-                    )
+                            )
 
                     )
                 }

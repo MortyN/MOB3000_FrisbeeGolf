@@ -21,12 +21,4 @@ object AppModule {
     fun provideApplication(@ApplicationContext app: Context): App {
         return app as App
     }
-
-    @Singleton
-    @Provides
-    fun provideRandomString(): String {
-        return "random string! :D"
-    }
-
-
 }

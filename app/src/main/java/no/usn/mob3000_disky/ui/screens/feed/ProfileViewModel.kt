@@ -1,15 +1,13 @@
-package no.usn.mob3000_disky.ui.screens.myprofile
+package no.usn.mob3000_disky.ui.screens.feed
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.*
@@ -26,11 +24,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: PostRepository
+    private val postRepository: PostRepository
+    //private val userRepository: UserRepository
 ): ViewModel(){
 
     val postList: MutableState<List<Post>> = mutableStateOf(ArrayList())
+    val postFilter: MutableState<PostFilter> = mutableStateOf(PostFilter(User(0), false))
 
+    val loading = mutableStateOf(false)
     val createPostResult: MutableState<Post> = mutableStateOf(Post(
         null,
         User(0),
@@ -46,18 +47,21 @@ class ProfileViewModel @Inject constructor(
         throwable.printStackTrace()
     }
 
-    fun getRepo() = repository
+    fun getRepo() = postRepository
 
-    fun getPosts(user: User){
+    fun getPosts(filter: PostFilter){
+        postFilter.value = filter
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val result = repository.getFeed(PostFilter(user, false))
+            loading.value = true
+            val result = postRepository.getFeed(filter)
             postList.value = result
+            delay(500) //Leave me alone, no questions.
+            loading.value = false
         }
     }
-
     fun createPost(post: Post){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val result = repository.createPost(post)
+            val result = postRepository.createPost(post)
             createPostResult.value = result
 
             postList.value += result;
@@ -66,13 +70,31 @@ class ProfileViewModel @Inject constructor(
 
     fun interactPost(interaction: Interaction){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            repository.interactPost(interaction)
+            postRepository.interactPost(interaction)
         }
     }
-    //    fun deletePost(postId: Long){
-//        viewModelScope.launch {
-//            val result = repository.deletePost(postId)
-//            feedList.value = result
-//        }
-//    }
+
+    fun isFriends(profileUser: User, loggedInUser: User): Int {
+        return profileUser.haveConnection(loggedInUser)
+    }
+
+    fun onFriendIconClicked(loggedInUser: User, profileUser: User){
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val link = null
+            //userRepository.toggleFriend(loggedInUser, profileUser)
+            if(link != null) profileUser.userLinks
+            else{
+                //Deleted
+                profileUser.userLinks = profileUser.userLinks.filter { link -> link.userLink1.userId == profileUser.userId || link.userLink2.userId == profileUser.userId }
+            }
+        }
+    }
+
+    fun deletePost(postId: Int){
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            postRepository.deletePost(postId)
+            postList.value = postList.value.filter { post -> post.postId != postId }
+        }
+
+    }
 }

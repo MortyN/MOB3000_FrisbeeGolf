@@ -1,4 +1,4 @@
-package no.usn.mob3000_disky.ui.screens.myprofile
+package no.usn.mob3000_disky.ui.screens.feed.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,50 +8,52 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.MaterialTheme.colors
-import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
-import no.usn.mob3000_disky.model.Interaction
-import no.usn.mob3000_disky.model.Interactions
-import no.usn.mob3000_disky.model.Post
-import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
+import no.usn.mob3000_disky.model.*
+import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 
 @Composable
-fun MyProfile(
+fun Profile(
+    navController: NavHostController,
     mainViewModel: ProfileViewModel,
-    loggedInUser: User
+    loggedInUser: User,
+    profileUser: User
 ) {
 
-val results = mainViewModel.postList.value
+    val results = mainViewModel.postList.value
+    val filter = PostFilter(profileUser, false)
+    val previousFilter = mainViewModel.postFilter.value
+    val loading = mainViewModel.loading.value
 
-    if(results.isEmpty()){
-        mainViewModel.getPosts(loggedInUser)
+    val connectionType = mainViewModel.isFriends(profileUser, loggedInUser)
+    if(!loading && ( results.isEmpty()
+                    || previousFilter.user.userId != filter.user.userId
+                    || previousFilter.getFromConnections !== filter.getFromConnections
+                )
+    ){
+        mainViewModel.getPosts(filter)
     }
-
-
-    val textState = remember { mutableStateOf(TextFieldValue()) }
-//    val data: List<Post> =  mainViewModel.feedListResponse
 
     Column(
         modifier = Modifier
@@ -67,110 +69,80 @@ val results = mainViewModel.postList.value
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Image(
-                painter = rememberImagePainter(
-                    APIUtils.s3LinkParser(loggedInUser.imgKey),
-                    builder = {
-                        scale(coil.size.Scale.FILL)
-                        transformations(CircleCropTransformation())
-                    }
-                ),
-                contentDescription = "",
-                modifier = Modifier
-                    .height(170.dp)
-                    .width(170.dp)
-                    .padding(0.dp, 16.dp, 0.dp, 0.dp)
-                    .weight(0.2f)
-            )
+            Box(){
+                Image(
+                    painter = rememberImagePainter(
+                        APIUtils.s3LinkParser(profileUser.imgKey),
+                        builder = {
+                            crossfade(true)
+                            placeholder(R.drawable.logo)
+                            error(R.drawable.logo)
+                            transformations(CircleCropTransformation())
+                            scale(Scale.FILL)
+                        }
+                    ),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .height(140.dp)
+                        .width(150.dp)
+                        .padding(0.dp, 16.dp, 0.dp, 0.dp)
+                )
+                Column(modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(Color(0xFF00BCD4))
+                    .height(50.dp)
+                    .width(50.dp)
+                    .clickable {
+                               mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
+                    },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        when(connectionType){
+                            UserLink.USER_LINK_TYPE_ACCEPTED -> Icons.Filled.PersonAdd
+                            UserLink.USER_LINK_TYPE_PENDING -> Icons.Filled.Person
+                            else -> Icons.Filled.Person
+                        },
+                        null,
+                        modifier = Modifier
+                            .size(30.dp),
+                        tint = Color(0xFFFDFDFD),
+                        )
+                }
+            }
             Text(
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 16.dp),
-                text = "${loggedInUser.firstName} ${loggedInUser.lastName}",
+                text = "${profileUser.firstName} ${profileUser.lastName}",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.background
             )
         }
-        Row(
-            modifier = Modifier
-                .height(65.dp)
-                .padding(0.dp, 10.dp, 0.dp, 0.dp)
-        ) {
-            TextField(
-                value = textState.value,
-                onValueChange = { textState.value = it },
-                modifier = Modifier.fillMaxHeight(),
-                label = { Text("Hva skjer idag?") },
-                leadingIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit")
-                    }
-                }
-            )
-            Button(
-                onClick = {
-                    mainViewModel.createPost(
-                        Post(
-                            null, loggedInUser,
-                            textState.value.text,
-                            1,
-                            null,
-                            "",
-                            "",
-                            Interactions()
-                        )
-                    )
-                }, modifier = Modifier
-                    .width(80.dp)
-                    .padding(16.dp, 0.dp, 0.dp, 0.dp)
-                    .fillMaxHeight(), colors = textButtonColors(
-                    backgroundColor = Color(0xFF06B272)
-                )
-            ) {
-                Icon(
-                    Icons.Filled.Send,
-                    null,
-                    modifier = Modifier.fillMaxWidth(),
-                    tint = Color.White
-                )
-            }
-
-        }
-
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(results) { p ->
-                PostListItem(
-                    post = p,
-                    0,
-                    0,
-                    {i -> print("CLICKED: $i")},
-                    mainViewModel,
-                    loggedInUser)
-            }
-
+                items(results) { p ->
+                    PostListItem(post = p, 0, 0, {i -> print("CLICKED: $i")}, mainViewModel, loggedInUser, navController)
+                }
         }
     }
 }
 
 @Composable
 fun PostListItem(
-    post: Post,
-    index: Int,
-    selectedIndex: Int,
+    post: Post, index: Int, selectedIndex: Int,
     onClick: (Int) -> Unit,
     mainViewModel: ProfileViewModel?,
-    loggedInUser: User
+    loggedInUser: User,
+    navController: NavHostController
 ) {
 
     var likes by remember {
         mutableStateOf(post.interactions.interactions?.size)
     }
-
-    val backgroundColor =
-        if (index == selectedIndex) MaterialTheme.colors.background else MaterialTheme.colors.background
-
 
     var likedByUser by remember {
         mutableStateOf(post.interactions.likedByUser)
@@ -203,7 +175,7 @@ fun PostListItem(
                         },
                         contentDescription = post.message,
                         modifier = Modifier
-                            .size(60.dp),
+                            .size(60.dp)
                     )
                 }
 
@@ -223,13 +195,11 @@ fun PostListItem(
                     }) {
                         IconButton(
                             onClick = {
-                                mainViewModel?.interactPost(
-                                    Interaction(
+                                mainViewModel?.interactPost(Interaction(
                                     post = post,
                                     user = loggedInUser,
                                     type = 1
-                                )
-                                )
+                                ))
 
                                 likes = if(likedByUser){
                                     likes?.minus(1)
@@ -248,4 +218,22 @@ fun PostListItem(
             }
         }
     }
+
 }
+
+@Composable
+fun CircularIndterminateProgressBar(
+    isDisplayed: Boolean,
+) {
+    if (isDisplayed) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .padding(20.dp), horizontalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(color = Color(0xFF005B97))
+        }
+    }
+}
+

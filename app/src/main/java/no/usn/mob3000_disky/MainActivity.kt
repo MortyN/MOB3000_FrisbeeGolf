@@ -14,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -31,10 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -42,46 +46,31 @@ import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.ROOT_ROUTE
 import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.screens.feed.Feed
-import no.usn.mob3000_disky.ui.screens.feed.FeedViewModel
-import no.usn.mob3000_disky.ui.screens.myprofile.MyProfile
-import no.usn.mob3000_disky.ui.screens.myprofile.MyProfileViewModel
+import no.usn.mob3000_disky.ui.screens.feed.myprofile.MyProfile
+import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
+import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
-import javax.inject.Inject
 
 // project structure https://stackoverflow.com/questions/68304586/how-to-structure-a-jetpack-compose-project
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var someRandomString: String
-
-    private val myProfileViewModel: MyProfileViewModel by viewModels()
-    private val feedViewModel: FeedViewModel by viewModels()
+    private val myProfileViewModel: ProfileViewModel by viewModels()
     private val roundViewModel: RoundViewModel by viewModels()
-
-    val loggedInUser = User(
-        userId = 110,
-        userName = "hakonopheim9912212",
-        firstName = "Håkon",
-        lastName = "Miehpo",
-        phoneNumber = "+4741527570",
-        password = "***********",
-        imgKey = "763c6pojd20mgm54m4j4fctkkp",
-        userLinks = null,
-        getFromConnections = true,
-    )
+    private val mainActivityViewModel: MainActivityViewModel by viewModels()
 
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}")
     )
+
 
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,8 +81,13 @@ class MainActivity : ComponentActivity() {
             val scope = rememberCoroutineScope()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val loggedInUser = mainActivityViewModel.loggedInUser.value
+
             // If you want the drawer from the right side, uncomment the following
             // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            LaunchedEffect(key1 = Unit) {
+                mainActivityViewModel.getLoggedInUser(110)
+            }
             Scaffold(
                 scaffoldState = scaffoldState,
                 topBar ={
@@ -112,8 +106,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     loggedInUser = loggedInUser,
                     scaffoldState = scaffoldState,
-                    myProfileViewModel = myProfileViewModel,
-                    feedViewModel = feedViewModel,
+                    profileViewModel = myProfileViewModel,
                     roundViewModel = roundViewModel,
                     )
             }
@@ -371,9 +364,8 @@ fun BottomNavigationBarPreview() {
 @Composable
 fun Navigation(
     navController: NavHostController,
-    myProfileViewModel: MyProfileViewModel,
+    profileViewModel: ProfileViewModel,
     roundViewModel: RoundViewModel,
-    feedViewModel: FeedViewModel,
     loggedInUser: User,
     scaffoldState: ScaffoldState,
 ) {
@@ -388,7 +380,8 @@ fun Navigation(
         composable(RootNavItem.Feed.route) {
             Feed(
                 loggedInUser,
-                feedViewModel
+                profileViewModel,
+                navController
             )
         }
         composable(RootNavItem.MyRounds.route) {
@@ -403,10 +396,26 @@ fun Navigation(
         composable(RootNavItem.MyProfile.route) {
             MyProfile(
                 loggedInUser = loggedInUser,
-                mainViewModel = myProfileViewModel
+                mainViewModel = profileViewModel
             )
-
         }
         addRoundNavGraph(navController = navController, roundViewModel = roundViewModel)
+
+        composable(RootNavItem.Profile.route.plus("/{user}"),
+            arguments = listOf(
+                navArgument("user") { type = NavType.StringType }
+            )
+        ) {
+                backStackEntry ->
+            backStackEntry?.arguments?.getString("user")?.let { json ->
+                val profileUser = Gson().fromJson(json, User::class.java)
+                Profile(
+                    navController,
+                    profileViewModel,
+                    loggedInUser,
+                    profileUser
+                )
+            }
+        }
     }
 }

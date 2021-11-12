@@ -9,7 +9,7 @@ interface PostRepository {
 
     suspend fun createPost(post: Post): Post
 
-    suspend fun deletePost(postid: Long): ResponseBody
+    suspend fun deletePost(postId: Int): ResponseBody
 
     suspend fun interactPost(interaction: Interaction): Interaction
 
