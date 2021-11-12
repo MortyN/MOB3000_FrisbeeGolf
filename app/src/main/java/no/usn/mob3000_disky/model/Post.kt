@@ -15,7 +15,7 @@ data class Post(
 
 data class PostFilter(
     @SerializedName("user") var user : User,
-    @SerializedName("getFromConnections") var getFromConnections : Boolean,
+    @SerializedName("getFromConnections") var getFromConnections : Boolean = false,
 )
 
 class Interactions (

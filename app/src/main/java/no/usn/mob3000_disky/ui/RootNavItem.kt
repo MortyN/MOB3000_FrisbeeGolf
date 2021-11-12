@@ -14,6 +14,7 @@ sealed class RootNavItem(var route: String, var icon: ImageVector, var title: St
     object MyRounds : RootNavItem("myrounds", Icons.Outlined.Analytics, "Mine Runder")
     object AddRound : RootNavItem("addround", Icons.Outlined.ControlPoint, "Ny Runde")
     object MyProfile : RootNavItem("myprofile", Icons.Outlined.AccountCircle, "Min Profil")
+    object Profile : RootNavItem("profile", Icons.Outlined.AccountCircle, "Profil")
     object Friends : RootNavItem("friends", Icons.Outlined.People, "Venner")
     object AddArena : RootNavItem("addarena", Icons.Outlined.PlusOne, "Opprett Arena")
     object TrackRecords : RootNavItem("trackrecords", Icons.Outlined.Leaderboard, "Bane Rekorder")
