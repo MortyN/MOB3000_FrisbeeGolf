@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,7 +50,6 @@ import no.usn.mob3000_disky.ui.screens.feed.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
-import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
@@ -66,7 +64,6 @@ class MainActivity : ComponentActivity() {
     private val myProfileViewModel: ProfileViewModel by viewModels()
     private val roundViewModel: RoundViewModel by viewModels()
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
 
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
@@ -113,11 +110,7 @@ class MainActivity : ComponentActivity() {
                     .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
-                    Drawer(
-                        scope = scope,
-                        scaffoldState = scaffoldState,
-                        navController = navController
-                    )
+                    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController, loggedInUser)
                 },
                 bottomBar = { BottomNavigationBar(navController) }
             ) {
@@ -174,7 +167,9 @@ fun TopBarBackBtn(
         },
         backgroundColor = HeaderBlue,
         contentColor = Color.White
+
     )
+
 }
 
 @Preview(showBackground = false)
@@ -187,7 +182,7 @@ fun TopBarPreview() {
 }
 
 @Composable
-fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
+fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController, loggedInUser: User) {
     val items = listOf(
         RootNavItem.MyProfile,
         RootNavItem.Friends,
@@ -212,7 +207,7 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                     .padding(10.dp)
                     .clip(CircleShape)
             )
-            Text(text = "Hei, Petter Stordalen", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(text = "Hei, ${loggedInUser.firstName} ${loggedInUser.lastName}", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
         }
         // Space between
         Spacer(
@@ -302,7 +297,7 @@ fun DrawerPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val navController = rememberNavController()
-    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+   // Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
 }
 
 @Composable
