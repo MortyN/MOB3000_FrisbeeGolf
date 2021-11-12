@@ -9,10 +9,13 @@ import no.usn.mob3000_disky.endpoints.AuthAPIService
 import no.usn.mob3000_disky.endpoints.PostAPIService
 import no.usn.mob3000_disky.repository.auth.AuthImplementation
 import no.usn.mob3000_disky.repository.auth.AuthRepository
+import no.usn.mob3000_disky.endpoints.UserAPIService
 import no.usn.mob3000_disky.repository.myprofile.PostImplementation
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.round.ArenaImplementation
 import no.usn.mob3000_disky.repository.round.ArenaRepository
+import no.usn.mob3000_disky.repository.users.UserImplementation
+import no.usn.mob3000_disky.repository.users.UserRepository
 import javax.inject.Singleton
 
 
@@ -42,6 +45,14 @@ object RepositoryModule {
         authAPI: AuthAPIService
     ): AuthRepository {
         return AuthImplementation(authAPI)
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserRepository(
+        userApi: UserAPIService
+    ): UserRepository {
+        return UserImplementation(userApi)
     }
 
 }
