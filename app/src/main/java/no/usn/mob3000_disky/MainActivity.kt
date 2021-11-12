@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
                 drawerGesturesEnabled = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
-                    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+                    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController, loggedInUser)
                 },
                 bottomBar = { BottomNavigationBar(navController) }
             ) {
@@ -153,7 +153,7 @@ fun TopBarPreview() {
 }
 
 @Composable
-fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
+fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController, loggedInUser: User) {
     val items = listOf(
         RootNavItem.MyProfile,
         RootNavItem.Friends,
@@ -178,7 +178,7 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
                     .padding(10.dp)
                     .clip(CircleShape)
             )
-            Text(text = "Hei, Petter Stordalen", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(text = "Hei, ${loggedInUser.firstName} ${loggedInUser.lastName}", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
         }
         // Space between
         Spacer(
@@ -268,7 +268,7 @@ fun DrawerPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val navController = rememberNavController()
-    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+   // Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
 }
 
 @Composable
