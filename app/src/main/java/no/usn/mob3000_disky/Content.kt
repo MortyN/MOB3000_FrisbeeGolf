@@ -33,7 +33,11 @@ fun HomeScreen(loggedinUser: User, profileViewModel: ProfileViewModel) {
         Button(onClick = {
 
             profileViewModel.viewModelScope.launch {
-                val result = profileViewModel.getRepo().getFeed(PostFilter(loggedinUser,true))
+                val result = profileViewModel.getRepo().getFeed(PostFilter(
+                    loggedinUser,
+                    true,
+                    false
+                ))
             }
 
         }) {

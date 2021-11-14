@@ -33,23 +33,25 @@ class User(
 
 class UserFilter(
     @SerializedName("userId")
-    var userId: Long?
+    var userId: Long?,
+    @SerializedName("getUserLinks")
+    var getUserLinks: Boolean = false
 )
+
 
 class UserLink(
     val userLink1: User,
     val userLink2: User,
     val status: Int,
-    val type: Int,
+    var type: Int,
 ) {
     companion object {
+        const val USER_LINK_TYPE_NO_CONNECTION = 0
         const val USER_LINK_TYPE_PENDING = 1
         const val USER_LINK_TYPE_ACCEPTED = 2
-
-        val columns: String
-            get() = " user_links.USER_ID_LINK1, user_links.USER_ID_LINK2, user_links.STATUS, user_links.TYPE, user_links.CREATED_TS "
     }
-
-
-
 }
+class UserLinkFilter(
+    val user: User,
+    var type: Int,
+)
