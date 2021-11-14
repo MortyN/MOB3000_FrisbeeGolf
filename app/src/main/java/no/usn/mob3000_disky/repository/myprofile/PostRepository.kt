@@ -12,7 +12,4 @@ interface PostRepository {
     suspend fun deletePost(postId: Int): ResponseBody
 
     suspend fun interactPost(interaction: Interaction): Interaction
-
-
-
 }

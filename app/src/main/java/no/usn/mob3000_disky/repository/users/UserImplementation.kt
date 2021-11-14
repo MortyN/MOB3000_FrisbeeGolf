@@ -14,4 +14,8 @@ class UserImplementation
         return userAPI.getUserList(user)
     }
 
+    override suspend fun toggleFriend(toggleWrapper: ToggleWrapper): UserLink {
+        return userAPI.toggleFriend(toggleWrapper)
+    }
+
 }

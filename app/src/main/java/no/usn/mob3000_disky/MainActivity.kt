@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -39,10 +40,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.rememberImagePainter
+import coil.size.Scale
+import coil.transform.CircleCropTransformation
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.ROOT_ROUTE
 import no.usn.mob3000_disky.ui.RootNavItem
@@ -50,6 +55,8 @@ import no.usn.mob3000_disky.ui.screens.feed.Feed
 import no.usn.mob3000_disky.ui.screens.feed.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
+import no.usn.mob3000_disky.ui.screens.friends.Friends
+import no.usn.mob3000_disky.ui.screens.friends.FriendsViewModel
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
@@ -67,6 +74,7 @@ class MainActivity : ComponentActivity() {
     private val roundViewModel: RoundViewModel by viewModels()
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private val friendsViewModel: FriendsViewModel by viewModels()
 
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
@@ -113,11 +121,7 @@ class MainActivity : ComponentActivity() {
                     .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
                 drawerContent = {
-                    Drawer(
-                        scope = scope,
-                        scaffoldState = scaffoldState,
-                        navController = navController
-                    )
+                    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController, loggedInUser)
                 },
                 bottomBar = { BottomNavigationBar(navController) }
             ) {
@@ -127,7 +131,8 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState,
                     profileViewModel = myProfileViewModel,
                     roundViewModel = roundViewModel,
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    friendsViewModel = friendsViewModel
                     )
             }
             // }
@@ -174,7 +179,9 @@ fun TopBarBackBtn(
         },
         backgroundColor = HeaderBlue,
         contentColor = Color.White
+
     )
+
 }
 
 @Preview(showBackground = false)
@@ -187,7 +194,7 @@ fun TopBarPreview() {
 }
 
 @Composable
-fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController) {
+fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavController, loggedInUser: User) {
     val items = listOf(
         RootNavItem.MyProfile,
         RootNavItem.Friends,
@@ -205,14 +212,23 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = R.drawable.logo.toString(),
+                painter = rememberImagePainter(
+                    APIUtils.s3LinkParser(loggedInUser.imgKey),
+                    builder = {
+                        scale(Scale.FILL)
+                        transformations(CircleCropTransformation())
+                        crossfade(true)
+                        placeholder(R.drawable.ic_profile)
+                        error(R.drawable.ic_profile)
+                    }),
+                contentDescription = R.drawable.ic_profile.toString(),
                 modifier = Modifier
                     .height(100.dp)
+                    .size(100.dp)
                     .padding(10.dp)
                     .clip(CircleShape)
             )
-            Text(text = "Hei, Petter Stordalen", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(text = "Hei, ${loggedInUser.firstName} ${loggedInUser.lastName}", fontSize = 20.sp, color = Color.Black, fontWeight = FontWeight.Bold)
         }
         // Space between
         Spacer(
@@ -302,7 +318,7 @@ fun DrawerPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val navController = rememberNavController()
-    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+   // Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
 }
 
 @Composable
@@ -388,12 +404,6 @@ fun BottomNavigationBar(navController: NavHostController){
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun BottomNavigationBarPreview() {
-    //BottomNavigationBar()
-}
-
 @ExperimentalAnimationApi
 @Composable
 fun Navigation(
@@ -402,6 +412,7 @@ fun Navigation(
     roundViewModel: RoundViewModel,
     userViewModel: UserViewModel,
     loggedInUser: User,
+    friendsViewModel: FriendsViewModel,
     scaffoldState: ScaffoldState,
 ) {
 
@@ -434,6 +445,15 @@ fun Navigation(
                 mainViewModel = profileViewModel
             )
         }
+
+        composable(RootNavItem.Friends.route) {
+            Friends(
+                loggedInUser,
+                friendsViewModel,
+                navController
+            )
+        }
+
         addRoundNavGraph(navController = navController, roundViewModel = roundViewModel, userViewModel = userViewModel, loggedInUser = loggedInUser)
 
         composable(RootNavItem.Profile.route.plus("/{user}"),
