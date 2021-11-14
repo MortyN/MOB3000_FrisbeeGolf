@@ -12,6 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyRoundViewModel @Inject constructor(
     private val scoreCardRepository: ScoreCardRepository
-): ViewModel(){
+): ViewModel() {
 
     val postList: MutableState<List<Post>> = mutableStateOf(ArrayList())
+}
