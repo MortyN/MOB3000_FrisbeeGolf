@@ -41,7 +41,7 @@ fun MyProfile(
 
     val results = mainViewModel.postList.value
 
-    val filter = PostFilter(loggedInUser, false)
+    val filter = PostFilter(loggedInUser, false, false)
     val previousFilter = mainViewModel.postFilter.value;
     val loading = mainViewModel.loading.value
 

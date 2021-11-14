@@ -7,4 +7,6 @@ interface UserRepository {
 
     suspend fun getUserList(user: UserFilter): List<User>
 
+    suspend fun toggleFriend(toggleWrapper: ToggleWrapper): UserLink
+
 }
