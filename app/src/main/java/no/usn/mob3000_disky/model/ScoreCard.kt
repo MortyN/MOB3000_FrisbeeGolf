@@ -1,29 +1,17 @@
 package no.usn.mob3000_disky.model
 
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
-class ScoreCard {
-    private var cardId: Long
-    private var arenaRound: ArenaRound? = null
-    private var startTs: Date? = null
-    private var endTs: Date? = null
-    private var createdBy: User? = null
+data class ScoreCard(
+    @SerializedName("cardId") var cardId : Long?,
+    @SerializedName("arenaRound") var arenaRound : ArenaRound,
+    @SerializedName("startTs") var startTs : String,
+    @SerializedName("endTs") var endTs : String,
+    @SerializedName("createdBy") var createdBy : User,
+    @SerializedName("members") var members : List<ScoreCardMember>,
+)
 
-    constructor(cardId: Long) {
-        this.cardId = cardId
-    }
-
-    constructor(
-        cardId: Long,
-        arenaRound: ArenaRound?,
-        startTs: Date?,
-        endTs: Date?,
-        createdBy: User?
-    ) {
-        this.cardId = cardId
-        this.arenaRound = arenaRound
-        this.startTs = startTs
-        this.endTs = endTs
-        this.createdBy = createdBy
-    }
-}
+data class ScoreCardFilter(
+    @SerializedName("user") var user : User
+)

@@ -63,6 +63,17 @@ object RetrofitModule {
             .create(FriendsAPIService::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideScoreCardService(): ScoreCardAPIService {
+        return Retrofit.Builder()
+            .baseUrl(APIConstants.APIHOST + APIConstants.APIPORT + APIConstants.APISCORECARDPREFIX)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ScoreCardAPIService::class.java)
+    }
+
+
 
 
 }
