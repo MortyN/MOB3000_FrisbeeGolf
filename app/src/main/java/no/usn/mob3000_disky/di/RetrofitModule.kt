@@ -5,10 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import no.usn.mob3000_disky.api.APIConstants
-import no.usn.mob3000_disky.endpoints.ArenaAPIService
-import no.usn.mob3000_disky.endpoints.AuthAPIService
-import no.usn.mob3000_disky.endpoints.PostAPIService
-import no.usn.mob3000_disky.endpoints.UserAPIService
+import no.usn.mob3000_disky.endpoints.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -55,6 +52,17 @@ object RetrofitModule {
             .build()
             .create(AuthAPIService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideScoreCardService(): ScoreCardAPIService {
+        return Retrofit.Builder()
+            .baseUrl(APIConstants.APIHOST + APIConstants.APIPORT + APIConstants.APISCORECARDPREFIX)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ScoreCardAPIService::class.java)
+    }
+
 
 
 

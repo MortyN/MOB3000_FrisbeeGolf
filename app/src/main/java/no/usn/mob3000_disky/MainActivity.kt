@@ -50,6 +50,7 @@ import no.usn.mob3000_disky.ui.screens.feed.Feed
 import no.usn.mob3000_disky.ui.screens.feed.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
+import no.usn.mob3000_disky.ui.screens.myrounds.MyRounds
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
@@ -420,8 +421,7 @@ fun Navigation(
             )
         }
         composable(RootNavItem.MyRounds.route) {
-            MusicScreen()
-
+            MyRounds()
         }
 //        composable(RootNavItem.AddRound.route) {
 //            scaffoldState.drawerState.isOpen
