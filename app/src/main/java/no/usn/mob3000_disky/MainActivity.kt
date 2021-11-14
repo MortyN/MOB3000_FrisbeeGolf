@@ -311,14 +311,14 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
     }
 }
 
-@Preview(showBackground = false)
+/*@Preview(showBackground = false)
 @Composable
 fun DrawerPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val navController = rememberNavController()
     Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
-}
+}*/
 
 @Composable
 fun DrawerItem(item: RootNavItem, selected: Boolean, onItemClick: (RootNavItem) -> Unit) {
