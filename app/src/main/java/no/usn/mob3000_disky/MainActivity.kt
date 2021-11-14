@@ -79,7 +79,8 @@ class MainActivity : ComponentActivity() {
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
-        RoundNavItem.ChoosePlayers.route.plus("/{track}")
+        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        RootNavItem.Friends.route
     )
 
 
@@ -424,11 +425,14 @@ fun Navigation(
         route = ROOT_ROUTE) {
 
         composable(RootNavItem.Feed.route) {
-            Feed(
-                loggedInUser,
-                profileViewModel,
-                navController
-            )
+            if(loggedInUser.userId != 0L){
+                Feed(
+                    loggedInUser,
+                    profileViewModel,
+                    navController
+                )
+            }
+
         }
         composable(RootNavItem.MyRounds.route) {
             MusicScreen()
