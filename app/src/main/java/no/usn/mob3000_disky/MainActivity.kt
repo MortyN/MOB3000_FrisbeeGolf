@@ -85,7 +85,8 @@ class MainActivity : ComponentActivity() {
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
-        RoundNavItem.ChoosePlayers.route.plus("/{track}")
+        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}")
     )
 
 
@@ -474,7 +475,7 @@ fun Navigation(
             }
         }
 
-        composable(RootNavItem.Profile.route.plus("/{scoreCard}"),
+        composable(RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}"),
             arguments = listOf(
                 navArgument("scoreCard") { type = NavType.StringType }
             )

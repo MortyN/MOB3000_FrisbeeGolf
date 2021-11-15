@@ -66,7 +66,7 @@ fun RoundItem(scoreCard: ScoreCard, navController: NavHostController){
             .clickable(
                 onClick = {
                     val scoreCardJson = Gson().toJson(scoreCard)
-                    navController.navigate(RootNavItem.Profile.route.plus("/$scoreCardJson"))
+                    navController.navigate(RootNavItem.ScoreCardSummary.route.plus("/$scoreCardJson"))
                 }
             )
     ) {
