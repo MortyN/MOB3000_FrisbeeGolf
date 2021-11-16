@@ -20,4 +20,5 @@ sealed class RootNavItem(var route: String, var icon: ImageVector, var title: St
     object TrackRecords : RootNavItem("trackrecords", Icons.Outlined.Leaderboard, "Bane Rekorder")
     object MyTracks : RootNavItem("mytracks", Icons.Outlined.SettingsInputComponent, "Dine Baner")
     object Settings : RootNavItem("settings", Icons.Outlined.Settings, "Innstillinger")
+    object ScoreCardSummary : RootNavItem("scorecardsummary", Icons.Outlined.Settings, "Spillekort")
 }

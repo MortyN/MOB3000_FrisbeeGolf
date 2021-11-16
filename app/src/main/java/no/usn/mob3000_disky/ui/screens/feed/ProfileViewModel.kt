@@ -48,8 +48,6 @@ class ProfileViewModel @Inject constructor(
         throwable.printStackTrace()
     }
 
-    fun getRepo() = postRepository
-
     fun getPosts(filter: PostFilter){
         postFilter.value = filter
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {

@@ -48,6 +48,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.api.APIUtils
+import no.usn.mob3000_disky.model.ScoreCard
+import no.usn.mob3000_disky.model.ScoreCardMember
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.ROOT_ROUTE
 import no.usn.mob3000_disky.ui.RootNavItem
@@ -57,7 +59,9 @@ import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
 import no.usn.mob3000_disky.ui.screens.friends.Friends
 import no.usn.mob3000_disky.ui.screens.friends.FriendsViewModel
+import no.usn.mob3000_disky.ui.screens.myrounds.MyRoundViewModel
 import no.usn.mob3000_disky.ui.screens.myrounds.MyRounds
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardSummary
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
@@ -76,11 +80,13 @@ class MainActivity : ComponentActivity() {
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
     private val friendsViewModel: FriendsViewModel by viewModels()
+    private val myRoundViewModel: MyRoundViewModel by viewModels()
 
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
-        RoundNavItem.ChoosePlayers.route.plus("/{track}")
+        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}")
     )
 
 
@@ -133,7 +139,8 @@ class MainActivity : ComponentActivity() {
                     profileViewModel = myProfileViewModel,
                     roundViewModel = roundViewModel,
                     userViewModel = userViewModel,
-                    friendsViewModel = friendsViewModel
+                    friendsViewModel = friendsViewModel,
+                    myRoundViewModel = myRoundViewModel
                     )
             }
             // }
@@ -413,6 +420,7 @@ fun Navigation(
     loggedInUser: User,
     friendsViewModel: FriendsViewModel,
     scaffoldState: ScaffoldState,
+    myRoundViewModel: MyRoundViewModel
 ) {
 
     //https://proandroiddev.com/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
@@ -430,13 +438,9 @@ fun Navigation(
             )
         }
         composable(RootNavItem.MyRounds.route) {
-            MyRounds()
+            MyRounds(myRoundViewModel, loggedInUser, navController)
         }
-//        composable(RootNavItem.AddRound.route) {
-//            scaffoldState.drawerState.isOpen
-//            AddRound()
-//
-//        }
+
         composable(RootNavItem.MyProfile.route) {
             MyProfile(
                 loggedInUser = loggedInUser,
@@ -467,6 +471,23 @@ fun Navigation(
                     profileViewModel,
                     loggedInUser,
                     profileUser
+                )
+            }
+        }
+
+        composable(RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}"),
+            arguments = listOf(
+                navArgument("scoreCard") { type = NavType.StringType }
+            )
+        ) {
+                backStackEntry ->
+            backStackEntry?.arguments?.getString("scoreCard")?.let { json ->
+                val scoreCard = Gson().fromJson(json, ScoreCard::class.java)
+                ScoreCardSummary(
+                    scoreCard,
+                    loggedInUser,
+                    myRoundViewModel
+
                 )
             }
         }
