@@ -13,6 +13,8 @@ import no.usn.mob3000_disky.repository.myprofile.PostImplementation
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.round.ArenaImplementation
 import no.usn.mob3000_disky.repository.round.ArenaRepository
+import no.usn.mob3000_disky.repository.score_card.ScoreCardImplementation
+import no.usn.mob3000_disky.repository.score_card.ScoreCardRepository
 import no.usn.mob3000_disky.repository.users.UserImplementation
 import no.usn.mob3000_disky.repository.users.UserRepository
 import javax.inject.Singleton
@@ -61,5 +63,13 @@ object RepositoryModule {
         return FriendsImplementation(friendsAPI)
     }
 
+
+    @Singleton
+    @Provides
+    fun provideScoreCardRepository(
+        scoreCardAPI: ScoreCardAPIService
+    ): ScoreCardRepository {
+        return ScoreCardImplementation(scoreCardAPI)
+    }
 
 }

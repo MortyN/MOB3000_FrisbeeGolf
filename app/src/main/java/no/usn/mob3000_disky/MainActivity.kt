@@ -57,6 +57,7 @@ import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 import no.usn.mob3000_disky.ui.screens.feed.profile.Profile
 import no.usn.mob3000_disky.ui.screens.friends.Friends
 import no.usn.mob3000_disky.ui.screens.friends.FriendsViewModel
+import no.usn.mob3000_disky.ui.screens.myrounds.MyRounds
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
@@ -180,9 +181,7 @@ fun TopBarBackBtn(
         },
         backgroundColor = HeaderBlue,
         contentColor = Color.White
-
     )
-
 }
 
 @Preview(showBackground = false)
@@ -313,14 +312,14 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
     }
 }
 
-@Preview(showBackground = false)
+/*@Preview(showBackground = false)
 @Composable
 fun DrawerPreview() {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val navController = rememberNavController()
-   // Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
-}
+    Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController)
+}*/
 
 @Composable
 fun DrawerItem(item: RootNavItem, selected: Boolean, onItemClick: (RootNavItem) -> Unit) {
@@ -435,8 +434,7 @@ fun Navigation(
 
         }
         composable(RootNavItem.MyRounds.route) {
-            MusicScreen()
-
+            MyRounds()
         }
 //        composable(RootNavItem.AddRound.route) {
 //            scaffoldState.drawerState.isOpen
