@@ -1,18 +1,18 @@
 package no.usn.mob3000_disky.ui.screens.round.nav
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.google.gson.Gson
-import kotlinx.coroutines.delay
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaRound
+import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.screens.round.*
 
-
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 fun NavGraphBuilder.addRoundNavGraph(
     navController: NavHostController,
@@ -26,6 +26,11 @@ fun NavGraphBuilder.addRoundNavGraph(
     ){
         composable(RoundNavItem.AddRound.route) {
             AddRound(roundViewModel, navController = navController)
+        }
+        composable(RoundNavItem.CurrentRound.route.plus("/currentround")){
+            CurrentRound(
+                roundViewModel = roundViewModel,
+                navController = navController)
         }
         composable(RoundNavItem.ChooseTrack.route.plus("/{arena}"),
             arguments = listOf(
@@ -49,10 +54,7 @@ fun NavGraphBuilder.addRoundNavGraph(
                     track = Gson().fromJson(backStackEntry?.arguments?.getString("track"),
                         ArenaRound::class.java),
                     selectedArena = Gson().fromJson(backStackEntry?.arguments?.getString("arena"),
-                        Arena::class.java), loggedInUser, userViewModel)
-
-
+                        Arena::class.java), loggedInUser, userViewModel, roundViewModel)
         }
     }
-
 }

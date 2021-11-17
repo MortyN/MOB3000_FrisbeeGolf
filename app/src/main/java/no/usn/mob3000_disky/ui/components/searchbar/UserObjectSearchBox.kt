@@ -9,20 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import kotlinx.coroutines.delay
 import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.model.UserLink
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteBox
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteEntity
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteSearchBarTag
-import java.util.*
+import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 
 
 @ExperimentalAnimationApi
 @Composable
-fun UserObjectSearchBox(users: List<User>) {
+fun UserObjectSearchBox(users: List<User>, onItemSelected: (User) -> Unit) {
 
     AutoCompleteBox(
         items = users,
@@ -37,6 +32,7 @@ fun UserObjectSearchBox(users: List<User>) {
             value = user.firstName
             filter(value)
             view.clearFocus()
+            onItemSelected(user)
         }
 
         TextSearchBar(
