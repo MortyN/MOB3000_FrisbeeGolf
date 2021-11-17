@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.users.UserRepository
+import no.usn.mob3000_disky.ui.Utils
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 //https://dagger.dev/hilt/view-model.html
 
@@ -41,7 +43,8 @@ class ProfileViewModel @Inject constructor(
         null,
         "",
         "",
-        Interactions()
+        Interactions(),
+        null
     ))
 
     private val exceptionHandler = CoroutineExceptionHandler{ _, throwable->
@@ -54,16 +57,22 @@ class ProfileViewModel @Inject constructor(
             loading.value = true
             val result = postRepository.getFeed(filter)
             postList.value = result
+            postList.value.forEach { it -> it.sortDate = Utils.getDate(it.postedTs) }
+            postList.value = postList.value.sortedByDescending { it.sortDate }
             delay(500) //Leave me alone, no questions.
             loading.value = false
+
+
         }
+
     }
     fun createPost(post: Post){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val result = postRepository.createPost(post)
             createPostResult.value = result
-
-            postList.value += result;
+            var list = postList.value
+            postList.value = listOf(result)
+            list.forEach { postList.value += it }
         }
     }
 
@@ -90,8 +99,8 @@ class ProfileViewModel @Inject constructor(
     fun deletePost(postId: Int){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             postRepository.deletePost(postId)
-            postList.value = postList.value.filter { post -> post.postId != postId }
-        }
 
+        }
+        postList.value = postList.value.filter { post -> post.postId != postId }
     }
 }

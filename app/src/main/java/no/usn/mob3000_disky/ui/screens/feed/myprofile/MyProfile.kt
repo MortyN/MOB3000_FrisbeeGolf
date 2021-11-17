@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,8 @@ import coil.transform.CircleCropTransformation
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.*
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
 
 @Composable
@@ -118,7 +121,8 @@ fun MyProfile(
                             null,
                             "",
                             "",
-                            Interactions()
+                            Interactions(),
+                            null
                         )
                     )
                 }, modifier = Modifier
@@ -136,19 +140,38 @@ fun MyProfile(
                 )
             }
         }
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(results) { p ->
-                PostListItem(
-                    post = p,
-                    0,
-                    0,
-                    mainViewModel,
-                    loggedInUser)
+        if(!results.isNullOrEmpty() && !loading){
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(results) { p ->
+                    PostListItem(
+                        post = p,
+                        0,
+                        0,
+                        mainViewModel,
+                        loggedInUser)
+                }
             }
+        } else if(loading){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+                    .padding(20.dp), horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF005B97))
+            }
+        } else if(results.isNullOrEmpty()){
+            Text(
+                text = "Du har ingen innlegg for øyeblikket.",
+                modifier = Modifier.padding(top = 10.dp),
+                color = Color(0xFF777777),
+                fontStyle = FontStyle.Italic
+            )
         }
+
     }
 }
 
@@ -202,7 +225,7 @@ fun PostListItem(
 
                 Column(Modifier.padding(padding)) {
                     Text(post.user.firstName + " " + post.user.lastName)
-                    Text(post.postedTs)
+                    Text(Utils.getDate(post.postedTs).getTimeAgo())
                 }
 
             }
@@ -268,7 +291,7 @@ fun PostListItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button(
-                        onClick = { }
+                        onClick = { openDialog.value = false }
                     ) {
                         Text("Tilbake")
                     }
@@ -321,7 +344,8 @@ fun PostFeedListItemPreview() {
         scoreCard = null,
         type = 2,
         updatedTs = "rgrg",
-        interactions = Interactions()
+        interactions = Interactions(),
+        sortDate = null
     )
 
     PostListItem(

@@ -10,9 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -27,11 +25,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -87,12 +87,14 @@ class MainActivity : ComponentActivity() {
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}"),
         RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}"),
-        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
         RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}"),
-        RoundNavItem.CurrentRound.route.plus("/currentround")
+        RoundNavItem.CurrentRound.route.plus("/currentround"),
+        RootNavItem.Friends.route,
+        RootNavItem.Profile.route.plus("/{user}")
     )
 
 
+    @ExperimentalMaterialApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -157,7 +159,6 @@ class MainActivity : ComponentActivity() {
                         friendsViewModel = friendsViewModel,
                         myRoundViewModel = myRoundViewModel
                     )
-                }
             }
             // }
         }
@@ -502,11 +503,14 @@ fun Navigation(
         route = ROOT_ROUTE) {
 
         composable(RootNavItem.Feed.route) {
-            Feed(
-                loggedInUser,
-                profileViewModel,
-                navController
-            )
+            if(loggedInUser.userId != 0L){
+                Feed(
+                    loggedInUser,
+                    profileViewModel,
+                    navController
+                )
+            }
+
         }
         composable(RootNavItem.MyRounds.route) {
             MyRounds(myRoundViewModel, loggedInUser, navController)
@@ -563,4 +567,5 @@ fun Navigation(
             }
         }
     }
+}
 }

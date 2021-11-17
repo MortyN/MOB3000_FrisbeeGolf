@@ -22,6 +22,7 @@ class FriendsViewModel @Inject constructor(
     var friendsList: MutableState<List<UserLink>> = mutableStateOf(ArrayList())
     val pendingFriendList: MutableState<List<UserLink>> = mutableStateOf(ArrayList())
     val userList: MutableState<List<User>> = mutableStateOf(ArrayList())
+    val users: MutableState<List<User>> = mutableStateOf(ArrayList())
 
 
 
@@ -42,9 +43,9 @@ class FriendsViewModel @Inject constructor(
 
             var userFilter = UserFilter(null, true);
 
-            userList.value = userRepo.getUserList(userFilter)
+            users.value = userRepo.getUserList(userFilter)
 
-            userList.value = userList.value.filter { user -> user.haveConnection(loggedInUser) < 2 }
+            userList.value = users.value.filter { user -> user.haveConnection(loggedInUser) < 2 }
 
             userList.value = userList.value.filter { user ->
                 if(user.userId == loggedInUser.userId) return@filter false
