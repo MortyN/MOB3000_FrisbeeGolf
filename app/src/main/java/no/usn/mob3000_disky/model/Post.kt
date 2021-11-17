@@ -1,6 +1,9 @@
 package no.usn.mob3000_disky.model
 
+import androidx.room.Ignore
 import com.google.gson.annotations.SerializedName
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class Post(
     @SerializedName("postId") var postId : Int?,
@@ -11,6 +14,7 @@ data class Post(
     @SerializedName("postedTs") var postedTs : String,
     @SerializedName("updatedTs") var updatedTs : String,
     @SerializedName("interactions") var interactions : Interactions,
+    @Ignore var sortDate: Date? = null
 )
 
 data class PostFilter(

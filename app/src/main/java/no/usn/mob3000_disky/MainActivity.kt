@@ -86,10 +86,14 @@ class MainActivity : ComponentActivity() {
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}"),
-        RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}")
+        RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}"),
+        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        RootNavItem.Friends.route,
+        RootNavItem.Profile.route.plus("/{user}")
     )
 
 
+    @ExperimentalMaterialApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -410,6 +414,7 @@ fun BottomNavigationBar(navController: NavHostController){
     }
 }
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
 fun Navigation(
@@ -431,11 +436,14 @@ fun Navigation(
         route = ROOT_ROUTE) {
 
         composable(RootNavItem.Feed.route) {
-            Feed(
-                loggedInUser,
-                profileViewModel,
-                navController
-            )
+            if(loggedInUser.userId != 0L){
+                Feed(
+                    loggedInUser,
+                    profileViewModel,
+                    navController
+                )
+            }
+
         }
         composable(RootNavItem.MyRounds.route) {
             MyRounds(myRoundViewModel, loggedInUser, navController)
