@@ -35,6 +35,7 @@ import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.Utils
 import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 
 @Composable
 fun Profile(
@@ -227,6 +228,11 @@ fun PostListItem(
             Column() {
                 Text(text = post.message)
             }
+
+            if(post.type == 2 && post.scoreCard != null){
+                ScoreCardResultTable(post.scoreCard, 5.dp)
+            }
+
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = {
