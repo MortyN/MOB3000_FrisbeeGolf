@@ -1,24 +1,31 @@
 package no.usn.mob3000_disky.ui.screens.round
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.DismissDirection.*
+import androidx.compose.material.DismissValue.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.PlusOne
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,121 +36,90 @@ import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
-import no.usn.mob3000_disky.model.Arena
-import no.usn.mob3000_disky.model.ArenaRound
-import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.model.UserFilter
+import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.components.searchbar.UserObjectSearchBox
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
+import kotlin.math.round
+
+@ExperimentalMaterialApi
+@Composable
+fun SwipeableUserList(
+    items: List<ScoreCardMember>,
+    dismissed: (listItem: ScoreCardMember) -> Unit
+) {
+    LazyColumn {
+        items(items,
+            {listItem: ScoreCardMember -> listItem.user.userId}
+        ) { item ->
+            val dismissState = rememberDismissState()
+            if (dismissState.isDismissed(EndToStart)){
+                dismissed(item)
+            }
+            SwipeToDismiss(
+                state = dismissState,
+                modifier = Modifier
+//                    .padding(vertical = 4.dp),
+                ,
+                directions = setOf(EndToStart),
+                background = {
+                    val scale by animateFloatAsState(
+                        if (dismissState.targetValue == Default) 0.75f else 1f
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .background(Color.Red)
+                            .padding(horizontal = 20.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "delete icon",
+                            modifier = Modifier.scale(scale)
+                        )
+                    }
+                },
+                dismissContent = {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RectangleShape,
+                        elevation = animateDpAsState(
+                            if (dismissState.dismissDirection != null) 4.dp else 0.dp
+                        ).value
+                    ) {
+                        Divider(color = Color.LightGray,modifier = Modifier
+                            .fillMaxWidth()
+                            .width(1.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    APIUtils.s3LinkParser(item.user.imgKey),
+                                    builder = {
+                                        crossfade(true)
+                                        placeholder(R.drawable.ic_profile)
+                                        scale(coil.size.Scale.FILL)
+                                        transformations(CircleCropTransformation())
+                                        error(R.drawable.ic_profile)
+                                    }
+                                ),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                            )
+                            Text(text = "${item.user.firstName} ${item.user.lastName}")
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun PreCurrentRoundPreview() {
 
-    val players = listOf("Hans Berglien", "Petter Stordalen", "Thomas Dahl")
-
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight()) {
-        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Din runde",
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp )
-        }
-        DividerCurrentRound()
-        Row(modifier = Modifier.padding(vertical = 10.dp)) {
-            Text(text = "Arena",
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(horizontal = 20.dp))
-            Text(text = "Arena",
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 20.sp,)
-        }
-        DividerCurrentRound()
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .height(170.dp)
-            .background(Color.Blue)) {
-            Text("map")
-        }
-        DividerCurrentRound()
-        Row(modifier = Modifier.padding(vertical = 10.dp)) {
-            Text(text = "Bane",
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(horizontal = 20.dp))
-            Text(text = "Arena",
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 20.sp,)
-        }
-        DividerCurrentRound()
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-                    .padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Spillere",
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp)
-                IconButton(onClick = {
-
-                }) {
-                    Box(modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .background(SelectedBlue), contentAlignment = Alignment.Center){
-                        Icon(imageVector = Icons.Filled.PlusOne, "", tint = Color.White)
-                    }
-                }
-            }
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(players) { p ->
-                    PlayerListItem(
-                        player = p,
-                        0,
-                        0,
-                    )
-                }
-
-            }
-        }
-
-    }
-}
-
-@Composable
-fun PlayerListItem(player: String, index: Int, selectedIndex: Int) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Image(
-            painter = rememberImagePainter(
-                APIUtils.s3LinkParser("2otpp4sqlc6p4v9c0udesi1sbk"),
-                builder = {
-                    scale(coil.size.Scale.FILL)
-                    transformations(CircleCropTransformation())
-                    placeholder(R.drawable.logo)
-                }
-            ),
-            contentDescription = "",
-            modifier = Modifier
-                .size(60.dp)
-                .padding(horizontal = 10.dp)
-        )
-        Text(text = player)
-    }
 }
 
 @Composable
@@ -155,19 +131,33 @@ fun DividerCurrentRound() {
     Spacer(modifier = Modifier.height(4.dp))
 }
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
-fun PreCurrentRound(navHostController: NavHostController, track: ArenaRound, selectedArena: Arena, loggedInUser: User, userViewModel: UserViewModel) {
+fun PreCurrentRound(
+    navHostController: NavHostController,
+    track: ArenaRound,
+    selectedArena: Arena,
+    loggedInUser: User,
+    userViewModel: UserViewModel,
+    roundViewModel: RoundViewModel
+) {
 
-    val players = listOf(loggedInUser.firstName+ " " + loggedInUser.lastName, "Petter Stordalen", "Thomas Dahl")
+    var playersRe = remember { mutableStateListOf<ScoreCardMember>() }
     val users = userViewModel.arenaList.value
     val loading = userViewModel.loading.value
 
-    LaunchedEffect(key1 = Unit){
+    val scorecard = roundViewModel.scoreCard.value
+    val scorecardmembers = roundViewModel.selectedScoreCardMembers
+
+    LaunchedEffect(track){
+//        roundViewModel.set(track)
         userViewModel.getUserList(UserFilter(null))
+        roundViewModel.scoreCard.value?.arenaRound = track
     }
 
     val addPlayerClicked = remember{ mutableStateOf(false) }
+
 
     if(addPlayerClicked.value){
         AlertDialog(
@@ -175,18 +165,16 @@ fun PreCurrentRound(navHostController: NavHostController, track: ArenaRound, sel
                 addPlayerClicked.value = false
             },
             title = {
-                Text(text = "Title")
+                Text(text = "Velg Spiller")
             },
             text = {
-                Column() {
-//                    TextField(
-//                        value = text,
-//                        onValueChange = { text = it }
-//                    )
-                    Text("Custom Text")
-
+                Column {
                     if(!loading){
-                        UserObjectSearchBox(users)
+                        UserObjectSearchBox(users, onItemSelected = { user ->
+                            roundViewModel.addSelectedScoreCardMember(ScoreCardMember(null, user, null, null))
+                            addPlayerClicked.value = false
+
+                        })
                     }
                 }
             },
@@ -199,11 +187,13 @@ fun PreCurrentRound(navHostController: NavHostController, track: ArenaRound, sel
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { addPlayerClicked.value = false }
                     ) {
-                        Text("Dismiss")
+                        Text("Avbryt")
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth(2f).height(500.dp)
+            modifier = Modifier
+                .fillMaxWidth(2f)
+                .height(500.dp)
         )
     }
 
@@ -258,32 +248,37 @@ fun PreCurrentRound(navHostController: NavHostController, track: ArenaRound, sel
                     fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp)
-                IconButton(onClick = {
+                Row{
+                    IconButton(onClick = {
 
-                    addPlayerClicked.value = true
-                }) {
-                    Box(modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
-                        .background(SelectedBlue), contentAlignment = Alignment.Center){
-                        Icon(imageVector = Icons.Filled.Add, "", tint = Color.White)
+                        addPlayerClicked.value = true
+                    }) {
+                        Box(modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(SelectedBlue), contentAlignment = Alignment.Center){
+                            Icon(imageVector = Icons.Filled.Add, "", tint = Color.White)
+                        }
+                    }
+                    IconButton(onClick = {
+                        roundViewModel.selectedScoreCardMembers.clear()
+
+                    }) {
+                        Box(modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red), contentAlignment = Alignment.Center){
+                            Icon(imageVector = Icons.Filled.Delete, "", tint = Color.White)
+                        }
                     }
                 }
             }
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(players) { p ->
-                    PlayerListItem(
-                        player = p,
-                        0,
-                        0,
-                    )
-                }
 
-            }
+                SwipeableUserList(scorecardmembers, dismissed = { userItem ->
+                        roundViewModel.removeSelectedScoreCardMember(userItem)
+                })
+
         }
-
     }
 }
+

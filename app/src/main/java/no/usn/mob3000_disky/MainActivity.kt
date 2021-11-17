@@ -10,7 +10,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults.textButtonColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
@@ -25,13 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -67,7 +67,7 @@ import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
 
 // project structure https://stackoverflow.com/questions/68304586/how-to-structure-a-jetpack-compose-project
-
+@ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -80,7 +80,9 @@ class MainActivity : ComponentActivity() {
     val ignoreTopBarRoutes = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
-        RoundNavItem.ChoosePlayers.route.plus("/{track}")
+        RoundNavItem.ChoosePlayers.route.plus("/{track}"),
+        RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}"),
+        RoundNavItem.CurrentRound.route.plus("/currentround")
     )
 
 
@@ -124,22 +126,80 @@ class MainActivity : ComponentActivity() {
                 drawerContent = {
                     Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController, loggedInUser)
                 },
-                bottomBar = { BottomNavigationBar(navController) }
-            ) {
-                Navigation(
-                    navController = navController,
-                    loggedInUser = loggedInUser,
-                    scaffoldState = scaffoldState,
-                    profileViewModel = myProfileViewModel,
-                    roundViewModel = roundViewModel,
-                    userViewModel = userViewModel,
-                    friendsViewModel = friendsViewModel
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController,
+                        currentRoute = currentRoute(navController = navController),
+                        onPreCurrentRound = {
+                            PreCurrentRoundBottomBar(roundViewModel = roundViewModel, navController = navController)
+                        },
+                        onCurrentRound = {
+                            CurrentRoundBottomBar(roundViewModel = roundViewModel, navController = navController)
+                        }
                     )
+                }
+            ){ innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)){
+                    Navigation(
+                        navController = navController,
+                        loggedInUser = loggedInUser,
+                        scaffoldState = scaffoldState,
+                        profileViewModel = myProfileViewModel,
+                        roundViewModel = roundViewModel,
+                        userViewModel = userViewModel,
+                        friendsViewModel = friendsViewModel
+                    )
+                }
             }
-            // }
         }
     }
+}
 
+//@Preview(showBackground = true)
+@Composable
+fun PreCurrentRoundBottomBar(roundViewModel: RoundViewModel, navController: NavHostController ) {
+    Row(modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 20.dp, vertical = 8.dp)) {
+        Button(
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+            shape = RoundedCornerShape(8.dp),
+            colors = textButtonColors(
+                backgroundColor = Color(0xFF43B956),
+                contentColor = Color.White
+
+        ), onClick = { navController.navigate(RoundNavItem.CurrentRound.route.plus("/currentround")) }) {
+            Text("Start Runde")
+        }
+    }
+}
+
+@Composable
+fun CurrentRoundBottomBar(roundViewModel: RoundViewModel, navController: NavHostController ) {
+    Row(modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Button(
+            modifier = Modifier.fillMaxHeight(),
+            shape = RoundedCornerShape(8.dp),
+            colors = textButtonColors(
+                backgroundColor = Color(0xFF43B956),
+                contentColor = Color.White
+
+            ), onClick = {
+
+            }) {
+            Text("Forrige Hull")
+        }
+        Button(
+            modifier = Modifier.fillMaxHeight(),
+            shape = RoundedCornerShape(8.dp),
+            colors = textButtonColors(
+                backgroundColor = Color(0xFF43B956),
+                contentColor = Color.White
+
+            ), onClick = {
+
+            }) {
+            Text("Neste Hull")
+        }
+    }
 }
 
 @Composable
@@ -358,51 +418,60 @@ fun DrawerItemPreview() {
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController){
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+fun BottomNavigationBar(navController: NavHostController, onPreCurrentRound:  @Composable () -> Unit = {}, currentRoute: String?, onCurrentRound:  @Composable () -> Unit = {}){
+
     val items = listOf(
         RootNavItem.Feed,
         RootNavItem.MyRounds,
         RootNavItem.AddRound,
         RootNavItem.MyProfile
     )
+    if(
+        currentRoute == RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}")){
+        onPreCurrentRound()
+    }else if(currentRoute == RoundNavItem.CurrentRound.route.plus("/currentround")){
+        onCurrentRound()
+    }
 
-    BottomNavigation(
-        backgroundColor = Color.White,
-        contentColor = Color.White
-    ) {
-        items.forEach { item ->
-            BottomNavigationItem(
-                icon = { Icon(item.icon, contentDescription = item.title) },
-                label = { Text(text = item.title) },
-                selectedContentColor = SelectedBlue,
-                unselectedContentColor = Color.Gray.copy(0.4f),
-                alwaysShowLabel = false,
-                selected = currentRoute == item.route,
-                onClick = {
-                    navController.navigate(item.route){
+    else{
+        BottomNavigation(
+            backgroundColor = Color.White,
+            contentColor = Color.White,
+        ) {
+            items.forEach { item ->
+                BottomNavigationItem(
+                    icon = { Icon(item.icon, contentDescription = item.title) },
+                    label = { Text(text = item.title) },
+                    selectedContentColor = SelectedBlue,
+                    unselectedContentColor = Color.Gray.copy(0.4f),
+                    alwaysShowLabel = false,
+                    selected = currentRoute == item.route,
+                    onClick = {
+                        navController.navigate(item.route){
                             navController.popBackStack()
-                        /*
-                        using pop up to avoid building up large stack of destinations on users backstack
-                         */
+                            /*
+                            using pop up to avoid building up large stack of destinations on users backstack
+                             */
 
-                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route){
-                                saveState = true
+                            navController.graph.startDestinationRoute?.let { route ->
+                                popUpTo(route){
+                                    saveState = true
+                                }
                             }
+                            //Avoid stacking same destination when clicking on same navbarbutton multiple times
+                            launchSingleTop = true
+                            //restore state when reselecting previous navigation item
+                            restoreState = true
                         }
-                        //Avoid stacking same destination when clicking on same navbarbutton multiple times
-                        launchSingleTop = true
-                        //restore state when reselecting previous navigation item
-                        restoreState = true
                     }
-                }
-            )
+                )
+            }
         }
     }
+
 }
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
 fun Navigation(

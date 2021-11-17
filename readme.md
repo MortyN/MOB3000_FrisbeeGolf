@@ -22,6 +22,8 @@
         - https://developer.android.com/jetpack/compose/side-effects
     - State (values that change over time)
         - https://developer.android.com/jetpack/compose/state
+        - Mutablestate:
+            - https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#mutableStateOf(kotlin.Any,androidx.compose.runtime.SnapshotMutationPolicy)
     - Recomposition
         - https://medium.com/mobile-app-development-publication/android-jetpack-compose-recomposition-made-easy-527ecc9bcbaf
     - Coil (ImageView HTTP client)
