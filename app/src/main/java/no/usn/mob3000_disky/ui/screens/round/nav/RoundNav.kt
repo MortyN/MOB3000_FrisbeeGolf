@@ -5,7 +5,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.google.gson.Gson
-import no.usn.mob3000_disky.MusicScreen
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaRound
 import no.usn.mob3000_disky.model.ScoreCard
@@ -57,6 +56,5 @@ fun NavGraphBuilder.addRoundNavGraph(
                     selectedArena = Gson().fromJson(backStackEntry?.arguments?.getString("arena"),
                         Arena::class.java), loggedInUser, userViewModel, roundViewModel)
         }
-
     }
 }

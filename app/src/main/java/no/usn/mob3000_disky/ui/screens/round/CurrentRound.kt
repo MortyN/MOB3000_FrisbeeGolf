@@ -14,6 +14,6 @@ fun CurrentRoundPreview() {
 
 @Composable
 fun CurrentRound(roundViewModel: RoundViewModel, navController: NavController) {
-    roundViewModel.scoreCard.value?.members?.get(0)?.user?.let { Text(text = it.firstName) }
+    Text(text = roundViewModel.selectedScoreCardMembers[0].user.firstName)
 
 }

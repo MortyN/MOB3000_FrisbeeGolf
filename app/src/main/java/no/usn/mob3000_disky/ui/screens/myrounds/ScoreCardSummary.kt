@@ -159,7 +159,7 @@ fun userResults(member: ScoreCardMember){
 }
 
 fun getScoreValue(member: ScoreCardMember, hole: ArenaRoundHole): Int?{
-    member.results.forEach { result ->
+    member.results?.forEach { result ->
         if(result.arenaRoundHole.arenaRoundHoleId == hole.arenaRoundHoleId){
             return result.scoreValue
         }

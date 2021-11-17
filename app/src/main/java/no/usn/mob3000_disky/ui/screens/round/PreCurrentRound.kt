@@ -151,9 +151,9 @@ fun PreCurrentRound(
     val scorecardmembers = roundViewModel.selectedScoreCardMembers
 
     LaunchedEffect(track){
-//        roundViewModel.set(track)
+        roundViewModel.setCurrentArenaRound(track)
         userViewModel.getUserList(UserFilter(null))
-        roundViewModel.scoreCard.value?.arenaRound = track
+        roundViewModel.scoreCard.value.arenaRound = track
     }
 
     val addPlayerClicked = remember{ mutableStateOf(false) }
@@ -171,7 +171,7 @@ fun PreCurrentRound(
                 Column {
                     if(!loading){
                         UserObjectSearchBox(users, onItemSelected = { user ->
-                            roundViewModel.addSelectedScoreCardMember(ScoreCardMember(null, user, null, null))
+                            roundViewModel.addSelectedScoreCardMember(ScoreCardMember(user = user))
                             addPlayerClicked.value = false
 
                         })
@@ -213,7 +213,7 @@ fun PreCurrentRound(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(horizontal = 20.dp))
-            Text(text = selectedArena.arenaName.orEmpty(),
+            Text(text = selectedArena.arenaName,
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Normal,
                 fontSize = 20.sp,)
@@ -229,7 +229,7 @@ fun PreCurrentRound(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(horizontal = 20.dp))
-            Text(text = track.description.orEmpty(),
+            Text(text = track.description,
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Normal,
                 fontSize = 20.sp,)

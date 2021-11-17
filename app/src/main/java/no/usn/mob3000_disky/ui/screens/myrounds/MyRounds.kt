@@ -56,8 +56,8 @@ fun MyRounds(mainViewModel: MyRoundViewModel, loggedInUser: User, navController:
 
 @Composable
 fun RoundItem(scoreCard: ScoreCard, navController: NavHostController){
-    scoreCard.members.toMutableList().sortBy {it.totalPar}
-    var firstMembers = scoreCard.members.take(4)
+    scoreCard.members?.toMutableList()?.sortBy {it.totalPar}
+    var firstMembers = scoreCard.members?.take(4)
 
     Card(
         elevation = 4.dp,
@@ -76,14 +76,14 @@ fun RoundItem(scoreCard: ScoreCard, navController: NavHostController){
                 .padding(16.dp)
         ) {
             Row(){
-                Text("${scoreCard.arenaRound.arena.arenaName}", fontWeight = FontWeight.Bold)
-                Text("- ${scoreCard.arenaRound.description}", fontWeight = FontWeight.Light)
+                Text("${scoreCard.arenaRound?.arena?.arenaName}", fontWeight = FontWeight.Bold)
+                Text("- ${scoreCard.arenaRound?.description}", fontWeight = FontWeight.Light)
             }
             Column(
                 Modifier
                     .fillMaxWidth()
             ) {
-                Text("5 dager siden - ${scoreCard.arenaRound.holeAmount} hull", fontWeight = FontWeight.Light)
+                Text("5 dager siden - ${scoreCard.arenaRound?.holeAmount} hull", fontWeight = FontWeight.Light)
             }
 
             Column(
@@ -96,7 +96,7 @@ fun RoundItem(scoreCard: ScoreCard, navController: NavHostController){
                     horizontalArrangement = Arrangement.SpaceBetween
 
                 ){
-                    firstMembers.forEach { m ->
+                    firstMembers?.forEach { m ->
                         PersonScore(m)
                     }
                 }
@@ -180,19 +180,6 @@ fun PersonScore(member: ScoreCardMember){
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @Composable
 fun DinosTables(){
