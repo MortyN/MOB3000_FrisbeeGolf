@@ -14,5 +14,6 @@ data class ScoreCard(
 )
 
 data class ScoreCardFilter(
-    @SerializedName("member") var user : User
+    @SerializedName("member") var user : User,
+    @SerializedName("scoreCardId") var scoreCardId : Long
 )
