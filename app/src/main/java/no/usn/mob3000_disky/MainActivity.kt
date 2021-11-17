@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}"),
-        RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}")
+        RootNavItem.ScoreCardSummary.route.plus("/{scoreCard}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}"),
         RootNavItem.Friends.route,
         RootNavItem.Profile.route.plus("/{user}")
@@ -425,6 +425,7 @@ fun Navigation(
     loggedInUser: User,
     friendsViewModel: FriendsViewModel,
     scaffoldState: ScaffoldState,
+    myRoundViewModel: MyRoundViewModel
 ) {
 
     //https://proandroiddev.com/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
