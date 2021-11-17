@@ -12,6 +12,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -24,6 +26,11 @@ import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
+import java.sql.Timestamp
+import java.util.*
+import kotlin.collections.ArrayList
 
 @Composable
 fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController) {
@@ -49,23 +56,41 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(results) { p ->
-                PostFeedListItem(
-                    post = p,
-                    0,
-                    0,
-                    { i -> print("CLICKED: $i") },
-                    mainViewModel,
-                    loggedInUser,
-                    navController
-                )
+        if(!results.isNullOrEmpty() && !loading){
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(results) { p ->
+                    PostFeedListItem(
+                        post = p,
+                        0,
+                        0,
+                        { i -> print("CLICKED: $i") },
+                        mainViewModel,
+                        loggedInUser,
+                        navController
+                    )
+                }
             }
+        } else if(loading){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+                    .padding(20.dp), horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF005B97))
+            }
+        } else if(results.isNullOrEmpty()){
+            Text(
+                text = "Det er ingen innlegg å vise her enda.",
+                modifier = Modifier.padding(top = 10.dp),
+                color = Color(0xFF777777),
+                fontStyle = FontStyle.Italic
+            )
         }
+
     }
 }
 
@@ -97,7 +122,8 @@ fun PostFeedListItemPreview() {
         scoreCard = null,
         type = 2,
         updatedTs = "rgrg",
-        interactions = Interactions()
+        interactions = Interactions(),
+        sortDate = null
     )
     val navController = rememberNavController()
 
@@ -112,11 +138,9 @@ fun PostFeedListItem(
     loggedInUser: User,
     navController: NavHostController
 ) {
-
     var likes by remember {
         mutableStateOf(post.interactions.interactions?.size)
     }
-
     val backgroundColor =
         if (index == selectedIndex) MaterialTheme.colors.background else MaterialTheme.colors.background
 
@@ -171,7 +195,7 @@ fun PostFeedListItem(
 
                 Column(Modifier.padding(padding)) {
                     Text(post.user.firstName + " " + post.user.lastName)
-                    Text(post.postedTs)
+                    Text(Utils.getDate(post.postedTs).getTimeAgo())
                 }
             }
             Column() {
@@ -209,5 +233,21 @@ fun PostFeedListItem(
         }
     }
 
+}
+
+@Composable
+fun CircularIndterminateProgressBar(
+    isDisplayed: Boolean,
+) {
+    if (isDisplayed) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .padding(20.dp), horizontalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(color = Color(0xFF005B97))
+        }
+    }
 }
 

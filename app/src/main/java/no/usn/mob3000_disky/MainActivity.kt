@@ -81,10 +81,12 @@ class MainActivity : ComponentActivity() {
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}"),
-        RootNavItem.Friends.route
+        RootNavItem.Friends.route,
+        RootNavItem.Profile.route.plus("/{user}")
     )
 
 
+    @ExperimentalMaterialApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -404,6 +406,7 @@ fun BottomNavigationBar(navController: NavHostController){
     }
 }
 
+@ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
 fun Navigation(
