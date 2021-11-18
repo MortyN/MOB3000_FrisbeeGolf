@@ -6,5 +6,8 @@ import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.ScoreCardFilter
 
 interface ScoreCardRepository {
+
+    suspend fun createScoreCard(scoreCard: ScoreCard): ScoreCard
+
     suspend fun getScoreCard(filter: ScoreCardFilter): List<ScoreCard>
 }
