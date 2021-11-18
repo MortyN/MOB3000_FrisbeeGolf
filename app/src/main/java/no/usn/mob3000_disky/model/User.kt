@@ -7,12 +7,12 @@ import java.util.*
 
 class User(
     var userId: Long,
-    val userName: String,
-    val firstName: String,
-    val lastName: String,
-    val phoneNumber: String,
-    val password: String,
-    val imgKey: String?,
+    val userName: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
+    val phoneNumber: String = "",
+    val password: String = "",
+    val imgKey: String = "",
     var userLinks: List<UserLink> = ArrayList<UserLink>()
     ): AutoCompleteEntity{
 

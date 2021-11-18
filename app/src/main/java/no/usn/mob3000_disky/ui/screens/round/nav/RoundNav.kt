@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import com.google.gson.Gson
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaRound
-import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.screens.round.*
