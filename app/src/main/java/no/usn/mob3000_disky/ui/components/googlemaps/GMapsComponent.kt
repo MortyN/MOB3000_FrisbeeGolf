@@ -57,8 +57,6 @@ fun AddArenaMap(modifier: Modifier = Modifier, arenas: List<Arena>, navControlle
                     navController.navigate(RoundNavItem.ChooseTrack.route.plus("/$arenaJson"))
                 }
 
-
-
             }
         }
     }
@@ -82,6 +80,7 @@ fun ShowArenaMap(modifier: Modifier = Modifier, arena: Arena, navController: Nav
                     .title(arena.arenaName)
                     .position(latLngNorway)
                 map.addMarker(markerOptions)
+
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngNorway, 15f))
             }
         }
