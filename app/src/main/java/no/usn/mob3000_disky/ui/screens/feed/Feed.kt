@@ -32,20 +32,21 @@ import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 import kotlin.collections.ArrayList
 
 @Composable
-fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController) {
+fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController, isRefresh: Boolean) {
 
     val results = mainViewModel.postList.value
     val loading = mainViewModel.loading.value
 
     val filter = PostFilter(loggedInUser, true, false)
     val previousFilter = mainViewModel.postFilter.value;
-
+    var refreshList = isRefresh
     LaunchedEffect(key1 = Unit) {
-        if(previousFilter.user.userId != filter.user.userId
+        if(refreshList || previousFilter.user.userId != filter.user.userId
             || previousFilter.getFromConnections !== filter.getFromConnections
             || previousFilter.getUserLinks !== filter.getUserLinks)
         {
             mainViewModel.getPosts(filter)
+            refreshList = false
         }
     }
 

@@ -552,10 +552,22 @@ fun DrawerPreview() {
                     Feed(
                         loggedInUser,
                         profileViewModel,
-                        navController
+                        navController,
+                        false
                     )
                 }
-
+            }
+            composable(RootNavItem.Feed.route.plus("/{refresh}"),
+                arguments = listOf(
+                    navArgument("refresh") { type = NavType.BoolType }
+                )
+            ) {
+                    Feed(
+                        loggedInUser,
+                        profileViewModel,
+                        navController,
+                        true
+                    )
             }
             composable(RootNavItem.MyRounds.route) {
                 MyRounds(myRoundViewModel, loggedInUser, navController)

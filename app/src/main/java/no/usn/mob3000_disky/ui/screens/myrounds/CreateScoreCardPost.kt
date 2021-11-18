@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.RootNavItem
@@ -37,7 +38,8 @@ import no.usn.mob3000_disky.ui.RootNavItem
             Button(
                 onClick = {
                     mainViewModel.shareScoreCard(loggedInUser, scoreCard, textState.value.text)
-                    navController.navigate(RootNavItem.Feed.route)
+
+                    navController.navigate(RootNavItem.Feed.route.plus("/true"))
                 },
                 modifier = Modifier.padding(top = 20.dp)
             ) {

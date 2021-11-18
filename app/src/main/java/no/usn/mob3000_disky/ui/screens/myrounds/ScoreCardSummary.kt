@@ -66,7 +66,6 @@ fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: My
             )
             Text(text = "Del poengkort med venner")
         }
-
     }
 }
 
