@@ -60,6 +60,7 @@ import no.usn.mob3000_disky.ui.screens.friends.Friends
 import no.usn.mob3000_disky.ui.screens.friends.FriendsViewModel
 import no.usn.mob3000_disky.ui.screens.myrounds.MyRoundViewModel
 import no.usn.mob3000_disky.ui.screens.myrounds.MyRounds
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardPost
 import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardSummary
 import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.UserViewModel
@@ -89,7 +90,8 @@ class MainActivity : ComponentActivity() {
         RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}"),
         RoundNavItem.CurrentRound.route.plus("/currentround"),
         RootNavItem.Friends.route,
-        RootNavItem.Profile.route.plus("/{user}")
+        RootNavItem.Profile.route.plus("/{user}"),
+        RootNavItem.ScoreCardPost.route.plus("/{scoreCard}")
     )
 
 
@@ -605,8 +607,25 @@ fun DrawerPreview() {
                     ScoreCardSummary(
                         scoreCard,
                         loggedInUser,
-                        myRoundViewModel
+                        myRoundViewModel,
+                        navController
 
+                    )
+                }
+            }
+
+            composable(RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),
+                arguments = listOf(
+                    navArgument("scoreCard") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                backStackEntry?.arguments?.getString("scoreCard")?.let { json ->
+                    val scoreCard = Gson().fromJson(json, ScoreCard::class.java)
+                    ScoreCardPost(
+                        scoreCard,
+                        loggedInUser,
+                        myRoundViewModel,
+                        navController
                     )
                 }
             }

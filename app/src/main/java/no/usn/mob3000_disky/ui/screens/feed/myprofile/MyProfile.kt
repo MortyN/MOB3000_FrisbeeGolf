@@ -35,6 +35,7 @@ import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.Utils
 import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 
 @Composable
 fun MyProfile(
@@ -115,14 +116,8 @@ fun MyProfile(
                 onClick = {
                     mainViewModel.createPost(
                         Post(
-                            null, loggedInUser,
-                            textState.value.text,
-                            1,
-                            null,
-                            "",
-                            "",
-                            Interactions(),
-                            null
+                            user = loggedInUser,
+                            message = textState.value.text
                         )
                     )
                 }, modifier = Modifier
@@ -233,6 +228,10 @@ fun PostListItem(
                 Text(text = post.message)
             }
 
+            if(post.type == 2 && post.scoreCard != null){
+                ScoreCardResultTable(post.scoreCard, 5.dp)
+            }
+
 
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -314,45 +313,4 @@ fun PostListItem(
     }
 
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PostFeedListItemPreview() {
-
-    val loggedInUser = User(
-        userId = 110,
-        userName = "hakonopheim9912212",
-        firstName = "Håkon",
-        lastName = "Miehpo",
-        phoneNumber = "+4741527570",
-        password = "***********",
-        imgKey = "null",
-        userLinks = ArrayList()
-    )
-
-    val post = Post(
-        postId = 101,
-        user = loggedInUser,
-        message = """
-    Vær så snill å rydd opp søppla etter dere.
-    Vi har nå hatt dugnad og plukket 3 søppelsekker med søppel.
-    Hvis vi skal fortsette å få lov til å ha kurvene der, må vi bli
-    flinkere på dette.
-        """.trimIndent(),
-        postedTs = "grij",
-        scoreCard = null,
-        type = 2,
-        updatedTs = "rgrg",
-        interactions = Interactions(),
-        sortDate = null
-    )
-
-    PostListItem(
-        post,
-        0,
-        0,
-        null,
-        loggedInUser
-    )
 }

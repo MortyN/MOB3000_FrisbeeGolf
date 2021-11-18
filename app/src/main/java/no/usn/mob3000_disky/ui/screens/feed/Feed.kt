@@ -28,8 +28,7 @@ import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.Utils
 import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
-import java.sql.Timestamp
-import java.util.*
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 import kotlin.collections.ArrayList
 
 @Composable
@@ -119,7 +118,7 @@ fun PostFeedListItemPreview() {
     flinkere på dette.
         """.trimIndent(),
         postedTs = "grij",
-        scoreCard = null,
+        scoreCard = ScoreCard(),
         type = 2,
         updatedTs = "rgrg",
         interactions = Interactions(),
@@ -141,9 +140,6 @@ fun PostFeedListItem(
     var likes by remember {
         mutableStateOf(post.interactions.interactions?.size)
     }
-    val backgroundColor =
-        if (index == selectedIndex) MaterialTheme.colors.background else MaterialTheme.colors.background
-
 
     var likedByUser by remember {
         mutableStateOf(post.interactions.likedByUser)
@@ -198,8 +194,13 @@ fun PostFeedListItem(
                     Text(Utils.getDate(post.postedTs).getTimeAgo())
                 }
             }
+
             Column() {
                 Text(text = post.message)
+            }
+
+            if(post.type == 2 && post.scoreCard != null){
+                ScoreCardResultTable(post.scoreCard, 5.dp)
             }
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

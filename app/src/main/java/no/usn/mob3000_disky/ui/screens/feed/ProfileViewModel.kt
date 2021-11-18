@@ -12,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
+import no.usn.mob3000_disky.repository.score_card.ScoreCardRepository
 import no.usn.mob3000_disky.repository.users.UserRepository
 import no.usn.mob3000_disky.ui.Utils
 import javax.inject.Inject
@@ -28,24 +29,15 @@ import kotlin.collections.ArrayList
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val postRepository: PostRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val scoreCardRepository: ScoreCardRepository
 ): ViewModel(){
 
     val postList: MutableState<List<Post>> = mutableStateOf(ArrayList())
     val postFilter: MutableState<PostFilter> = mutableStateOf(PostFilter(User(0), false, false))
 
     val loading = mutableStateOf(false)
-    val createPostResult: MutableState<Post> = mutableStateOf(Post(
-        null,
-        User(0),
-        "",
-        0,
-        null,
-        "",
-        "",
-        Interactions(),
-        null
-    ))
+    val createPostResult: MutableState<Post> = mutableStateOf(Post())
 
     private val exceptionHandler = CoroutineExceptionHandler{ _, throwable->
         throwable.printStackTrace()
@@ -60,6 +52,12 @@ class ProfileViewModel @Inject constructor(
             postList.value.forEach { it -> it.sortDate = Utils.getDate(it.postedTs) }
             postList.value = postList.value.sortedByDescending { it.sortDate }
             delay(500) //Leave me alone, no questions.
+
+            postList.value.forEach { post ->
+                if(post.type == 2 && post.scoreCard != null){
+                    post.scoreCard = scoreCardRepository.getScoreCard(ScoreCardFilter(User(0), post.scoreCard.cardId))[0]
+                }
+            }
             loading.value = false
 
 

@@ -4,27 +4,34 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
+import com.google.gson.Gson
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 
 @Composable
-fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: MyRoundViewModel){
+fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: MyRoundViewModel, navController: NavHostController){
     Column(modifier = Modifier.padding(16.dp)) {
         Row(){
             Text("Vear diskgolf", fontWeight = FontWeight.Bold)
@@ -34,7 +41,7 @@ fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: My
             Modifier
                 .fillMaxWidth()
         ) {
-            Text("5 dager siden - 18 hull", fontWeight = FontWeight.Light)
+            Text("${Utils.getDate(scoreCard.startTs).getTimeAgo()} - 18 hull", fontWeight = FontWeight.Light)
         }
 
         Column(modifier = Modifier.padding(top = 10.dp)) {
@@ -43,36 +50,51 @@ fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: My
             }
         }
 
-        ScoreCardResultTable(scoreCard)
+        ScoreCardResultTable(scoreCard, 32.dp)
+
+        Button(
+            onClick = {
+                val scoreCardJson = Gson().toJson(scoreCard)
+                navController.navigate(RootNavItem.ScoreCardPost.route.plus("/$scoreCardJson"))
+            },
+            modifier = Modifier.fillMaxWidth().padding(top = 60.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Share,
+                contentDescription = "Localized description",
+                Modifier.padding(end = 8.dp)
+            )
+            Text(text = "Del poengkort med venner")
+        }
 
     }
 }
 
 @Composable
-fun ScoreCardResultTable(scoreCard: ScoreCard) {
+fun ScoreCardResultTable(scoreCard: ScoreCard, padding: Dp) {
     var length = scoreCard.arenaRound.arenaRoundHoles.size
     var firstHoles = scoreCard.arenaRound.arenaRoundHoles.take(9)
     var midHoles: List<ArenaRoundHole> = ArrayList()
     var lastHoles: List<ArenaRoundHole> = ArrayList()
 
-    generateScoreTable(firstHoles, scoreCard.members)
+    generateScoreTable(firstHoles, scoreCard.members, padding)
 
     if(firstHoles.size == 9){
         midHoles = scoreCard.arenaRound.arenaRoundHoles.subList(9, if(length > 18) 17 else length)
-        generateScoreTable(midHoles, scoreCard.members)
+        generateScoreTable(midHoles, scoreCard.members, padding)
     }
 
     if(midHoles.size == 18){
         lastHoles = scoreCard.arenaRound.arenaRoundHoles.subList(18,if(length > 27) 27 else length)
-        generateScoreTable(lastHoles, scoreCard.members)
+        generateScoreTable(lastHoles, scoreCard.members, padding)
     }
 
 }
 
 
 @Composable
-fun generateScoreTable(holes: List<ArenaRoundHole>, members: List<ScoreCardMember> ){
-    Column(modifier = Modifier.padding(top = 32.dp)) {
+fun generateScoreTable(holes: List<ArenaRoundHole>, members: List<ScoreCardMember>, padding: Dp){
+    Column(modifier = Modifier.padding(top = padding)) {
         Row() {
             Text("Hull", modifier = Modifier.weight(0.2f), textAlign = TextAlign.Start)
             // Header Row
