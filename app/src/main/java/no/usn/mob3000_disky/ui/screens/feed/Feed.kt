@@ -50,6 +50,7 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
         }
     }
 
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -57,22 +58,23 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
         verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if(!results.isNullOrEmpty() && !loading){
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(results) { p ->
-                    PostFeedListItem(
-                        post = p,
-                        0,
-                        0,
-                        { i -> print("CLICKED: $i") },
-                        mainViewModel,
-                        loggedInUser,
-                        navController
-                    )
+
+                LazyColumn(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(results) { p ->
+                        PostFeedListItem(
+                            post = p,
+                            0,
+                            0,
+                            { i -> print("CLICKED: $i") },
+                            mainViewModel,
+                            loggedInUser,
+                            navController
+                        )
+                    }
                 }
-            }
         } else if(loading){
             Row(
                 modifier = Modifier

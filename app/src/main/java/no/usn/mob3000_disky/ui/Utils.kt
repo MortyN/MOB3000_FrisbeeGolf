@@ -14,6 +14,12 @@ class Utils {
             var dateAndTime = timestamp.split("T")
             var datePart = dateAndTime[0].split("-")
             var time = dateAndTime[1].split(".")[0].split(":")
+            var year = datePart[0].toInt()
+            var month = datePart[1].toInt()
+            var day = datePart[2].toInt()
+            var hours = time[0].toInt()
+            var min = time[1].toInt()
+            var sec = time[2].toInt()
             var date = Date(datePart[0].toInt(),datePart[1].toInt(),datePart[2].toInt(),time[0].toInt() + 2,time[1].toInt(),time[2].toInt())
             return date
         }
