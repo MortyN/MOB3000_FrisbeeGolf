@@ -27,13 +27,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -51,7 +49,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.ScoreCard
-import no.usn.mob3000_disky.model.ScoreCardMember
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.ROOT_ROUTE
 import no.usn.mob3000_disky.ui.RootNavItem
@@ -84,7 +81,7 @@ class MainActivity : ComponentActivity() {
     private val friendsViewModel: FriendsViewModel by viewModels()
     private val myRoundViewModel: MyRoundViewModel by viewModels()
 
-    val ignoreTopBarRoutes = listOf(
+    val replaceTomAndBottomBar = listOf(
         RoundNavItem.ChooseTrack.route,
         RoundNavItem.ChooseTrack.route.plus("/{arena}"),
         RoundNavItem.ChoosePlayers.route.plus("/{track}"),
@@ -118,7 +115,7 @@ class MainActivity : ComponentActivity() {
                     TopBarBackBtn(
                         scope = scope,
                         scaffoldState = scaffoldState,
-                        isMenu = !ignoreTopBarRoutes.contains(currentRoute(navController = navController)),
+                        isMenu = !replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
                         navController = navController
                     )
 
@@ -126,7 +123,7 @@ class MainActivity : ComponentActivity() {
 
                 drawerBackgroundColor = Color(0xFFF5F5F5),
                 drawerGesturesEnabled =
-                !ignoreTopBarRoutes
+                !replaceTomAndBottomBar
                     .contains(currentRoute(navController = navController))
                     .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
 
@@ -141,6 +138,7 @@ class MainActivity : ComponentActivity() {
                 bottomBar = {
                     BottomNavigationBar(
                         navController,
+                        isMenu = replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
                         currentRoute = currentRoute(navController = navController),
                         onPreCurrentRound = {
                             PreCurrentRoundBottomBar(
@@ -148,12 +146,12 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         },
-                        onCurrentRound = {
-                            CurrentRoundBottomBar(
-                                roundViewModel = roundViewModel,
-                                navController = navController
-                            )
-                        }
+//                        onCurrentRound = {
+//                            CurrentRoundBottomBar(
+//                                roundViewModel = roundViewModel,
+//                                navController = navController
+//                            )
+//                        }
                     )
                 }
             ) { innerPadding ->
@@ -199,41 +197,41 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun CurrentRoundBottomBar(roundViewModel: RoundViewModel, navController: NavHostController) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 20.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(
-                modifier = Modifier.fillMaxHeight(),
-                shape = RoundedCornerShape(8.dp),
-                colors = textButtonColors(
-                    backgroundColor = Color(0xFF43B956),
-                    contentColor = Color.White
-
-                ), onClick = {
-
-                }) {
-                Text("Forrige Hull")
-            }
-            Button(
-                modifier = Modifier.fillMaxHeight(),
-                shape = RoundedCornerShape(8.dp),
-                colors = textButtonColors(
-                    backgroundColor = Color(0xFF43B956),
-                    contentColor = Color.White
-
-                ), onClick = {
-
-                }) {
-                Text("Neste Hull")
-            }
-        }
-    }
+//    @Composable
+//    fun CurrentRoundBottomBar(roundViewModel: RoundViewModel, navController: NavHostController) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(56.dp)
+//                .padding(horizontal = 20.dp, vertical = 8.dp),
+//            horizontalArrangement = Arrangement.SpaceEvenly
+//        ) {
+//            Button(
+//                modifier = Modifier.fillMaxHeight(),
+//                shape = RoundedCornerShape(8.dp),
+//                colors = textButtonColors(
+//                    backgroundColor = Color(0xFF43B956),
+//                    contentColor = Color.White
+//
+//                ), onClick = {
+//
+//                }) {
+//                Text("Forrige Hull")
+//            }
+//            Button(
+//                modifier = Modifier.fillMaxHeight(),
+//                shape = RoundedCornerShape(8.dp),
+//                colors = textButtonColors(
+//                    backgroundColor = Color(0xFF43B956),
+//                    contentColor = Color.White
+//
+//                ), onClick = {
+//
+//                }) {
+//                Text("Neste Hull")
+//            }
+//        }
+//    }
 
     @Composable
     fun currentRoute(navController: NavHostController): String? {
@@ -472,8 +470,9 @@ fun DrawerPreview() {
         navController: NavHostController,
         onPreCurrentRound: @Composable () -> Unit = {},
         currentRoute: String?,
-        onCurrentRound: @Composable () -> Unit = {}
+        isMenu: Boolean
     ) {
+        if(currentRoute != RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}") && isMenu) return
 
         val items = listOf(
             RootNavItem.Feed,
@@ -484,7 +483,6 @@ fun DrawerPreview() {
 
         when (currentRoute) {
             RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}") -> onPreCurrentRound()
-            RoundNavItem.CurrentRound.route.plus("/currentround") -> onCurrentRound()
             else -> {
                 BottomNavigation(
                     backgroundColor = Color.White,

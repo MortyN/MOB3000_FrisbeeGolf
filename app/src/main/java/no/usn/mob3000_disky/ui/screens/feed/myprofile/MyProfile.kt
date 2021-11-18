@@ -327,7 +327,7 @@ fun PostFeedListItemPreview() {
         lastName = "Miehpo",
         phoneNumber = "+4741527570",
         password = "***********",
-        imgKey = null,
+        imgKey = "null",
         userLinks = ArrayList()
     )
 
