@@ -144,20 +144,19 @@ fun PreCurrentRound(
 ) {
 
     var playersRe = remember { mutableStateListOf<ScoreCardMember>() }
-    val users = userViewModel.arenaList.value
+    val users = userViewModel.userList
     val loading = userViewModel.loading.value
 
     val scorecard = roundViewModel.scoreCard.value
     val scorecardmembers = roundViewModel.selectedScoreCardMembers
 
-    LaunchedEffect(track){
+    LaunchedEffect(key1 = Unit){
         roundViewModel.setCurrentArenaRound(track)
         userViewModel.getUserList(UserFilter(null))
         roundViewModel.scoreCard.value.arenaRound = track
     }
 
     val addPlayerClicked = remember{ mutableStateOf(false) }
-
 
     if(addPlayerClicked.value){
         AlertDialog(
@@ -171,8 +170,10 @@ fun PreCurrentRound(
                 Column {
                     if(!loading){
                         UserObjectSearchBox(users, onItemSelected = { user ->
+                            userViewModel.removeUserFromList(user)
                             roundViewModel.addSelectedScoreCardMember(ScoreCardMember(user = user))
                             addPlayerClicked.value = false
+
 
                         })
                     }
@@ -275,6 +276,7 @@ fun PreCurrentRound(
             }
 
                 SwipeableUserList(scorecardmembers, dismissed = { userItem ->
+                        userViewModel.addUserToList(userItem.user)
                         roundViewModel.removeSelectedScoreCardMember(userItem)
                 })
 

@@ -11,7 +11,7 @@ import retrofit2.http.POST
 interface ScoreCardAPIService {
 
     @POST("create")
-    suspend fun createScoreCard(@Body user: UserFilter): ScoreCard
+    suspend fun createScoreCard(@Body scoreCard: ScoreCard): ScoreCard
 
     @DELETE
     suspend fun deleteScoreCard(@Body scoreCardId: Long)
