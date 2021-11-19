@@ -66,6 +66,7 @@ import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
 import no.usn.mob3000_disky.ui.screens.round.UserViewModel
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.addRoundNavGraph
+import no.usn.mob3000_disky.ui.theme.BtnAcceptGreen
 import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
@@ -189,51 +190,23 @@ class MainActivity : ComponentActivity() {
                     .fillMaxHeight(),
                 shape = RoundedCornerShape(8.dp),
                 colors = textButtonColors(
-                    backgroundColor = Color(0xFF43B956),
+                    backgroundColor = BtnAcceptGreen,
                     contentColor = Color.White
-
                 ),
-                onClick = { navController.navigate(RoundNavItem.CurrentRound.route.plus("/currentround")) }) {
+                onClick = {
+                    roundViewModel.initScoreCardResults()
+                    roundViewModel.nextRoundHole(roundHole = roundViewModel.scoreCard.value.arenaRound.arenaRoundHoles[0])
+                    navController.navigate(RoundNavItem.CurrentRound.route.plus("/currentround"))
+
+                }) {
                 Text("Start Runde")
             }
         }
     }
 
-//    @Composable
-//    fun CurrentRoundBottomBar(roundViewModel: RoundViewModel, navController: NavHostController) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(56.dp)
-//                .padding(horizontal = 20.dp, vertical = 8.dp),
-//            horizontalArrangement = Arrangement.SpaceEvenly
-//        ) {
-//            Button(
-//                modifier = Modifier.fillMaxHeight(),
-//                shape = RoundedCornerShape(8.dp),
-//                colors = textButtonColors(
-//                    backgroundColor = Color(0xFF43B956),
-//                    contentColor = Color.White
-//
-//                ), onClick = {
-//
-//                }) {
-//                Text("Forrige Hull")
-//            }
-//            Button(
-//                modifier = Modifier.fillMaxHeight(),
-//                shape = RoundedCornerShape(8.dp),
-//                colors = textButtonColors(
-//                    backgroundColor = Color(0xFF43B956),
-//                    contentColor = Color.White
-//
-//                ), onClick = {
-//
-//                }) {
-//                Text("Neste Hull")
-//            }
-//        }
-//    }
+
+
+
 
     @Composable
     fun currentRoute(navController: NavHostController): String? {
@@ -615,7 +588,7 @@ fun DrawerPreview() {
                 )
             ) { backStackEntry ->
                 backStackEntry?.arguments?.getString("scoreCard")?.let { json ->
-                    val scoreCard = Gson().fromJson(json, ScoreCard::class.java)
+                    val scoreCard = Gson().fromJson(json, Long::class.java)
                     ScoreCardSummary(
                         scoreCard,
                         loggedInUser,

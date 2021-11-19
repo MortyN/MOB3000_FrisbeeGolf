@@ -23,8 +23,17 @@ class MyRoundViewModel @Inject constructor(
 
     val rounds: MutableState<List<ScoreCard>> = mutableStateOf(ArrayList())
 
+    var scoreCard = mutableStateOf(ScoreCard())
+        private set
+
     private val exceptionHandler = CoroutineExceptionHandler{ _, throwable->
         throwable.printStackTrace()
+    }
+
+    fun getOneScoreCard(scoreCardId: Long){
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            scoreCard.value = scoreCardRepo.getScoreCard(ScoreCardFilter( scoreCardId = scoreCardId))[0]
+        }
     }
 
     fun getScoreCard(loggedInUser: User){

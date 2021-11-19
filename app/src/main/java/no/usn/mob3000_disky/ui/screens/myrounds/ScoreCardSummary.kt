@@ -9,7 +9,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,7 +31,15 @@ import no.usn.mob3000_disky.ui.Utils
 import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 
 @Composable
-fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: MyRoundViewModel, navController: NavHostController){
+fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRoundViewModel, navController: NavHostController){
+
+    LaunchedEffect(true){
+        mainViewModel.getOneScoreCard(scoreCardId)
+    }
+
+    val scoreCard = remember { mutableStateOf(mainViewModel.scoreCard.value) }
+
+if(scoreCard.value.cardId != 0L){
     Column(modifier = Modifier.padding(16.dp)) {
         Row(){
             Text("Vear diskgolf", fontWeight = FontWeight.Bold)
@@ -41,23 +49,25 @@ fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: My
             Modifier
                 .fillMaxWidth()
         ) {
-            Text("${Utils.getDate(scoreCard.startTs).getTimeAgo()} - 18 hull", fontWeight = FontWeight.Light)
+            Text("${Utils.getDate(scoreCard.value.startTs).getTimeAgo()} - 18 hull", fontWeight = FontWeight.Light)
         }
 
         Column(modifier = Modifier.padding(top = 10.dp)) {
-            scoreCard.members.forEach {
+            scoreCard.value.members.forEach {
                 userResults(it)
             }
         }
 
-        ScoreCardResultTable(scoreCard, 32.dp)
+        ScoreCardResultTable(scoreCard.value, 32.dp)
 
         Button(
             onClick = {
                 val scoreCardJson = Gson().toJson(scoreCard)
                 navController.navigate(RootNavItem.ScoreCardPost.route.plus("/$scoreCardJson"))
             },
-            modifier = Modifier.fillMaxWidth().padding(top = 60.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp)
         ) {
             Icon(
                 imageVector = Icons.Filled.Share,
@@ -67,6 +77,8 @@ fun ScoreCardSummary(scoreCard: ScoreCard, loggedInUser: User, mainViewModel: My
             Text(text = "Del poengkort med venner")
         }
     }
+}
+
 }
 
 @Composable
@@ -140,7 +152,7 @@ fun generateScoreTable(holes: List<ArenaRoundHole>, members: List<ScoreCardMembe
                         modifier = Modifier
                             .weight(0.1f)
                             .background(color)
-                            .border(0.3.dp,Color.White)
+                            .border(0.3.dp, Color.White)
                     )
                 }
             }

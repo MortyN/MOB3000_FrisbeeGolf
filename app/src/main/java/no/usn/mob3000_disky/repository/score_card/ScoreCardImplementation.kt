@@ -12,6 +12,10 @@ class ScoreCardImplementation(
     private val scoreCardAPI: ScoreCardAPIService
 ): ScoreCardRepository {
 
+    override suspend fun createScoreCard(scoreCard: ScoreCard): ScoreCard {
+        return scoreCardAPI.createScoreCard(scoreCard)
+    }
+
     override suspend fun getScoreCard(filter: ScoreCardFilter): List<ScoreCard> {
        return scoreCardAPI.getScoreCard(filter)
     }
