@@ -40,6 +40,7 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
     val filter = PostFilter(loggedInUser, true, false)
     val previousFilter = mainViewModel.postFilter.value;
     var refreshList = isRefresh
+
     LaunchedEffect(key1 = Unit) {
         if(refreshList || previousFilter.user.userId != filter.user.userId
             || previousFilter.getFromConnections !== filter.getFromConnections
@@ -237,21 +238,5 @@ fun PostFeedListItem(
         }
     }
 
-}
-
-@Composable
-fun CircularIndterminateProgressBar(
-    isDisplayed: Boolean,
-) {
-    if (isDisplayed) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(20.dp)
-                .padding(20.dp), horizontalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(color = Color(0xFF005B97))
-        }
-    }
 }
 
