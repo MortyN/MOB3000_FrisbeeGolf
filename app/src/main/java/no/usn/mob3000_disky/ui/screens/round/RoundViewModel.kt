@@ -40,6 +40,10 @@ class RoundViewModel @Inject constructor(
     var scoreCard = mutableStateOf(ScoreCard())
         private set
 
+    var newScoreCard = mutableStateOf(ScoreCard())
+        private set
+
+
     var currentRoundHole = mutableStateOf(ArenaRoundHole())
         private set
 
@@ -91,7 +95,7 @@ class RoundViewModel @Inject constructor(
 
             val result = scoreCardRepository.createScoreCard(scoreCard = scoreCard.value)
 
-            scoreCard.value = result
+            newScoreCard.value = result
 
             createSCloading.value = false
 

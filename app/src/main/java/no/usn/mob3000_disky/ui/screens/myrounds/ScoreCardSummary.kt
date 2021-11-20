@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
+import com.google.android.gms.common.config.GservicesValue.value
 import com.google.gson.Gson
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
@@ -31,78 +32,83 @@ import no.usn.mob3000_disky.ui.Utils
 import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 
 @Composable
-fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRoundViewModel, navController: NavHostController){
+fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRoundViewModel, navController: NavHostController) {
 
-    LaunchedEffect(true){
+    val scoreCard = remember { mutableStateOf(mainViewModel.scoreCard.value) }
+    val loading = mainViewModel.loading.value
+
+    LaunchedEffect(key1 = Unit) {
         mainViewModel.getOneScoreCard(scoreCardId)
     }
 
-    val scoreCard = remember { mutableStateOf(mainViewModel.scoreCard.value) }
+    if (mainViewModel.scoreCard.value.cardId != 0L) {
+        scoreCard.value = mainViewModel.scoreCard.value
 
-if(scoreCard.value.cardId != 0L){
-    Column(modifier = Modifier.padding(16.dp)) {
-        Row(){
-            Text("Vear diskgolf", fontWeight = FontWeight.Bold)
-            Text("- Ukesgolf", fontWeight = FontWeight.Light)
-        }
-        Column(
-            Modifier
-                .fillMaxWidth()
-        ) {
-            Text("${Utils.getDate(scoreCard.value.startTs).getTimeAgo()} - 18 hull", fontWeight = FontWeight.Light)
-        }
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row() {
+                Text("Vear diskgolf", fontWeight = FontWeight.Bold)
+                Text("- Ukesgolf", fontWeight = FontWeight.Light)
+            }
+            Column(
+                Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    "${Utils.getDate(scoreCard.value.startTs).getTimeAgo()} - 18 hull",
+                    fontWeight = FontWeight.Light
+                )
+            }
 
-        Column(modifier = Modifier.padding(top = 10.dp)) {
-            scoreCard.value.members.forEach {
-                userResults(it)
+            Column(modifier = Modifier.padding(top = 10.dp)) {
+                scoreCard.value.members.forEach {
+                    userResults(it)
+                }
+            }
+
+            ScoreCardResultTable(scoreCard.value, 32.dp)
+
+            Button(
+                onClick = {
+                    val scoreCardJson = Gson().toJson(scoreCard)
+                    navController.navigate(RootNavItem.ScoreCardPost.route.plus("/$scoreCardJson"))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 60.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Share,
+                    contentDescription = "Localized description",
+                    Modifier.padding(end = 8.dp)
+                )
+                Text(text = "Del poengkort med venner")
             }
         }
-
-        ScoreCardResultTable(scoreCard.value, 32.dp)
-
-        Button(
-            onClick = {
-                val scoreCardJson = Gson().toJson(scoreCard)
-                navController.navigate(RootNavItem.ScoreCardPost.route.plus("/$scoreCardJson"))
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 60.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Share,
-                contentDescription = "Localized description",
-                Modifier.padding(end = 8.dp)
-            )
-            Text(text = "Del poengkort med venner")
-        }
-
+    } else {
+        Text("Laster...")
     }
-}
-
 }
 
 @Composable
 fun ScoreCardResultTable(scoreCard: ScoreCard, padding: Dp) {
     var length = scoreCard.arenaRound.arenaRoundHoles.size
-    var firstHoles = scoreCard.arenaRound.arenaRoundHoles.take(9)
+    var sortedList = scoreCard.arenaRound.arenaRoundHoles.sortedBy { it.order }
+    var firstHoles = sortedList.take(9)
     var midHoles: List<ArenaRoundHole> = ArrayList()
     var lastHoles: List<ArenaRoundHole> = ArrayList()
 
     generateScoreTable(firstHoles, scoreCard.members, padding)
 
     if(firstHoles.size == 9){
-        midHoles = scoreCard.arenaRound.arenaRoundHoles.subList(9, if(length > 18) 17 else length)
+        midHoles = sortedList.subList(9, if(length > 18) 17 else length)
         generateScoreTable(midHoles, scoreCard.members, padding)
     }
 
     if(midHoles.size == 18){
-        lastHoles = scoreCard.arenaRound.arenaRoundHoles.subList(18,if(length > 27) 27 else length)
+        lastHoles = sortedList.subList(18,if(length > 27) 27 else length)
         generateScoreTable(lastHoles, scoreCard.members, padding)
     }
-
 }
-
 
 @Composable
 fun generateScoreTable(holes: List<ArenaRoundHole>, members: List<ScoreCardMember>, padding: Dp){
@@ -134,7 +140,7 @@ fun generateScoreTable(holes: List<ArenaRoundHole>, members: List<ScoreCardMembe
                     var scoreValue = getScoreValue(member, hole)
                     var scoreDiff: Int? = null
 
-                    if(scoreValue != null){
+                    if(scoreValue != null && scoreValue > 0){
                         scoreDiff =  scoreValue - hole.parValue
                     }
 
@@ -148,7 +154,11 @@ fun generateScoreTable(holes: List<ArenaRoundHole>, members: List<ScoreCardMembe
                     }
 
                     Text(
-                        scoreValue?.toString() ?: "-",
+                        if(scoreValue != null && scoreValue > 0){
+                            scoreValue.toString()
+                        } else {
+                            "-"
+                        },
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .weight(0.1f)

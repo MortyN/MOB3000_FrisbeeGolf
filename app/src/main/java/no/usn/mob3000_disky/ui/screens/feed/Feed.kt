@@ -32,22 +32,25 @@ import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 import kotlin.collections.ArrayList
 
 @Composable
-fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController) {
+fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController, isRefresh: Boolean) {
 
     val results = mainViewModel.postList.value
     val loading = mainViewModel.loading.value
 
     val filter = PostFilter(loggedInUser, true, false)
     val previousFilter = mainViewModel.postFilter.value;
+    var refreshList = isRefresh
 
     LaunchedEffect(key1 = Unit) {
-        if(previousFilter.user.userId != filter.user.userId
+        if(refreshList || previousFilter.user.userId != filter.user.userId
             || previousFilter.getFromConnections !== filter.getFromConnections
             || previousFilter.getUserLinks !== filter.getUserLinks)
         {
             mainViewModel.getPosts(filter)
+            refreshList = false
         }
     }
+
 
     Column(
         modifier = Modifier
@@ -56,22 +59,23 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
         verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if(!results.isNullOrEmpty() && !loading){
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(results) { p ->
-                    PostFeedListItem(
-                        post = p,
-                        0,
-                        0,
-                        { i -> print("CLICKED: $i") },
-                        mainViewModel,
-                        loggedInUser,
-                        navController
-                    )
+
+                LazyColumn(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(results) { p ->
+                        PostFeedListItem(
+                            post = p,
+                            0,
+                            0,
+                            { i -> print("CLICKED: $i") },
+                            mainViewModel,
+                            loggedInUser,
+                            navController
+                        )
+                    }
                 }
-            }
         } else if(loading){
             Row(
                 modifier = Modifier
@@ -234,21 +238,5 @@ fun PostFeedListItem(
         }
     }
 
-}
-
-@Composable
-fun CircularIndterminateProgressBar(
-    isDisplayed: Boolean,
-) {
-    if (isDisplayed) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(20.dp)
-                .padding(20.dp), horizontalArrangement = Arrangement.Center
-        ) {
-            CircularProgressIndicator(color = Color(0xFF005B97))
-        }
-    }
 }
 

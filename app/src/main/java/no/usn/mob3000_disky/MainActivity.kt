@@ -48,10 +48,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.api.APIUtils
+import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.ROOT_ROUTE
 import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.screens.MyArenas.EditArena
+import no.usn.mob3000_disky.ui.screens.MyArenas.MyArenaViewModel
+import no.usn.mob3000_disky.ui.screens.MyArenas.MyArenas
 import no.usn.mob3000_disky.ui.screens.feed.Feed
 import no.usn.mob3000_disky.ui.screens.feed.myprofile.MyProfile
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
@@ -82,6 +86,7 @@ class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels()
     private val friendsViewModel: FriendsViewModel by viewModels()
     private val myRoundViewModel: MyRoundViewModel by viewModels()
+    private val myArenaViewModel: MyArenaViewModel by viewModels()
 
     val replaceTomAndBottomBar = listOf(
         RoundNavItem.ChooseTrack.route,
@@ -92,7 +97,8 @@ class MainActivity : ComponentActivity() {
         RoundNavItem.CurrentRound.route.plus("/currentround"),
         RootNavItem.Friends.route,
         RootNavItem.Profile.route.plus("/{user}"),
-        RootNavItem.ScoreCardPost.route.plus("/{scoreCard}")
+        RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),
+        RootNavItem.EditArena.route.plus("/{arena}")
     )
 
 
@@ -167,7 +173,8 @@ class MainActivity : ComponentActivity() {
                         roundViewModel = roundViewModel,
                         userViewModel = userViewModel,
                         friendsViewModel = friendsViewModel,
-                        myRoundViewModel = myRoundViewModel
+                        myRoundViewModel = myRoundViewModel,
+                        myArenaViewModel = myArenaViewModel
                     )
                 }
 
@@ -507,7 +514,8 @@ fun DrawerPreview() {
         loggedInUser: User,
         friendsViewModel: FriendsViewModel,
         scaffoldState: ScaffoldState,
-        myRoundViewModel: MyRoundViewModel
+        myRoundViewModel: MyRoundViewModel,
+        myArenaViewModel: MyArenaViewModel
     ) {
 
         //https://proandroiddev.com/jetpack-compose-navigation-architecture-with-viewmodels-1de467f19e1c
@@ -523,10 +531,22 @@ fun DrawerPreview() {
                     Feed(
                         loggedInUser,
                         profileViewModel,
-                        navController
+                        navController,
+                        false
                     )
                 }
-
+            }
+            composable(RootNavItem.Feed.route.plus("/{refresh}"),
+                arguments = listOf(
+                    navArgument("refresh") { type = NavType.BoolType }
+                )
+            ) {
+                    Feed(
+                        loggedInUser,
+                        profileViewModel,
+                        navController,
+                        true
+                    )
             }
             composable(RootNavItem.MyRounds.route) {
                 MyRounds(myRoundViewModel, loggedInUser, navController)
@@ -543,6 +563,14 @@ fun DrawerPreview() {
                 Friends(
                     loggedInUser,
                     friendsViewModel,
+                    navController
+                )
+            }
+
+            composable(RootNavItem.MyTracks.route) {
+                MyArenas(
+                    loggedInUser,
+                    myArenaViewModel,
                     navController
                 )
             }
@@ -585,6 +613,33 @@ fun DrawerPreview() {
 
                     )
                 }
+            }
+
+            composable(RootNavItem.EditArena.route.plus("/{arena}"),
+                arguments = listOf(
+                    navArgument("arena") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                backStackEntry?.arguments?.getString("arena")?.let { json ->
+                    val arena = Gson().fromJson(json, Arena::class.java)
+                    EditArena(
+                        loggedInUser,
+                        arena,
+                        myArenaViewModel,
+                        navController
+
+                    )
+                }
+            }
+
+
+            composable(RootNavItem.EditArena.route) {
+                EditArena(
+                    loggedInUser,
+                    null,
+                    myArenaViewModel,
+                    navController
+                )
             }
 
             composable(RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),

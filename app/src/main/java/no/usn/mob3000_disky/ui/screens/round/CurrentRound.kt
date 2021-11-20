@@ -45,52 +45,6 @@ import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 import no.usn.mob3000_disky.ui.theme.BtnAcceptGreen
 
-//@Preview(showBackground = true)
-//@Composable
-//fun CurrentRoundPreview() {
-//
-//    val scoreCard = ScoreCard()
-//
-//    scoreCard.members = listOf(
-//        ScoreCardMember(user = User(0, firstName = "Petter", lastName = "Stordalen")),
-//        ScoreCardMember(user = User(0, firstName = "Hans", lastName = "Lillelien"))
-//        )
-//
-//    Scaffold(
-////        bottomBar = {CurrentRoundBottomBar()}
-//    ) {
-//        Column(modifier = Modifier
-//            .fillMaxWidth()
-//            .fillMaxHeight()) {
-//            Row(
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier
-//                    .padding(
-//                        horizontal = 30.dp,
-//                        vertical = 20.dp
-//                    )
-//                    .fillMaxWidth()) {
-//                Text(text = "Hull 01", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-//                ParCircle(parAmount = 5)
-//            }
-//            Column(modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp)
-//                .background(Color.Blue)) {
-//
-//            }
-//
-//            LazyColumn{
-//                items(items = scoreCard.members, itemContent = { item ->
-//                    PlayerListItem(item)
-//                })
-//            }
-//        }
-//    }
-//
-//}
-
 @ExperimentalAnimationApi
 @Composable
 fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostController) {
@@ -102,8 +56,12 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
     var currentRoundHole = roundViewModel.currentRoundHole.value
 
     val density = LocalDensity.current
-
-
+    LaunchedEffect(roundViewModel.newScoreCard.value.cardId){
+        if(roundViewModel.newScoreCard.value.cardId != 0L){
+            val scoreCardJson = Gson().toJson(roundViewModel.newScoreCard.value.cardId)
+            navController.navigate(RootNavItem.ScoreCardSummary.route.plus("/$scoreCardJson"))
+        }
+    }
 
     Scaffold(
         bottomBar = {CurrentRoundBottomBar(roundViewModel = roundViewModel)},
@@ -122,12 +80,6 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
                 FloatingActionButton(onClick = {
                     roundViewModel.createScoreCard()
                 }, modifier = Modifier.padding(10.dp), backgroundColor = BtnAcceptGreen, contentColor = Color.White){
-
-                    if(roundViewModel.scoreCard.value.cardId != 0L){
-                        val scoreCardJson = Gson().toJson(roundViewModel.scoreCard.value.cardId)
-                        navController.popBackStack(RootNavItem.Feed.route, true)
-                        navController.navigate(RootNavItem.ScoreCardSummary.route.plus("/$scoreCardJson"))
-                    }
 
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
                         Text(text = "Ferdig", modifier = Modifier.padding(horizontal = 5.dp))
@@ -162,7 +114,9 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
 //                    .background(Color.Blue)) {
 //
 //                }
-                ShowArenaHoleMap(modifier = Modifier.fillMaxWidth().height(200.dp), roundViewModel.currentRoundHole.value)
+                ShowArenaHoleMap(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp), roundViewModel.currentRoundHole.value)
 
                 LazyColumn{
                     items(items = users, itemContent = { item ->
