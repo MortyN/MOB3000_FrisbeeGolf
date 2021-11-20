@@ -108,12 +108,7 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
                     Text(text = currentRoundHole.holeName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     ParCircle(parAmount = currentRoundHole.parValue)
                 }
-//                Column(modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(200.dp)
-//                    .background(Color.Blue)) {
-//
-//                }
+
                 ShowArenaHoleMap(modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp), roundViewModel.currentRoundHole.value)
@@ -199,14 +194,7 @@ fun ShowArenaHoleMap(modifier: Modifier = Modifier, arenaRoundHole: ArenaRoundHo
 @Composable
 fun PlayerListItem(member: ScoreCardMember, roundViewModel: RoundViewModel) {
 
-//    val scoreCardResult = remember {
-//        mutableStateOf(member.results.find { it.arenaRoundHole.arenaRoundHoleId == roundViewModel.currentRoundHole.value.arenaRoundHoleId })
-//    }
-
-    val scoreCard = roundViewModel.scoreCard.value
-
     val currentScoreCardResult = remember { mutableStateOf(member.results[roundViewModel.currentRoundHole.value.order-1])}
-    
     val uiScoreCardCount = remember { mutableStateOf(currentScoreCardResult.value.scoreValue)}
 
     LaunchedEffect(key1 = roundViewModel.currentRoundHole.value.arenaRoundHoleId ){
@@ -235,7 +223,15 @@ fun PlayerListItem(member: ScoreCardMember, roundViewModel: RoundViewModel) {
             )
             Text(text = member.user.firstName, fontWeight = FontWeight.SemiBold)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                Button(onClick = {/*TODO*/}){
+                Button(onClick = {
+                    if(uiScoreCardCount.value == 0 ){
+                        currentScoreCardResult.value.scoreValue = roundViewModel.currentRoundHole.value.parValue.minus(1)
+                        uiScoreCardCount.value = roundViewModel.currentRoundHole.value.parValue.minus(1)
+                    } else {
+                        currentScoreCardResult.value.scoreValue = currentScoreCardResult.value.scoreValue.minus(1)
+                        uiScoreCardCount.value = uiScoreCardCount.value.minus(1)
+                    }
+                }){
                     Text(text = "-")
                 }
                 Column(modifier = Modifier.width(50.dp), horizontalAlignment = Alignment.CenterHorizontally ) {
