@@ -69,7 +69,7 @@ fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRou
 
             Button(
                 onClick = {
-                    val scoreCardJson = Gson().toJson(scoreCard)
+                    val scoreCardJson = Gson().toJson(mainViewModel.scoreCard.value)
                     navController.navigate(RootNavItem.ScoreCardPost.route.plus("/$scoreCardJson"))
                 },
                 modifier = Modifier
