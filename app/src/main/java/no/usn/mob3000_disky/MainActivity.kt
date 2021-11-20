@@ -255,15 +255,6 @@ class MainActivity : ComponentActivity() {
             contentColor = Color.White
         )
     }
-
-    @Preview(showBackground = false)
-    @Composable
-    fun TopBarPreview() {
-        val scope = rememberCoroutineScope()
-        val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-
-    }
-
     @Composable
     fun Drawer(
         scope: CoroutineScope,
@@ -274,8 +265,6 @@ class MainActivity : ComponentActivity() {
         val items = listOf(
             RootNavItem.MyProfile,
             RootNavItem.Friends,
-            RootNavItem.TrackRecords,
-            RootNavItem.AddArena,
             RootNavItem.MyTracks
         )
         Column(
