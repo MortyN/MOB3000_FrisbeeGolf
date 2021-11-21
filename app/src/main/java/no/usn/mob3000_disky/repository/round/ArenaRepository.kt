@@ -7,4 +7,6 @@ interface ArenaRepository {
 
     suspend fun getArena(arena: ArenaFilter): List<Arena>
 
+    suspend fun createArena(arena: Arena): Arena
+
 }
