@@ -86,6 +86,7 @@ import android.location.LocationManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.maps.model.LatLng
+import no.usn.mob3000_disky.ui.screens.MyArenas.ArenaHoleMapEditor
 import java.lang.Exception
 import kotlin.math.round
 
@@ -131,9 +132,9 @@ class MainActivity : ComponentActivity() {
         RootNavItem.Friends.route,
         RootNavItem.Profile.route.plus("/{user}"),
         RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),
-        RootNavItem.EditArena.route.plus("/{arena}")
+        RootNavItem.EditArena.route.plus("/{arena}"),
+        RootNavItem.ArenaHoleMapEditor.route
     )
-
 
     @ExperimentalMaterialApi
     @ExperimentalAnimationApi
@@ -233,7 +234,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun PreCurrentRoundBottomBar(roundViewModel: RoundViewModel, navController: NavHostController) {
         Row(
@@ -261,10 +261,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-
-
-
 
     @Composable
     fun currentRoute(navController: NavHostController): String? {
@@ -672,7 +668,6 @@ fun DrawerPreview() {
                 }
             }
 
-
             composable(RootNavItem.EditArena.route) {
                 EditArena(
                     loggedInUser,
@@ -680,6 +675,10 @@ fun DrawerPreview() {
                     myArenaViewModel,
                     navController
                 )
+            }
+
+            composable(RootNavItem.ArenaHoleMapEditor.route) {
+                ArenaHoleMapEditor(myArenaViewModel)
             }
 
             composable(RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),

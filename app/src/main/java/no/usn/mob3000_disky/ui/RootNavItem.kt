@@ -23,4 +23,5 @@ sealed class RootNavItem(var route: String, var icon: ImageVector, var title: St
     object ScoreCardSummary : RootNavItem("scorecardsummary", Icons.Outlined.Settings, "Spillekort")
     object ScoreCardPost : RootNavItem("scorecardpost", Icons.Outlined.Settings, "Opprett innlegg")
     object EditArena : RootNavItem("editarena", Icons.Outlined.Settings, "Endre/opprett arena")
+    object ArenaHoleMapEditor : RootNavItem("arenaholemapeditor", Icons.Outlined.EditLocation, "Endre hull")
 }
