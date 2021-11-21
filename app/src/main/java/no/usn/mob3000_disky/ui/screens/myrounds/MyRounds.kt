@@ -34,6 +34,8 @@ import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.ScoreCardMember
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 
 
 @Composable
@@ -83,7 +85,7 @@ fun RoundItem(scoreCard: ScoreCard, navController: NavHostController){
                 Modifier
                     .fillMaxWidth()
             ) {
-                Text("5 dager siden - ${scoreCard.arenaRound?.holeAmount} hull", fontWeight = FontWeight.Light)
+                Text("${Utils.getDate(scoreCard.startTs).getTimeAgo()} - ${scoreCard.arenaRound?.holeAmount} hull", fontWeight = FontWeight.Light)
             }
 
             Column(

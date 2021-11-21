@@ -55,6 +55,9 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
 
     var currentRoundHole = roundViewModel.currentRoundHole.value
 
+    var distance = FloatArray(1)
+    android.location.Location.distanceBetween(currentRoundHole.startLatitude.toDouble(), currentRoundHole.startLongitude.toDouble(),currentRoundHole.endLatitude.toDouble(), currentRoundHole.endLongitude.toDouble(), distance)
+
     val density = LocalDensity.current
     LaunchedEffect(roundViewModel.newScoreCard.value.cardId){
         if(roundViewModel.newScoreCard.value.cardId != 0L){
@@ -105,7 +108,8 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
                             vertical = 10.dp
                         )
                         .fillMaxWidth()) {
-                    Text(text = currentRoundHole.holeName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+                    Text(text = "${currentRoundHole.holeName} - ${distance[0].toInt()}m", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     ParCircle(parAmount = currentRoundHole.parValue)
                 }
 
