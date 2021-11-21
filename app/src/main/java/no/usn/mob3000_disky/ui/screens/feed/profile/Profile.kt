@@ -10,18 +10,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -31,7 +32,10 @@ import coil.transform.CircleCropTransformation
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.*
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 
 @Composable
 fun Profile(
@@ -42,17 +46,23 @@ fun Profile(
 ) {
 
     val results = mainViewModel.postList.value
-    val filter = PostFilter(profileUser, false)
+    val filter = PostFilter(profileUser, false, true)
     val previousFilter = mainViewModel.postFilter.value
     val loading = mainViewModel.loading.value
 
-    val connectionType = mainViewModel.isFriends(profileUser, loggedInUser)
+
+
     if(!loading && ( results.isEmpty()
                     || previousFilter.user.userId != filter.user.userId
                     || previousFilter.getFromConnections !== filter.getFromConnections
+                    || previousFilter.getUserLinks !== filter.getUserLinks
                 )
     ){
         mainViewModel.getPosts(filter)
+    }
+
+    var connectionType by remember {
+        mutableStateOf(mainViewModel.isFriends(profileUser, loggedInUser))
     }
 
     Column(
@@ -74,14 +84,14 @@ fun Profile(
                     painter = rememberImagePainter(
                         APIUtils.s3LinkParser(profileUser.imgKey),
                         builder = {
-                            crossfade(true)
-                            placeholder(R.drawable.logo)
-                            error(R.drawable.logo)
                             transformations(CircleCropTransformation())
                             scale(Scale.FILL)
+                            crossfade(true)
+                            placeholder(R.drawable.ic_profile)
+                            error(R.drawable.ic_profile)
                         }
                     ),
-                    contentDescription = "",
+                    contentDescription = "Hmm",
                     modifier = Modifier
                         .height(140.dp)
                         .width(150.dp)
@@ -94,23 +104,33 @@ fun Profile(
                     .height(50.dp)
                     .width(50.dp)
                     .clickable {
-                               mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
+                        mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
+                        when (connectionType) {
+                            UserLink.USER_LINK_TYPE_ACCEPTED -> connectionType =
+                                UserLink.USER_LINK_TYPE_NO_CONNECTION
+                            UserLink.USER_LINK_TYPE_PENDING -> connectionType =
+                                UserLink.USER_LINK_TYPE_NO_CONNECTION
+                            UserLink.USER_LINK_TYPE_NO_CONNECTION -> connectionType =
+                                UserLink.USER_LINK_TYPE_PENDING
+                        }
+
                     },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        when(connectionType){
-                            UserLink.USER_LINK_TYPE_ACCEPTED -> Icons.Filled.PersonAdd
-                            UserLink.USER_LINK_TYPE_PENDING -> Icons.Filled.Person
-                            else -> Icons.Filled.Person
-                        },
-                        null,
-                        modifier = Modifier
-                            .size(30.dp),
-                        tint = Color(0xFFFDFDFD),
+                        Icon(
+                            when(connectionType){
+                                UserLink.USER_LINK_TYPE_NO_CONNECTION -> Icons.Filled.PersonAdd
+                                UserLink.USER_LINK_TYPE_ACCEPTED -> Icons.Filled.PeopleAlt
+                                UserLink.USER_LINK_TYPE_PENDING ->  Icons.Filled.PersonAddDisabled
+                                else -> Icons.Filled.ReportOff
+                            },
+                            null,
+                            modifier = Modifier
+                                .size(30.dp),
+                            tint = Color(0xFFFDFDFD),
                         )
-                }
+                    }
             }
             Text(
                 modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 16.dp),
@@ -120,14 +140,33 @@ fun Profile(
                 color = colors.background
             )
         }
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        if(!results.isNullOrEmpty() && !loading){
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 items(results) { p ->
                     PostListItem(post = p, 0, 0, {i -> print("CLICKED: $i")}, mainViewModel, loggedInUser, navController)
                 }
+            }
+        } else if(loading){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+                    .padding(20.dp), horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF005B97))
+            }
+        } else if(results.isNullOrEmpty()){
+            Text(
+                text = "${profileUser.firstName} ${profileUser.lastName} har ingen innlegg for øyeblikket.",
+                modifier = Modifier.padding(top = 10.dp),
+                color = Color(0xFF777777),
+                fontStyle = FontStyle.Italic
+            )
         }
+        
     }
 }
 
@@ -169,6 +208,8 @@ fun PostListItem(
                                 builder = {
                                     scale(Scale.FILL)
                                     transformations(CircleCropTransformation())
+                                    placeholder(R.drawable.ic_profile)
+                                    error(R.drawable.ic_profile)
                                 })
                         } else {
                             painterResource(R.drawable.logo)
@@ -181,12 +222,17 @@ fun PostListItem(
 
                 Column(Modifier.padding(padding)) {
                     Text(post.user.firstName + " " + post.user.lastName)
-                    Text(post.postedTs)
+                    Text(Utils.getDate(post.postedTs).getTimeAgo())
                 }
             }
             Column() {
                 Text(text = post.message)
             }
+
+            if(post.type == 2 && post.scoreCard != null){
+                ScoreCardResultTable(post.scoreCard, 5.dp)
+            }
+
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = {
@@ -234,6 +280,90 @@ fun CircularIndterminateProgressBar(
         ) {
             CircularProgressIndicator(color = Color(0xFF005B97))
         }
+    }
+}
+
+@Preview
+@Composable
+fun preview(){
+    var connectionType by remember {
+        mutableStateOf(1)
+    }
+    Box(){
+        Image(
+            painter = rememberImagePainter(
+                APIUtils.s3LinkParser("profileUser.imgKey"),
+                builder = {
+                    crossfade(true)
+                    placeholder(R.drawable.logo)
+                    error(R.drawable.logo)
+                    transformations(CircleCropTransformation())
+                    scale(Scale.FILL)
+                }
+            ),
+            contentDescription = "Hmm",
+            modifier = Modifier
+                .height(140.dp)
+                .width(150.dp)
+                .padding(0.dp, 16.dp, 0.dp, 0.dp)
+        )
+        Column(modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .clip(RoundedCornerShape(100.dp))
+            .background(Color(0xFF00BCD4))
+            .height(50.dp)
+            .width(50.dp)
+            .clickable {
+                //mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
+                when (connectionType) {
+                    UserLink.USER_LINK_TYPE_ACCEPTED -> connectionType =
+                        UserLink.USER_LINK_TYPE_NO_CONNECTION
+                    UserLink.USER_LINK_TYPE_PENDING -> connectionType =
+                        UserLink.USER_LINK_TYPE_NO_CONNECTION
+                    UserLink.USER_LINK_TYPE_NO_CONNECTION -> connectionType =
+                        UserLink.USER_LINK_TYPE_PENDING
+                }
+
+            },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if(connectionType == UserLink.USER_LINK_TYPE_ACCEPTED || connectionType == UserLink.USER_LINK_TYPE_NO_CONNECTION){
+                Icon(
+                    when(connectionType){
+                        UserLink.USER_LINK_TYPE_NO_CONNECTION -> Icons.Filled.PersonAdd
+                        UserLink.USER_LINK_TYPE_ACCEPTED -> Icons.Filled.Person
+                        else -> Icons.Filled.Person
+
+                    },
+                    null,
+                    modifier = Modifier
+                        .size(30.dp),
+                    tint = Color(0xFFFDFDFD),
+                )
+            } else{
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(6.dp)){
+                    Icon(Icons.Filled.Person,
+                        null,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .align(Alignment.BottomEnd),
+                        tint = Color(0xFFFDFDFD))
+                    Icon(Icons.Outlined.Schedule,
+                        null,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .align(Alignment.TopStart)
+                        ,
+                        tint = Color(0xFFFDFDFD)
+                    )
+                }
+            }
+        }
+
     }
 }
 

@@ -1,51 +1,64 @@
 package no.usn.mob3000_disky.ui
 
 import android.util.Log
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
 class Utils {
     companion object{
-        fun formatTimeAgo(date1: String): String {  // Note : date1 must be in   "yyyy-MM-dd hh:mm:ss"   format
-            var conversionTime = ""
-            try{
-                val format = "yyyy-MM-dd hh:mm:ss"
-
-                val sourceSdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.getDefault())
-                val requiredSdf = SimpleDateFormat(format, Locale.getDefault())
-                val date = requiredSdf.format(sourceSdf.parse(date1))
 
 
+        //2021-11-17T17:03:07.000+00:00
+        fun getDate(timestamp: String): Date{
+            var dateAndTime = timestamp.split("T")
+            var datePart = dateAndTime[0].split("-")
+            var time = dateAndTime[1].split(".")[0].split(":")
+            var year = datePart[0].toInt()
+            var month = datePart[1].toInt()
+            var day = datePart[2].toInt()
+            var hours = time[0].toInt()
+            var min = time[1].toInt()
+            var sec = time[2].toInt()
+            var date = Date(datePart[0].toInt(),datePart[1].toInt(),datePart[2].toInt(),time[0].toInt() + 2,time[1].toInt(),time[2].toInt())
+            return date
+        }
+        fun Date.getTimeAgo(): String {
+            val calendar = Calendar.getInstance()
+            calendar.time = this
 
-                val sdf = SimpleDateFormat(format)
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
 
-                val datetime= Calendar.getInstance()
-                var date2 = sdf.format(datetime.time).toString()
+            val currentCalendar = Calendar.getInstance()
 
-                val dateObj1 = sdf.parse(date)
-                val dateObj2 = sdf.parse(date2)
-                val diff = dateObj2.time - dateObj1.time
+            val currentYear = currentCalendar.get(Calendar.YEAR)
+            val currentMonth = currentCalendar.get(Calendar.MONTH)
+            val currentDay = currentCalendar.get(Calendar.DAY_OF_MONTH)
+            val currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY)
+            val currentMinute = currentCalendar.get(Calendar.MINUTE)
 
-                val diffDays = diff / (24 * 60 * 60 * 1000)
-                val diffhours = diff / (60 * 60 * 1000)
-                val diffmin = diff / (60 * 1000)
-                val diffsec = diff  / 1000
-                if(diffDays > 1){
-                    conversionTime += diffDays.toString() + " dager "
-                }else if(diffhours > 1 ){
-                    conversionTime += (diffhours-diffDays*24).toString() + " timer "
-                }else if(diffmin>1){
-                    conversionTime += (diffmin-diffhours*60).toString() + " minutter "
-                }else if(diffsec>1){
-                    conversionTime += (diffsec-diffmin*60).toString() + " sekunder "
-                }
-            }catch (ex:java.lang.Exception){
-                Log.e("formatTimeAgo",ex.toString())
+            return if (year < currentYear ) {
+                val interval = currentYear - year
+                if (interval == 1) "$interval år siden" else "$interval år siden"
+            } else if (month < currentMonth) {
+                val interval = currentMonth - month
+                if (interval == 1) "$interval måned siden" else "$interval måneder siden"
+            } else  if (day < currentDay) {
+                val interval = currentDay - day
+                if (interval == 1) "$interval dag siden" else "$interval dager siden"
+            } else if (hour < currentHour) {
+                val interval = currentHour - hour
+                if (interval == 1) "$interval time siden" else "$interval time siden"
+            } else if (minute < currentMinute) {
+                val interval = currentMinute - minute
+                if (interval == 1) "$interval minutt siden" else "$interval minutter siden"
+            } else {
+                "akkurat nå"
             }
-            if(conversionTime != ""){
-                conversionTime += "siden"
-            }
-            return conversionTime
         }
     }
 }

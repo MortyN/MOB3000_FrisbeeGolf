@@ -12,6 +12,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -24,22 +26,31 @@ import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
+import kotlin.collections.ArrayList
 
 @Composable
-fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController) {
+fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: NavHostController, isRefresh: Boolean) {
 
     val results = mainViewModel.postList.value
     val loading = mainViewModel.loading.value
 
-    val filter = PostFilter(loggedInUser, true)
+    val filter = PostFilter(loggedInUser, true, false)
     val previousFilter = mainViewModel.postFilter.value;
+    var refreshList = isRefresh
 
     LaunchedEffect(key1 = Unit) {
-        if(previousFilter.user.userId != filter.user.userId || previousFilter.getFromConnections !== filter.getFromConnections)
+        if(refreshList || previousFilter.user.userId != filter.user.userId
+            || previousFilter.getFromConnections !== filter.getFromConnections
+            || previousFilter.getUserLinks !== filter.getUserLinks)
         {
             mainViewModel.getPosts(filter)
+            refreshList = false
         }
     }
+
 
     Column(
         modifier = Modifier
@@ -47,23 +58,42 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if(!results.isNullOrEmpty() && !loading){
 
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(results) { p ->
-                PostFeedListItem(
-                    post = p,
-                    0,
-                    0,
-                    { i -> print("CLICKED: $i") },
-                    mainViewModel,
-                    loggedInUser,
-                    navController
-                )
+                LazyColumn(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(results) { p ->
+                        PostFeedListItem(
+                            post = p,
+                            0,
+                            0,
+                            { i -> print("CLICKED: $i") },
+                            mainViewModel,
+                            loggedInUser,
+                            navController
+                        )
+                    }
+                }
+        } else if(loading){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+                    .padding(20.dp), horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF005B97))
             }
+        } else if(results.isNullOrEmpty()){
+            Text(
+                text = "Det er ingen innlegg å vise her enda.",
+                modifier = Modifier.padding(top = 10.dp),
+                color = Color(0xFF777777),
+                fontStyle = FontStyle.Italic
+            )
         }
+
     }
 }
 
@@ -78,7 +108,7 @@ fun PostFeedListItemPreview() {
         lastName = "Miehpo",
         phoneNumber = "+4741527570",
         password = "***********",
-        imgKey = null,
+        imgKey = "",
         userLinks = ArrayList()
     )
 
@@ -92,10 +122,11 @@ fun PostFeedListItemPreview() {
     flinkere på dette.
         """.trimIndent(),
         postedTs = "grij",
-        scoreCard = null,
+        scoreCard = ScoreCard(),
         type = 2,
         updatedTs = "rgrg",
-        interactions = Interactions()
+        interactions = Interactions(),
+        sortDate = null
     )
     val navController = rememberNavController()
 
@@ -110,14 +141,9 @@ fun PostFeedListItem(
     loggedInUser: User,
     navController: NavHostController
 ) {
-
     var likes by remember {
         mutableStateOf(post.interactions.interactions?.size)
     }
-
-    val backgroundColor =
-        if (index == selectedIndex) MaterialTheme.colors.background else MaterialTheme.colors.background
-
 
     var likedByUser by remember {
         mutableStateOf(post.interactions.likedByUser)
@@ -169,11 +195,16 @@ fun PostFeedListItem(
 
                 Column(Modifier.padding(padding)) {
                     Text(post.user.firstName + " " + post.user.lastName)
-                    Text(post.postedTs)
+                    Text(Utils.getDate(post.postedTs).getTimeAgo())
                 }
             }
+
             Column() {
                 Text(text = post.message)
+            }
+
+            if(post.type == 2 && post.scoreCard != null){
+                ScoreCardResultTable(post.scoreCard, 5.dp)
             }
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

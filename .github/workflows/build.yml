@@ -8,32 +8,11 @@ on:
       - 'v1.0.*'
 
 jobs:
-  test:
-    name: Run Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: New Tag Generator test
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-        run: |
-          CURRENT_TAG=$(curl --silent "https://api.github.com/repos/MortyN/MOB3000_FrisbeeGolf/releases/latest" | # Get latest release from GitHub api
-          grep '"tag_name":' |                                            # Get tag line
-          sed -E 's/.*"([^"]+)".*/\1/')
-          NEWVERSION=`expr ${CURRENT_TAG: -1} + 1`
-          NEWTAG=${CURRENT_TAG%?}$NEWVERSION
-          echo "::set-env name=NEWTAG::${CURRENT_TAG%?}$NEWVERSION"
-      - name: Checkout ${{env.NEWTAG}}
-        uses: actions/checkout@v1
-      - name: Setup JDK 
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Run Tests
-        run: bash ./gradlew test --stacktrace   
   apk:
     name: Generate APK 
-    needs: test
     runs-on: ubuntu-latest
+    env:
+      LOCALIP: 192.168.50.240
     steps:
       - name: Checkout
         uses: actions/checkout@v1

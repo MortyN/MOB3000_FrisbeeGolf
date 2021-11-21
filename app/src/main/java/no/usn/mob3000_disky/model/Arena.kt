@@ -4,28 +4,29 @@ import com.google.gson.annotations.SerializedName
 import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteEntity
 import java.sql.Timestamp
 import java.util.*
+import kotlin.collections.ArrayList
 
 class Arena (
-    var arenaId: Long? = null,
-    var arenaName: String? = null,
-    var description: String? = null,
-    var established: Date? = null,
-    var createdBy: User? = null,
-    var createdTs: Timestamp? = null,
-    var updateTs: Timestamp? = null,
-    var latitude: String,
-    var longitude: String,
-    var rounds: List<ArenaRound>? = null,
+    var arenaId: Long = 0,
+    var arenaName: String = "",
+    var description: String = "",
+    var established: String = "",
+    var createdBy: User = User(0),
+    var createdTs: String = "",
+    var updateTs: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var rounds: List<ArenaRound> = ArrayList(),
     var active: Boolean = false
         ):AutoCompleteEntity {
 
-    constructor (arenaId: Long) : this(arenaId, null, null, null, null, null, null, "", "") {
+    constructor (arenaId: Long) : this() {
         this.arenaId = arenaId
     }
 
     override fun filter(query: String): Boolean {
-        return arenaName?.lowercase(Locale.getDefault())
-            ?.startsWith(query.toLowerCase(Locale.getDefault()))!!
+        return arenaName.lowercase(Locale.getDefault())
+            .startsWith(query.lowercase(Locale.getDefault()))
     }
 
 }

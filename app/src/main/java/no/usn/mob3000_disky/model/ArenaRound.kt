@@ -1,25 +1,16 @@
 package no.usn.mob3000_disky.model
 
-import java.util.*
+import com.google.gson.annotations.SerializedName
+import kotlin.collections.ArrayList
 
-//class ArenaRound {
-//    private val arenaRoundId: Long? = null
-//    private val arena: Arena? = null
-//    private val holeAmount: Int? = null
-//    private val payment: Boolean? = null
-//    private val description: String? = null
-//    private val createdBy: User? = null
-//    private val creationTs: Date? = null
-//    private val updateTs: Date? = null
-//}
-
-class ArenaRound (
-            val arenaRoundId: Long?,
-            val arena: Arena,
-            val holeAmount: Int?,
-            val payment: Boolean?,
-            val description: String?,
-            val createdBy: User?,
-            val creationTs: Date?,
-            val updateTs: Date?
-        )
+data class ArenaRound(
+    @SerializedName("arenaRoundId") var arenaRoundId : Long = 0,
+    @SerializedName("arena") var arena : Arena = Arena(),
+    @SerializedName("holeAmount") var holeAmount : Int = 0,
+    @SerializedName("payment") var payment : Boolean = false,
+    @SerializedName("description") var description : String = "",
+    @SerializedName("createdBy") var createdBy : User = User(0),
+    @SerializedName("creationTs") var creationTs : String = "",
+    @SerializedName("updateTs") var updateTs : String = "",
+    @SerializedName("holes") var arenaRoundHoles : List<ArenaRoundHole> = ArrayList()
+)
