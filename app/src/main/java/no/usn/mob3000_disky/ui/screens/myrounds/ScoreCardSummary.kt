@@ -46,15 +46,15 @@ fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRou
 
         Column(modifier = Modifier.padding(16.dp)) {
             Row() {
-                Text("Vear diskgolf", fontWeight = FontWeight.Bold)
-                Text("- Ukesgolf", fontWeight = FontWeight.Light)
+                Text("${scoreCard.value.arenaRound.arena.arenaName} - ", fontWeight = FontWeight.Bold)
+                Text("${scoreCard.value.arenaRound.description}", fontWeight = FontWeight.Light)
             }
             Column(
                 Modifier
                     .fillMaxWidth()
             ) {
                 Text(
-                    "${Utils.getDate(scoreCard.value.startTs).getTimeAgo()} - 18 hull",
+                    "${Utils.getDate(scoreCard.value.startTs).getTimeAgo()} - ${scoreCard.value.arenaRound.holeAmount} hull",
                     fontWeight = FontWeight.Light
                 )
             }
