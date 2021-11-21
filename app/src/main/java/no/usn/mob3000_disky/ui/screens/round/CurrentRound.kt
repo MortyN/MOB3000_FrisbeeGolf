@@ -138,8 +138,8 @@ fun ShowArenaHoleMap(modifier: Modifier = Modifier, arenaRoundHole: ArenaRoundHo
                 map.clear()
                 map.uiSettings.isZoomControlsEnabled = true
 
-                val holeStart =  LatLng(arenaRoundHole.startLatitude.toDouble(), arenaRoundHole.startLongitude.toDouble())
-                val holeEnd = LatLng(arenaRoundHole.endLatitude.toDouble(), arenaRoundHole.endLongitude.toDouble())
+                val holeStart =  LatLng(arenaRoundHole.startLatitude, arenaRoundHole.startLongitude)
+                val holeEnd = LatLng(arenaRoundHole.endLatitude, arenaRoundHole.endLongitude)
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(holeStart,18f))
                 val markerOptions = MarkerOptions()
                     .title("Start")

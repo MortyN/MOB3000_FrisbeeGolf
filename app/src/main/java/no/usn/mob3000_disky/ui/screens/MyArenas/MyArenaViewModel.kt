@@ -22,6 +22,12 @@ class MyArenaViewModel @Inject constructor(
 
     val arenas: MutableState<List<Arena>> = mutableStateOf(ArrayList())
 
+    var currentArenaHole = mutableStateOf(ArenaRoundHole())
+       private set
+
+    var currentArena = mutableStateOf(Arena())
+        private set
+
     var arenaCreateResult = mutableStateOf(Arena())
        private set
 
@@ -40,7 +46,10 @@ class MyArenaViewModel @Inject constructor(
 
     fun getArena(loggedInUser: User){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            arenas.value =  arenaRepo.getArena(ArenaFilter(null,null,listOf(loggedInUser.userId), true, null))
+            val result = arenaRepo.getArena(ArenaFilter(null,null,listOf(loggedInUser.userId), true, null))
+
+            arenas.value = result
+
         }
     }
 }

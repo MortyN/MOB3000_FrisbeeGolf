@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.maps.CameraUpdateFactory
@@ -55,7 +56,7 @@ fun EditArena(
     loggedInUser: User,
     arena: Arena?,
     arenaViewModel: MyArenaViewModel,
-    navController: NavController
+    navController: NavHostController
 ) {
     val currentArena =
         remember { mutableStateOf(arenaViewModel.arenas.value.find { it.arenaId == arena?.arenaId }) }
@@ -77,6 +78,8 @@ fun EditArena(
         } else {
             name.value = currentArena.value?.let { TextFieldValue(it.arenaName) }!!
             description.value = currentArena.value?.let { TextFieldValue(it.description) }!!
+
+            arenaViewModel.currentArena.value = currentArena.value!!
         }
     }
 
@@ -114,7 +117,8 @@ fun EditArena(
                 }
 
             }
-        }
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) {
 
         Column() {
@@ -194,10 +198,15 @@ fun EditArena(
                 }
                 if (arenaRounds?.value != null) {
                     items(items = arenaRounds.value) { a ->
-                        ArenaRoundItem(a)
+                        ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
                     }
                 }
+                item {
+                    Spacer(modifier = Modifier.size(100.dp))
+                }
             }
+
+
         }
 
     }
@@ -205,7 +214,7 @@ fun EditArena(
 }
 
 @Composable
-fun ArenaRoundItem(arenaRound: ArenaRound) {
+fun ArenaRoundItem(arenaRound: ArenaRound, navController: NavHostController, myArenaViewModel: MyArenaViewModel) {
     val arenaRoundHoles = remember { mutableStateOf(arenaRound.arenaRoundHoles) }
 
     var editMode by remember {
@@ -303,7 +312,12 @@ fun ArenaRoundItem(arenaRound: ArenaRound) {
                     }
                 }
                 arenaRoundHoles.value.forEach { hole ->
-                    ArenaRoundHoleItem(hole, arenaRound)
+                    ArenaRoundHoleItem(
+                        hole,
+                        arenaRound,
+                        navController = navController,
+                        myArenaViewModel = myArenaViewModel
+                    )
                 }
             }
         }
@@ -311,7 +325,12 @@ fun ArenaRoundItem(arenaRound: ArenaRound) {
 }
 
 @Composable
-fun ArenaRoundHoleItem(hole: ArenaRoundHole, arenaRound: ArenaRound) {
+fun ArenaRoundHoleItem(
+    hole: ArenaRoundHole,
+    arenaRound: ArenaRound,
+    navController: NavHostController,
+    myArenaViewModel: MyArenaViewModel
+) {
     var editMode by remember {
         mutableStateOf(false)
     }
@@ -373,63 +392,73 @@ fun ArenaRoundHoleItem(hole: ArenaRoundHole, arenaRound: ArenaRound) {
                         )
                     }
                 }
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .width(150.dp)
-                            .padding(bottom = 10.dp)
-                    ) {
-                        Text(text = "Hull nummer: ")
-                        TextField(
-                            value = number.value,
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                            onValueChange = {
-                                number.value = it
-                                if (it.text != "") {
-                                    hole.parValue = it.text.toInt()
-                                    hole.order = it.text.toInt()
-                                    hole.holeName = "Hull ${it.text}"
-
-                                    if (parValue.value.text != "") {
-                                        text.value = ""
-                                    }
-                                } else {
-                                    text.value = "Du må fylle inn verdier i alle felt"
-                                }
-                            },
+                Row() {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .width(50.dp)
-                                .height(50.dp)
-                        )
+                                .width(150.dp)
+                                .padding(bottom = 10.dp)
+                        ) {
+                            Text(text = "Hull nummer: ")
+                            TextField(
+                                value = number.value,
+                                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                onValueChange = {
+                                    number.value = it
+                                    if (it.text != "") {
+                                        hole.parValue = it.text.toInt()
+                                        hole.order = it.text.toInt()
+                                        hole.holeName = "Hull ${it.text}"
+
+                                        if (parValue.value.text != "") {
+                                            text.value = ""
+                                        }
+                                    } else {
+                                        text.value = "Du må fylle inn verdier i alle felt"
+                                    }
+                                },
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp)
+                            )
+                        }
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.width(150.dp)
+                        ) {
+                            Text(text = "Par: ")
+                            TextField(
+                                value = parValue.value,
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp),
+                                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                onValueChange = {
+                                    parValue.value = it
+                                    if (it.text != "") {
+                                        hole.parValue = it.text.toInt()
+                                        if (number.value.text != "") {
+                                            text.value = ""
+                                        }
+                                    } else {
+                                        text.value = "Du må fylle inn verdier i alle felt"
+                                    }
+                                }
+                            )
+                        }
+                        Button(onClick = {
+                            myArenaViewModel.currentArenaHole.value = hole
+
+                            navController.navigate(RootNavItem.ArenaHoleMapEditor.route)
+                        }) {
+                            Text("Endre hull posisjon")
+                        }
                     }
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.width(150.dp)
-                    ) {
-                        Text(text = "Par: ")
-                        TextField(
-                            value = parValue.value,
-                            modifier = Modifier
-                                .width(50.dp)
-                                .height(50.dp),
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                            onValueChange = {
-                                parValue.value = it
-                                if (it.text != "") {
-                                    hole.parValue = it.text.toInt()
-                                    if (number.value.text != "") {
-                                        text.value = ""
-                                    }
-                                } else {
-                                    text.value = "Du må fylle inn verdier i alle felt"
-                                }
-                            }
-                        )
-                    }
                 }
                 if (text.value != "") {
                     Text(text.value, color = Color(255, 0, 0))
@@ -523,5 +552,7 @@ fun ArenaMap(arena: Arena, modifier: Modifier, arenaViewModel: MyArenaViewModel)
     }
 
 }
+
+
 
 
