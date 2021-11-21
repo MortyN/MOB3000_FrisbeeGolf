@@ -57,7 +57,7 @@ fun MyProfile(
             }
         }
 
-    val textState = remember { mutableStateOf(TextFieldValue()) }
+    var textState = remember { mutableStateOf(TextFieldValue()) }
 
     Column(
         modifier = Modifier
@@ -117,9 +117,11 @@ fun MyProfile(
                     mainViewModel.createPost(
                         Post(
                             user = loggedInUser,
-                            message = textState.value.text
+                            message = textState.value.text,
+                            type = 1
                         )
                     )
+                    textState.value = TextFieldValue("")
                 }, modifier = Modifier
                     .width(80.dp)
                     .padding(16.dp, 0.dp, 0.dp, 0.dp)
