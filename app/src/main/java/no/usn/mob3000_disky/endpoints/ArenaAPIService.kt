@@ -10,4 +10,7 @@ interface ArenaAPIService {
     @POST("get")
     suspend fun getArena(@Body arena: ArenaFilter): List<Arena>
 
+    @POST("create")
+    suspend fun createArena(@Body arena: Arena): Arena
+
 }

@@ -14,8 +14,8 @@ class Arena (
     var createdBy: User = User(0),
     var createdTs: String = "",
     var updateTs: String = "",
-    var latitude: String = "",
-    var longitude: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
     var rounds: List<ArenaRound> = ArrayList(),
     var active: Boolean = false
         ):AutoCompleteEntity {

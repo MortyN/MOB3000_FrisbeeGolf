@@ -12,4 +12,8 @@ class ArenaImplementation
         return arenaAPI.getArena(arena = arena)
     }
 
+    override suspend fun createArena(arena: Arena): Arena {
+        return arenaAPI.createArena(arena = arena)
+    }
+
 }

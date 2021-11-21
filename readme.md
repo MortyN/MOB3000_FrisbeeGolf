@@ -32,6 +32,7 @@
  - Google Maps SDK
     - https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java
     - https://developers.google.com/maps/documentation/android-sdk/marker
+    - https://developer.android.com/training/location
 
  - Architecture
     - https://developer.android.com/jetpack/guide
