@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.google.android.libraries.maps.model.LatLng
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -43,6 +44,8 @@ class RoundViewModel @Inject constructor(
     var newScoreCard = mutableStateOf(ScoreCard())
         private set
 
+    var currentLocation = mutableStateOf(LatLng(0.0,0.0))
+        private set
 
     var currentRoundHole = mutableStateOf(ArenaRoundHole())
         private set

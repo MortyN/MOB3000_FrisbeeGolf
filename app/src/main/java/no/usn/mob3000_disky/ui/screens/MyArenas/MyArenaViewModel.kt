@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.libraries.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +21,9 @@ class MyArenaViewModel @Inject constructor(
 ): ViewModel() {
 
     val arenas: MutableState<List<Arena>> = mutableStateOf(ArrayList())
+
+    var currentDroppedMarkerLocation = mutableStateOf(LatLng(0.0,0.0))
+        private set
 
     private val exceptionHandler = CoroutineExceptionHandler{ _, throwable->
         throwable.printStackTrace()
