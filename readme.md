@@ -22,6 +22,8 @@
         - https://developer.android.com/jetpack/compose/side-effects
     - State (values that change over time)
         - https://developer.android.com/jetpack/compose/state
+        - Mutablestate:
+            - https://developer.android.com/reference/kotlin/androidx/compose/runtime/package-summary#mutableStateOf(kotlin.Any,androidx.compose.runtime.SnapshotMutationPolicy)
     - Recomposition
         - https://medium.com/mobile-app-development-publication/android-jetpack-compose-recomposition-made-easy-527ecc9bcbaf
     - Coil (ImageView HTTP client)
@@ -30,6 +32,7 @@
  - Google Maps SDK
     - https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java
     - https://developers.google.com/maps/documentation/android-sdk/marker
+    - https://developer.android.com/training/location
 
  - Architecture
     - https://developer.android.com/jetpack/guide

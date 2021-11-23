@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,10 @@ import coil.transform.CircleCropTransformation
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
 import no.usn.mob3000_disky.model.*
+import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
 import no.usn.mob3000_disky.ui.screens.feed.ProfileViewModel
+import no.usn.mob3000_disky.ui.screens.myrounds.ScoreCardResultTable
 
 @Composable
 fun Profile(
@@ -100,12 +104,15 @@ fun Profile(
                     .height(50.dp)
                     .width(50.dp)
                     .clickable {
-                               mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
-                               when(connectionType){
-                                   UserLink.USER_LINK_TYPE_ACCEPTED -> connectionType = UserLink.USER_LINK_TYPE_NO_CONNECTION
-                                   UserLink.USER_LINK_TYPE_PENDING -> connectionType = UserLink.USER_LINK_TYPE_NO_CONNECTION
-                                   UserLink.USER_LINK_TYPE_NO_CONNECTION -> connectionType = UserLink.USER_LINK_TYPE_PENDING
-                               }
+                        mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
+                        when (connectionType) {
+                            UserLink.USER_LINK_TYPE_ACCEPTED -> connectionType =
+                                UserLink.USER_LINK_TYPE_NO_CONNECTION
+                            UserLink.USER_LINK_TYPE_PENDING -> connectionType =
+                                UserLink.USER_LINK_TYPE_NO_CONNECTION
+                            UserLink.USER_LINK_TYPE_NO_CONNECTION -> connectionType =
+                                UserLink.USER_LINK_TYPE_PENDING
+                        }
 
                     },
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -133,14 +140,33 @@ fun Profile(
                 color = colors.background
             )
         }
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        if(!results.isNullOrEmpty() && !loading){
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 items(results) { p ->
                     PostListItem(post = p, 0, 0, {i -> print("CLICKED: $i")}, mainViewModel, loggedInUser, navController)
                 }
+            }
+        } else if(loading){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+                    .padding(20.dp), horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(color = Color(0xFF005B97))
+            }
+        } else if(results.isNullOrEmpty()){
+            Text(
+                text = "${profileUser.firstName} ${profileUser.lastName} har ingen innlegg for øyeblikket.",
+                modifier = Modifier.padding(top = 10.dp),
+                color = Color(0xFF777777),
+                fontStyle = FontStyle.Italic
+            )
         }
+        
     }
 }
 
@@ -196,12 +222,17 @@ fun PostListItem(
 
                 Column(Modifier.padding(padding)) {
                     Text(post.user.firstName + " " + post.user.lastName)
-                    Text(post.postedTs)
+                    Text(Utils.getDate(post.postedTs).getTimeAgo())
                 }
             }
             Column() {
                 Text(text = post.message)
             }
+
+            if(post.type == 2 && post.scoreCard != null){
+                ScoreCardResultTable(post.scoreCard, 5.dp)
+            }
+
             Column(horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = {
@@ -284,10 +315,13 @@ fun preview(){
             .width(50.dp)
             .clickable {
                 //mainViewModel.onFriendIconClicked(loggedInUser, profileUser)
-                when(connectionType){
-                    UserLink.USER_LINK_TYPE_ACCEPTED -> connectionType = UserLink.USER_LINK_TYPE_NO_CONNECTION
-                    UserLink.USER_LINK_TYPE_PENDING -> connectionType = UserLink.USER_LINK_TYPE_NO_CONNECTION
-                    UserLink.USER_LINK_TYPE_NO_CONNECTION -> connectionType = UserLink.USER_LINK_TYPE_PENDING
+                when (connectionType) {
+                    UserLink.USER_LINK_TYPE_ACCEPTED -> connectionType =
+                        UserLink.USER_LINK_TYPE_NO_CONNECTION
+                    UserLink.USER_LINK_TYPE_PENDING -> connectionType =
+                        UserLink.USER_LINK_TYPE_NO_CONNECTION
+                    UserLink.USER_LINK_TYPE_NO_CONNECTION -> connectionType =
+                        UserLink.USER_LINK_TYPE_PENDING
                 }
 
             },
@@ -308,7 +342,10 @@ fun preview(){
                     tint = Color(0xFFFDFDFD),
                 )
             } else{
-                Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(6.dp)){
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(6.dp)){
                     Icon(Icons.Filled.Person,
                         null,
                         modifier = Modifier

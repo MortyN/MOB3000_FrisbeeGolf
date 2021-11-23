@@ -14,18 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import coil.transform.CircleCropTransformation
+import com.google.gson.Gson
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.api.APIUtils
+import no.usn.mob3000_disky.model.ScoreCard
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.model.UserLink
+import no.usn.mob3000_disky.ui.RootNavItem
 
+@ExperimentalMaterialApi
 @Composable
 fun Friends(loggedInUser: User, mainViewModel: FriendsViewModel, navController: NavHostController) {
     val friendsList = mainViewModel.friendsList.value
@@ -40,66 +46,90 @@ fun Friends(loggedInUser: User, mainViewModel: FriendsViewModel, navController: 
 Column() {
     TabRow(
         selectedTabIndex = selectedTabIndex,
-        modifier = Modifier.fillMaxWidth(), // Don't specify the TabRow's height!
+        modifier = Modifier.fillMaxWidth(),
     ) {
         listOf("Venner", "Forespørsel", "Finn venner").forEachIndexed { i, text ->
             Tab(
                 selected = selectedTabIndex == i,
                 onClick = { selectedTabIndex = i },
-                modifier = Modifier.height(50.dp), // Specify the Tab's height instead
+                modifier = Modifier.height(50.dp),
                 text = { Text(text) }
             )
         }
     }
 
     when(selectedTabIndex){
-        0 -> FriendList(friendsList, loggedInUser, mainViewModel)
-        1 -> PendingList(pendingFriendList, loggedInUser, mainViewModel)
-        2 -> UserList(userList, loggedInUser, mainViewModel)
+        0 -> FriendList(friendsList, loggedInUser, mainViewModel, navController)
+        1 -> PendingList(pendingFriendList, loggedInUser, mainViewModel, navController)
+        2 -> UserList(userList, loggedInUser, mainViewModel, navController)
     }
 }
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun FriendList(list: List<UserLink>, loggedInUser: User, mainViewModel: FriendsViewModel){
+fun FriendList(list: List<UserLink>, loggedInUser: User, mainViewModel: FriendsViewModel, navController: NavHostController){
     val searchKeyword = remember { mutableStateOf(TextFieldValue("")) }
     SearchBox(searchKeyword)
     var filteredList = list.filter { link ->  matchFriendListSearchResult(link, loggedInUser, searchKeyword) }
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(filteredList) { u ->
-            listItem(
-                u,
-                loggedInUser,
-                mainViewModel
-            )
+    if(!filteredList.isNullOrEmpty()){
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(filteredList) { u ->
+                listItem(
+                    u,
+                    loggedInUser,
+                    mainViewModel,
+                    navController
+                )
+            }
         }
+    } else {
+        Text(
+            text = "Du har ingen venner enda",
+            modifier = Modifier.padding(top = 10.dp).fillMaxWidth(),
+            color = Color(0xFF777777),
+            fontStyle = FontStyle.Italic,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun PendingList(list: List<UserLink>, loggedInUser: User, mainViewModel: FriendsViewModel){val searchKeyword = remember { mutableStateOf(TextFieldValue("")) }
+fun PendingList(list: List<UserLink>, loggedInUser: User, mainViewModel: FriendsViewModel, navController: NavHostController){val searchKeyword = remember { mutableStateOf(TextFieldValue("")) }
     SearchBox(searchKeyword)
     var filteredList = list.filter { link ->  matchFriendListSearchResult(link, loggedInUser, searchKeyword) }
-
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(filteredList) { u ->
-            listItem(
-                u,
-                loggedInUser,
-                mainViewModel
-            )
+    if(!filteredList.isNullOrEmpty()) {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(filteredList) { u ->
+                listItem(
+                    u,
+                    loggedInUser,
+                    mainViewModel,
+                    navController
+                )
+            }
         }
+    } else {
+        Text(
+            text = "Du har ingen venneforespørsler.",
+            modifier = Modifier.padding(top = 10.dp).fillMaxWidth(),
+            color = Color(0xFF777777),
+            fontStyle = FontStyle.Italic,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun UserList(list: List<User>, loggedInUser: User, mainViewModel: FriendsViewModel){
+fun UserList(list: List<User>, loggedInUser: User, mainViewModel: FriendsViewModel, navController: NavHostController){
     val searchKeyword = remember { mutableStateOf(TextFieldValue("")) }
     SearchBox(searchKeyword)
 
@@ -113,15 +143,16 @@ fun UserList(list: List<User>, loggedInUser: User, mainViewModel: FriendsViewMod
                 userListItem(
                     u,
                     loggedInUser,
-                    mainViewModel
+                    mainViewModel,
+                    navController
                 )
-
         }
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun userListItem(user: User, loggedInUser: User, mainViewModel: FriendsViewModel) {
+fun userListItem(user: User, loggedInUser: User, mainViewModel: FriendsViewModel, navController: NavHostController) {
 
     var userLink by remember {
         mutableStateOf(user.userLinks.find { link -> link.userLink1.userId == loggedInUser.userId })
@@ -130,7 +161,11 @@ fun userListItem(user: User, loggedInUser: User, mainViewModel: FriendsViewModel
     Card(
         elevation = 4.dp,
         modifier = Modifier
-            .padding(16.dp, 16.dp)
+            .padding(16.dp, 16.dp),
+        onClick = {
+            val userJson = Gson().toJson(user)
+            navController.navigate(RootNavItem.Profile.route.plus("/$userJson"))
+        }
     ) {
         Column(
             Modifier
@@ -158,7 +193,8 @@ fun userListItem(user: User, loggedInUser: User, mainViewModel: FriendsViewModel
                             .clickable(
                                 enabled = true,
                                 onClick = {
-
+                                        val userJson = Gson().toJson(user)
+                                        navController.navigate(RootNavItem.Profile.route.plus("/$userJson"))
                                 }
                             )
                     )
@@ -200,8 +236,9 @@ fun userListItem(user: User, loggedInUser: User, mainViewModel: FriendsViewModel
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
-fun listItem(userLink: UserLink, loggedInUser: User, mainViewModel: FriendsViewModel){
+fun listItem(userLink: UserLink, loggedInUser: User, mainViewModel: FriendsViewModel, navController: NavHostController){
 
     val user: User
 
@@ -242,7 +279,9 @@ fun listItem(userLink: UserLink, loggedInUser: User, mainViewModel: FriendsViewM
                             .clickable(
                                 enabled = true,
                                 onClick = {
-
+                                        var fullUserObject = mainViewModel.users.value.find { o -> o.userId ==  user.userId}
+                                        val userJson = Gson().toJson(fullUserObject)
+                                        navController.navigate(RootNavItem.Profile.route.plus("/$userJson"))
                                 }
                             )
 

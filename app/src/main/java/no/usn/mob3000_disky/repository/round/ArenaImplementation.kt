@@ -5,11 +5,15 @@ import no.usn.mob3000_disky.model.*
 
 class ArenaImplementation
     constructor(
-        private val postAPI: ArenaAPIService
+        private val arenaAPI: ArenaAPIService
     ): ArenaRepository {
 
     override suspend fun getArena(arena: ArenaFilter): List<Arena> {
-        return postAPI.getArena(arena = arena)
+        return arenaAPI.getArena(arena = arena)
+    }
+
+    override suspend fun createArena(arena: Arena): Arena {
+        return arenaAPI.createArena(arena = arena)
     }
 
 }

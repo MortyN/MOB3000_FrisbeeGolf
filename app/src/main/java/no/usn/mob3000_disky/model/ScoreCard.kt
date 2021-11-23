@@ -2,16 +2,18 @@ package no.usn.mob3000_disky.model
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
+import kotlin.collections.ArrayList
 
 data class ScoreCard(
-    @SerializedName("cardId") var cardId : Long?,
-    @SerializedName("arenaRound") var arenaRound : ArenaRound,
-    @SerializedName("startTs") var startTs : String,
-    @SerializedName("endTs") var endTs : String,
-    @SerializedName("createdBy") var createdBy : User,
-    @SerializedName("members") var members : List<ScoreCardMember>,
+    @SerializedName("cardId") var cardId : Long = 0,
+    @SerializedName("arenaRound") var arenaRound : ArenaRound = ArenaRound(),
+    @SerializedName("startTs") var startTs : String = "",
+    @SerializedName("endTs") var endTs : String = "",
+    @SerializedName("createdBy") var createdBy : User = User(0),
+    @SerializedName("members") var members : List<ScoreCardMember> = ArrayList(),
 )
 
 data class ScoreCardFilter(
-    @SerializedName("user") var user : User
+    @SerializedName("member") var user : User = User(0),
+    @SerializedName("scoreCardId") var scoreCardId : Long = 0
 )
