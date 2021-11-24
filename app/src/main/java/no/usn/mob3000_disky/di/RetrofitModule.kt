@@ -73,6 +73,16 @@ object RetrofitModule {
             .create(ScoreCardAPIService::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideAuthValidationService(): AuthValidationService {
+        return Retrofit.Builder()
+            .baseUrl(APIConstants.APIHOST + APIConstants.APIPORT)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AuthValidationService::class.java)
+    }
+
 
 
 

@@ -7,16 +7,18 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import no.usn.mob3000_disky.endpoints.AuthValidationService
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.auth.AuthRepository
-import no.usn.mob3000_disky.repository.myprofile.PostRepository
+import no.usn.mob3000_disky.repository.auth.AuthValidationImplementation
+import no.usn.mob3000_disky.repository.auth.AuthValidationRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val authValidationRepository: AuthValidationRepository
 ): ViewModel(){
 
     val loggedInUser: MutableState<User> = mutableStateOf(User(0))
@@ -29,6 +31,13 @@ class MainActivityViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             val result = repository.getOneUser(userId)
             loggedInUser.value = result
+        }
+    }
+
+    suspend fun signIn(idToken: String?) {
+        if (idToken != null) {
+           val result = authValidationRepository.validategso(idToken)
+            System.out.print(result)
         }
     }
 }

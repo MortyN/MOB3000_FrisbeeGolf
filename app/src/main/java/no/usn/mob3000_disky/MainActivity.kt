@@ -83,10 +83,12 @@ import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
 import android.location.LocationManager
+import androidx.compose.foundation.ExperimentalFoundationApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.maps.model.LatLng
 import no.usn.mob3000_disky.ui.screens.MyArenas.ArenaHoleMapEditor
+import no.usn.mob3000_disky.ui.screens.login.loginScreen
 import java.lang.Exception
 import kotlin.math.round
 
@@ -136,6 +138,7 @@ class MainActivity : ComponentActivity() {
         RootNavItem.ArenaHoleMapEditor.route
     )
 
+    @ExperimentalFoundationApi
     @ExperimentalMaterialApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -230,6 +233,9 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
+            }
+            Surface(color = MaterialTheme.colors.background) {
+                loginScreen(authViewModel = mainActivityViewModel)
             }
         }
     }
