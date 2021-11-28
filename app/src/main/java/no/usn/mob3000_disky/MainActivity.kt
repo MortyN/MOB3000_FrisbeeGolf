@@ -179,7 +179,6 @@ class MainActivity : ComponentActivity() {
                         isMenu = !replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
                         navController = navController
                     )
-
                 },
 
                 drawerBackgroundColor = Color(0xFFF5F5F5),

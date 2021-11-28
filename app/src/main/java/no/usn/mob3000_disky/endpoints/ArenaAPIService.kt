@@ -8,9 +8,8 @@ import retrofit2.http.POST
 interface ArenaAPIService {
 
     @POST("get")
-    suspend fun getArena(@Body arena: ArenaFilter): List<Arena>
+    suspend fun  getArena(@Body arena: ArenaFilter): List<Arena>
 
     @POST("create")
     suspend fun createArena(@Body arena: Arena): Arena
-
 }
