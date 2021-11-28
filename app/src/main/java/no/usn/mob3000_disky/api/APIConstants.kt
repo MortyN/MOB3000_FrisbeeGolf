@@ -12,7 +12,8 @@ class APIConstants {
         const val APIUSERPREFIX = "$APIVERSIONPREFIX/user/"
         const val APIUSERLINKPREFIX = "$APIVERSIONPREFIX/userLink/"
         const val APISCORECARDPREFIX = "$APIVERSIONPREFIX/scorecard/"
-        const val APIPORT = ":8080"
+        const val APIPORT = ""
         val APIHOST = "http://${BuildConfig.API_IP_ADDRESS}"
+//        val APIHOST = "http://192.168.50.240"
     }
 }
