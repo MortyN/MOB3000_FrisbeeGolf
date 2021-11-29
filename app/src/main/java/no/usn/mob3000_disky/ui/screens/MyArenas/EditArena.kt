@@ -63,7 +63,7 @@ fun EditArena(
 
     val name = remember { mutableStateOf(TextFieldValue()) }
     val description = remember { mutableStateOf(TextFieldValue()) }
-    var arenaRounds = remember { currentArena.value?.let { mutableStateOf(it.rounds) } }
+    val arenaRounds = remember { mutableStateOf(currentArena.value?.rounds) }
 
     LaunchedEffect(key1 = Unit) {
         if (currentArena.value == null) {
@@ -164,13 +164,15 @@ fun EditArena(
                                 fontSize = 20.sp
                             )
                             IconButton(onClick = {
-                                if (arenaRounds != null) {
-                                    var tempList = ArrayList(arenaRounds!!.value)
+                                if (arenaRounds?.value != null) {
+                                    var tempList = ArrayList(arenaRounds.value)
                                     tempList += ArenaRound()
-                                    arenaRounds!!.value = tempList
+                                    arenaRounds.value = tempList
                                     currentArena.value!!.rounds = tempList
                                 } else {
-                                    arenaRounds = mutableStateOf(arrayListOf(ArenaRound(createdBy = loggedInUser)))
+                                    var tempList = arrayListOf<ArenaRound>()
+                                    tempList += ArenaRound(createdBy = loggedInUser)
+                                    arenaRounds!!.value = tempList
 
                                 }
                             }) {
@@ -187,8 +189,8 @@ fun EditArena(
                         }
                     }
                 }
-                if (arenaRounds?.value != null) {
-                    items(items = arenaRounds!!.value) { a ->
+                if (arenaRounds.value != null) {
+                    items(items = arenaRounds.value!!) { a ->
                         ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
                     }
                 }
