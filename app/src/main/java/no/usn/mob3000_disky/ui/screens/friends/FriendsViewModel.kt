@@ -12,13 +12,15 @@ import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.friends.FriendsRepository
 import no.usn.mob3000_disky.repository.users.UserRepository
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     private val friendRepo: FriendsRepository,
-    private val userRepo: UserRepository
+    private val userRepo: UserRepository,
 ): ViewModel() {
+    val loggedInUser = mutableStateOf(User(0))
     var friendsList: MutableState<List<UserLink>> = mutableStateOf(ArrayList())
     val pendingFriendList: MutableState<List<UserLink>> = mutableStateOf(ArrayList())
     val userList: MutableState<List<User>> = mutableStateOf(ArrayList())
@@ -33,17 +35,17 @@ class FriendsViewModel @Inject constructor(
     fun getLists(loggedInUser: User) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             var friendListFilter = UserLinkFilter(loggedInUser, UserLink.USER_LINK_TYPE_ACCEPTED);
-            friendsList.value = friendRepo.getFriends(friendListFilter)
+            friendsList.value = friendRepo.getFriends(friendListFilter, loggedInUser.apiKey)
 
             var pendingListFilter = UserLinkFilter(loggedInUser, UserLink.USER_LINK_TYPE_PENDING);
 
-            pendingFriendList.value = friendRepo.getFriends(pendingListFilter)
+            pendingFriendList.value = friendRepo.getFriends(pendingListFilter, loggedInUser.apiKey)
             pendingFriendList.value =
                 pendingFriendList.value.filter { link -> link.userLink2.userId == loggedInUser.userId }
 
             var userFilter = UserFilter(null, true);
 
-            users.value = userRepo.getUserList(userFilter)
+            users.value = userRepo.getUserList(userFilter, loggedInUser.apiKey)
 
             userList.value = users.value.filter { user -> user.haveConnection(loggedInUser) < 2 }
 
@@ -62,7 +64,7 @@ class FriendsViewModel @Inject constructor(
 
     fun deleteFriend(senderUser: User, recipientUser: User){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val link =  userRepo.toggleFriend(ToggleWrapper(senderUser = senderUser, recipientUser = recipientUser))
+            val link =  userRepo.toggleFriend(ToggleWrapper(senderUser = senderUser, recipientUser = recipientUser), loggedInUser.value.apiKey)
             if(link.type == UserLink.USER_LINK_TYPE_NO_CONNECTION) {
                 friendsList.value = friendsList.value.filter { link -> link.userLink1.userId != recipientUser.userId
                                                                         && link.userLink2.userId != recipientUser.userId }
@@ -75,7 +77,7 @@ class FriendsViewModel @Inject constructor(
     fun addFriend(senderUser: User, recipientUser: User){
 
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            var link =  userRepo.toggleFriend(ToggleWrapper(senderUser = senderUser, recipientUser = recipientUser))
+            var link =  userRepo.toggleFriend(ToggleWrapper(senderUser = senderUser, recipientUser = recipientUser), loggedInUser.value.apiKey)
             if(link != null && link.type == UserLink.USER_LINK_TYPE_PENDING) {
                 recipientUser.userLinks += link
             }
@@ -84,7 +86,7 @@ class FriendsViewModel @Inject constructor(
 
     fun deleteFriendRequest(senderUser: User, recipientUser: User){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            userRepo.toggleFriend(ToggleWrapper(senderUser = senderUser, recipientUser = recipientUser))
+            userRepo.toggleFriend(ToggleWrapper(senderUser = senderUser, recipientUser = recipientUser), loggedInUser.value.apiKey)
             recipientUser.userLinks = ArrayList()
 
         }
@@ -97,7 +99,7 @@ class FriendsViewModel @Inject constructor(
                     senderUser = senderUser,
                     recipientUser = recipientUser
                 )
-            )
+                , loggedInUser.value.apiKey)
             if (link.type == UserLink.USER_LINK_TYPE_NO_CONNECTION) {
                 pendingFriendList.value = pendingFriendList.value.filter { link ->
                     link.userLink1.userId != senderUser.userId
@@ -112,7 +114,7 @@ class FriendsViewModel @Inject constructor(
      fun acceptFriendRequest(userLink: UserLink){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             userLink.type = UserLink.USER_LINK_TYPE_ACCEPTED
-            val link =  friendRepo.updateFriend(userLink)
+            val link =  friendRepo.updateFriend(userLink, loggedInUser.value.apiKey)
             friendsList.value += userLink
             pendingFriendList.value = pendingFriendList.value.filter { link -> !(link.userLink1.userId == userLink.userLink1.userId
                                                                                     && link.userLink2.userId == userLink.userLink2.userId) }

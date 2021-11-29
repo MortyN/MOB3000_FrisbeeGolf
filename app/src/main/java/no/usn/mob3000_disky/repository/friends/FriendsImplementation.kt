@@ -10,11 +10,11 @@ class FriendsImplementation constructor(
     private val friendsAPI: FriendsAPIService
 ): FriendsRepository  {
 
-    override suspend fun getFriends(filter: UserLinkFilter): List<UserLink> {
-        return friendsAPI.getFriends(filter)
+    override suspend fun getFriends(filter: UserLinkFilter, idToken: String): List<UserLink> {
+        return friendsAPI.getFriends(filter, idToken)
     }
 
-    override suspend fun updateFriend(userLink: UserLink): UserLink {
-        return friendsAPI.updateFriend(userLink)
+    override suspend fun updateFriend(userLink: UserLink, idToken: String): UserLink {
+        return friendsAPI.updateFriend(userLink, idToken)
     }
 }

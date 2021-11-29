@@ -1,13 +1,18 @@
 package no.usn.mob3000_disky.di
 
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import no.usn.mob3000_disky.api.APIConstants
 import no.usn.mob3000_disky.endpoints.*
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
@@ -78,7 +83,7 @@ object RetrofitModule {
     fun provideAuthValidationService(): AuthValidationService {
         return Retrofit.Builder()
             .baseUrl(APIConstants.APIHOST + APIConstants.APIPORT)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .build()
             .create(AuthValidationService::class.java)
     }

@@ -12,13 +12,14 @@ import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.round.ArenaRepository
 import no.usn.mob3000_disky.repository.users.UserRepository
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
-    private val repository: UserRepository
+    private val repository: UserRepository,
 ): ViewModel() {
-
+    val loggedInUser = mutableStateOf(User(0))
 
     var userList = mutableStateListOf<User>()
         private set
@@ -41,7 +42,7 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             loading.value = true
 
-            val result = repository.getUserList(userFilter)
+            val result = repository.getUserList(userFilter, loggedInUser.value.apiKey)
             userList.addAll(result)
 
             loading.value = false

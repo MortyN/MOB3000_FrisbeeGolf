@@ -5,8 +5,8 @@ import okhttp3.ResponseBody
 
 interface ArenaRepository {
 
-    suspend fun getArena(arena: ArenaFilter): List<Arena>
+    suspend fun getArena(arena: ArenaFilter, idToken: String): List<Arena>
 
-    suspend fun createArena(arena: Arena): Arena
+    suspend fun createArena(arena: Arena, idToken: String): Arena
 
 }

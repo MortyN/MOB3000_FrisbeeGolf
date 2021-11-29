@@ -5,10 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import no.usn.mob3000_disky.endpoints.*
-import no.usn.mob3000_disky.repository.auth.AuthImplementation
-import no.usn.mob3000_disky.repository.auth.AuthRepository
-import no.usn.mob3000_disky.repository.auth.AuthValidationImplementation
-import no.usn.mob3000_disky.repository.auth.AuthValidationRepository
+import no.usn.mob3000_disky.repository.auth.*
 import no.usn.mob3000_disky.repository.friends.FriendsImplementation
 import no.usn.mob3000_disky.repository.friends.FriendsRepository
 import no.usn.mob3000_disky.repository.myprofile.PostImplementation
@@ -81,5 +78,4 @@ object RepositoryModule {
     ): AuthValidationRepository {
         return AuthValidationImplementation(authValidationService)
     }
-
 }

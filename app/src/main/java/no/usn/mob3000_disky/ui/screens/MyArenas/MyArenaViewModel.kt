@@ -13,12 +13,15 @@ import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.round.ArenaRepository
 import no.usn.mob3000_disky.repository.score_card.ScoreCardRepository
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MyArenaViewModel @Inject constructor(
-    private val arenaRepo: ArenaRepository
+    private val arenaRepo: ArenaRepository,
 ): ViewModel() {
+
+    val loggedInUser = mutableStateOf(User(0))
 
     val arenas: MutableState<List<Arena>> = mutableStateOf(ArrayList())
 
@@ -40,13 +43,13 @@ class MyArenaViewModel @Inject constructor(
 
     fun saveArena(arena: Arena){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler){
-            arenaCreateResult.value = arenaRepo.createArena(arena)
+            arenaCreateResult.value = arenaRepo.createArena(arena, loggedInUser.value.apiKey)
         }
     }
 
     fun getArena(loggedInUser: User){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val result = arenaRepo.getArena(ArenaFilter(null,null,listOf(loggedInUser.userId), true, null))
+            val result = arenaRepo.getArena(ArenaFilter(null,null,listOf(loggedInUser.userId), true, null), loggedInUser.apiKey)
 
             arenas.value = result
 

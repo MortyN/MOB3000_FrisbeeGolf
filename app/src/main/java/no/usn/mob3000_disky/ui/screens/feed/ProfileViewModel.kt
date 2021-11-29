@@ -18,6 +18,7 @@ import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.score_card.ScoreCardRepository
 import no.usn.mob3000_disky.repository.users.UserRepository
 import no.usn.mob3000_disky.ui.Utils
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -33,8 +34,10 @@ import kotlin.collections.ArrayList
 class ProfileViewModel @Inject constructor(
     private val postRepository: PostRepository,
     private val userRepository: UserRepository,
-    private val scoreCardRepository: ScoreCardRepository
+    private val scoreCardRepository: ScoreCardRepository,
 ): ViewModel(){
+
+    val loggedInUser = mutableStateOf(User(0))
 
     val postList: MutableState<List<Post>> = mutableStateOf(ArrayList())
     val postFilter: MutableState<PostFilter> = mutableStateOf(PostFilter(User(0), false, false))
@@ -50,7 +53,7 @@ class ProfileViewModel @Inject constructor(
         postFilter.value = filter
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             loading.value = true
-            val result = postRepository.getFeed(filter)
+            val result = postRepository.getFeed(filter, "230198")
             postList.value = result
             postList.value.forEach { it -> it.sortDate = Utils.getDate(it.postedTs) }
             postList.value = postList.value.sortedByDescending { it.sortDate }
@@ -58,7 +61,7 @@ class ProfileViewModel @Inject constructor(
 
             postList.value.forEach { post ->
                 if(post.type == 2 && post.scoreCard != null){
-                    post.scoreCard = scoreCardRepository.getScoreCard(ScoreCardFilter(User(0), post.scoreCard.cardId))[0]
+                    post.scoreCard = scoreCardRepository.getScoreCard(ScoreCardFilter(User(0), post.scoreCard.cardId), loggedInUser.value.apiKey)[0]
                 }
             }
             loading.value = false
@@ -69,7 +72,7 @@ class ProfileViewModel @Inject constructor(
     }
     fun createPost(post: Post){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val result = postRepository.createPost(post)
+            val result = postRepository.createPost(post, loggedInUser.value.apiKey)
             createPostResult.value = result
             var list = postList.value
             postList.value = listOf(result)
@@ -79,7 +82,7 @@ class ProfileViewModel @Inject constructor(
 
     fun interactPost(interaction: Interaction){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            postRepository.interactPost(interaction)
+            postRepository.interactPost(interaction, loggedInUser.value.apiKey)
         }
     }
 
@@ -89,7 +92,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onFriendIconClicked(loggedInUser: User, profileUser: User){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            val link =  userRepository.toggleFriend(ToggleWrapper(senderUser = loggedInUser, recipientUser = profileUser))
+            val link =  userRepository.toggleFriend(ToggleWrapper(senderUser = loggedInUser, recipientUser = profileUser), loggedInUser.apiKey)
             if(link != null) profileUser.userLinks += link
             else{
                 profileUser.userLinks = profileUser.userLinks.filter { link -> link.userLink1.userId == profileUser.userId || link.userLink2.userId == profileUser.userId }
@@ -99,7 +102,7 @@ class ProfileViewModel @Inject constructor(
 
     fun deletePost(postId: Int){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            postRepository.deletePost(postId)
+            postRepository.deletePost(postId, loggedInUser.value.apiKey)
 
         }
         postList.value = postList.value.filter { post -> post.postId != postId }

@@ -18,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val repository: AuthRepository,
-    private val authValidationRepository: AuthValidationRepository
 ): ViewModel(){
 
     val loggedInUser: MutableState<User> = mutableStateOf(User(0))
@@ -34,10 +33,4 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    suspend fun signIn(idToken: String?) {
-        if (idToken != null) {
-           val result = authValidationRepository.validategso(idToken)
-            System.out.print(result)
-        }
-    }
 }

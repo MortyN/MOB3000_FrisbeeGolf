@@ -15,9 +15,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavAction
+import androidx.navigation.NavHostController
+import androidx.navigation.Navigation
 import com.google.android.gms.common.api.ApiException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import no.usn.mob3000_disky.MainActivity
 import no.usn.mob3000_disky.MainActivityViewModel
 import no.usn.mob3000_disky.R
 import no.usn.mob3000_disky.ui.theme.Shapes
@@ -115,7 +119,6 @@ fun loginView(
             }
 
         }
-
     }
 }
 
@@ -125,7 +128,7 @@ fun loginView(
 @ExperimentalMaterialApi
 @Composable
 fun loginScreen(
-    authViewModel: MainActivityViewModel
+    authViewModel: AuthViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     var text by remember {mutableStateOf<String?>(null)}
@@ -155,4 +158,7 @@ fun loginScreen(
             text = null
             authResultLauncher.launch(signInRequestCode)
         })
+    user?.let {
+
+    }
 }

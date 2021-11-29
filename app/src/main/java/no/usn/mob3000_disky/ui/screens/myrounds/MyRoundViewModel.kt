@@ -12,16 +12,18 @@ import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.myprofile.PostRepository
 import no.usn.mob3000_disky.repository.score_card.ScoreCardRepository
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import org.w3c.dom.Text
 import javax.inject.Inject
 
 @HiltViewModel
 class MyRoundViewModel @Inject constructor(
     private val scoreCardRepo: ScoreCardRepository,
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
 ): ViewModel() {
     val loading = mutableStateOf(false)
     val rounds: MutableState<List<ScoreCard>> = mutableStateOf(ArrayList())
+    val loggedInUser = mutableStateOf(User(0))
 
     var scoreCard = mutableStateOf(ScoreCard())
 
@@ -32,7 +34,7 @@ class MyRoundViewModel @Inject constructor(
     fun getOneScoreCard(scoreCardId: Long){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             loading.value  =  true
-            var newScoreCard = scoreCardRepo.getScoreCard(ScoreCardFilter( scoreCardId = scoreCardId))[0]
+            var newScoreCard = scoreCardRepo.getScoreCard(ScoreCardFilter( scoreCardId = scoreCardId), loggedInUser.value.apiKey)[0]
             scoreCard = mutableStateOf(newScoreCard)
             loading.value  =  false
         }
@@ -40,13 +42,13 @@ class MyRoundViewModel @Inject constructor(
 
     fun getScoreCard(loggedInUser: User){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            rounds.value =  scoreCardRepo.getScoreCard(ScoreCardFilter(loggedInUser, 0))
+            rounds.value =  scoreCardRepo.getScoreCard(ScoreCardFilter(loggedInUser, 0), loggedInUser.apiKey)
         }
     }
 
     fun shareScoreCard(loggedInUser: User, scoreCard: ScoreCard, text: String){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            postRepository.createPost(Post(message = text, scoreCard = scoreCard, user = loggedInUser, type = 2))
+            postRepository.createPost(Post(message = text, scoreCard = scoreCard, user = loggedInUser, type = 2), loggedInUser.apiKey)
         }
     }
 }

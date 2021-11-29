@@ -17,13 +17,16 @@ import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.repository.round.ArenaRepository
 import no.usn.mob3000_disky.repository.score_card.ScoreCardRepository
 import no.usn.mob3000_disky.ui.RootNavItem
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RoundViewModel @Inject constructor(
     private val arenaRepository: ArenaRepository,
-    private val scoreCardRepository: ScoreCardRepository
+    private val scoreCardRepository: ScoreCardRepository,
 ): ViewModel() {
+
+    val loggedInUser = mutableStateOf(User(0))
 
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         throwable.printStackTrace()
@@ -96,7 +99,7 @@ class RoundViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             createSCloading.value = true
 
-            val result = scoreCardRepository.createScoreCard(scoreCard = scoreCard.value)
+            val result = scoreCardRepository.createScoreCard(scoreCard = scoreCard.value, loggedInUser.value.apiKey)
 
             newScoreCard.value = result
 
@@ -110,7 +113,7 @@ class RoundViewModel @Inject constructor(
             loading.value = true
             val templist: MutableList<String> = arrayListOf()
 
-            val result = arenaRepository.getArena(arenaFilter)
+            val result = arenaRepository.getArena(arenaFilter, loggedInUser.value.apiKey)
 
             for (res in result){
                 res.arenaName.let { templist.add(it) }
