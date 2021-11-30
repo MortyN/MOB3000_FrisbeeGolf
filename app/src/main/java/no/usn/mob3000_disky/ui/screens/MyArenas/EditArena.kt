@@ -61,24 +61,16 @@ fun EditArena(
     val currentArena =
         remember { mutableStateOf(arenaViewModel.arenas.value.find { it.arenaId == arena?.arenaId }) }
 
-//    LaunchedEffect(key1 = Unit){
-//        if (arena != null) {
-//            currentArena.value = arenaViewModel.arenas.value.find { it.arenaId == arena.arenaId }
-//        }
-//    }
-
     val name = remember { mutableStateOf(TextFieldValue()) }
     val description = remember { mutableStateOf(TextFieldValue()) }
-    val arenaRounds = remember { currentArena.value?.let { mutableStateOf(it.rounds) } }
+    val arenaRounds = remember { mutableStateOf(currentArena.value?.rounds) }
 
     LaunchedEffect(key1 = Unit) {
         if (currentArena.value == null) {
-            currentArena.value = Arena()
-
+            currentArena.value = Arena(createdBy = loggedInUser)
         } else {
             name.value = currentArena.value?.let { TextFieldValue(it.arenaName) }!!
             description.value = currentArena.value?.let { TextFieldValue(it.description) }!!
-
             arenaViewModel.currentArena.value = currentArena.value!!
         }
     }
@@ -89,11 +81,9 @@ fun EditArena(
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(
-                    // Overwrites the initial value of alpha to 0.4f for fade in, 0 by default
                     initialAlpha = 0.4f
                 ),
                 exit = fadeOut(
-                    // Overwrites the default animation with tween
                     animationSpec = tween(durationMillis = 250)
                 )
             ) {
@@ -106,7 +96,6 @@ fun EditArena(
                     backgroundColor = BtnAcceptGreen,
                     contentColor = Color.White
                 ) {
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 12.dp)
@@ -115,7 +104,6 @@ fun EditArena(
                         Icon(imageVector = Icons.Default.Send, contentDescription = "")
                     }
                 }
-
             }
         },
         floatingActionButtonPosition = FabPosition.Center
@@ -176,11 +164,16 @@ fun EditArena(
                                 fontSize = 20.sp
                             )
                             IconButton(onClick = {
-                                if (arenaRounds != null) {
+                                if (arenaRounds?.value != null) {
                                     var tempList = ArrayList(arenaRounds.value)
                                     tempList += ArenaRound()
                                     arenaRounds.value = tempList
                                     currentArena.value!!.rounds = tempList
+                                } else {
+                                    var tempList = arrayListOf<ArenaRound>()
+                                    tempList += ArenaRound(createdBy = loggedInUser)
+                                    arenaRounds!!.value = tempList
+
                                 }
                             }) {
                                 Box(
@@ -196,8 +189,8 @@ fun EditArena(
                         }
                     }
                 }
-                if (arenaRounds?.value != null) {
-                    items(items = arenaRounds.value) { a ->
+                if (arenaRounds.value != null) {
+                    items(items = arenaRounds.value!!) { a ->
                         ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
                     }
                 }
@@ -205,12 +198,8 @@ fun EditArena(
                     Spacer(modifier = Modifier.size(100.dp))
                 }
             }
-
-
         }
-
     }
-
 }
 
 @Composable
