@@ -11,4 +11,5 @@
     <color name="lightgray">#EEEEEE</color>
     <color name="selected_nav_item">#0082D6</color>
     <color name="divider_gray">#D1D1D1</color>
+    <color name="green">#77cd00</color>
 </resources>

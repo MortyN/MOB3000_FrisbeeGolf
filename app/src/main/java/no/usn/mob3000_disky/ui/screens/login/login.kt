@@ -2,18 +2,18 @@ package no.usn.mob3000_disky.ui.screens.login
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ExperimentalGraphicsApi
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavAction
 import androidx.navigation.NavHostController
@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import no.usn.mob3000_disky.MainActivity
 import no.usn.mob3000_disky.MainActivityViewModel
 import no.usn.mob3000_disky.R
+import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.theme.Shapes
 
 //https://github.com/hadiyarajesh/ComposeGoogleSignIn/tree/master/app/src/main/java/com/hadiyarajesh/composegoogle
@@ -34,10 +35,10 @@ import no.usn.mob3000_disky.ui.theme.Shapes
 @Composable
 fun SignInButton(
     text: String,
-    loadingText: String = "Signing in...",
+    loadingText: String = "Logger inn...",
     icon: Painter,
     isLoading: Boolean = false,
-    shape: Shape = Shapes.medium,
+    shape: Shape = Shapes.large,
     borderColor: Color = Color.LightGray,
     backgroundColor: Color = MaterialTheme.colors.surface,
     progressIndicatorColor: Color = MaterialTheme.colors.primary,
@@ -47,7 +48,7 @@ fun SignInButton(
         modifier = Modifier.clickable(
             enabled = !isLoading,
             onClick = onClick
-        ),
+        ).padding(top = 12.dp),
         shape = shape,
         border = BorderStroke(width = 1.dp, color = borderColor),
         color = backgroundColor
@@ -85,43 +86,7 @@ fun SignInButton(
     }
 }
 
-@ExperimentalMaterialApi
-@Composable
-fun loginView(
-    errorText: String?,
-    onClick: () -> Unit
-) {
-    var isLoading by remember {
-        mutableStateOf(false)
-    }
-
-    Scaffold {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            SignInButton(
-                text = "Sign in with Google",
-                loadingText = "Signing in...",
-                isLoading = isLoading,
-                icon = painterResource(id = R.drawable.logo),
-                onClick = {
-                    isLoading = true
-                    onClick()
-                }
-            )
-
-            errorText?.let {
-                isLoading = false
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(text = it)
-            }
-
-        }
-    }
-}
-
+@ExperimentalGraphicsApi
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoroutinesApi
@@ -140,7 +105,7 @@ fun loginScreen(
             try {
                 val account = task?.getResult(ApiException::class.java)
                 if (account == null) {
-                    text = "Google sign in failed"
+                    text = "Google login feilet"
                 } else {
                     coroutineScope.launch {
                         authViewModel.signIn(
@@ -149,16 +114,80 @@ fun loginScreen(
                     }
                 }
             } catch (e: ApiException) {
-                text = "Google sign in failed"
+                text = "Google login feilet"
             }
         }
-    loginView(
-        errorText = text,
-        onClick = {
-            text = null
-            authResultLauncher.launch(signInRequestCode)
-        })
-    user?.let {
+    Scaffold (backgroundColor = Color(R.color.green) ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .background(color = Color(R.color.green)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Disky App")
+            loginView(
+                errorText = text,
+                onClick = {
+                    text = null
+                    authResultLauncher.launch(signInRequestCode)
+                },
+                onCLick2 = {
+                    text = null
+                    authResultLauncher.launch(signInRequestCode)
+                }
+            )
+        }
+    }
+}
 
+@ExperimentalGraphicsApi
+@ExperimentalMaterialApi
+@Composable
+fun loginView(
+    errorText: String?,
+    onClick: () -> Unit,
+    onCLick2: () -> Unit
+
+) {
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+
+    Scaffold (modifier = Modifier.background(Color.Green)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.hsl(84F, 0.53F, 0.50F)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SignInButton(
+                text = "Logg inn med Google",
+                loadingText = "Logger inn...",
+                isLoading = isLoading,
+                icon = painterResource(id = R.drawable.googleg_standard_color_18),
+                onClick = {
+                    isLoading = true
+                    onClick()
+                }
+            )
+            SignInButton(
+                text = "Logg inn med test bruker",
+                loadingText = "Logger inn...",
+                isLoading = isLoading,
+                icon = painterResource(id = R.drawable.googleg_standard_color_18),
+                onClick = {
+                    isLoading = true
+                    onCLick2()
+                }
+            )
+
+            errorText?.let {
+                isLoading = false
+                Spacer(modifier = Modifier.height(30.dp))
+                Text(text = it)
+            }
+
+        }
     }
 }
