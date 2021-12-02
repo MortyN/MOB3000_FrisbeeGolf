@@ -67,14 +67,6 @@ class RoundViewModel @Inject constructor(
         }
     }
 
-    fun addResultToScorecardList(scoreCardResult: ScoreCardResult){
-        val templist = scoreCard.value.members
-            .find { it.user.userId == scoreCardResult.scoreCardMember.user.userId }?.results?.toMutableList()?.plus(scoreCardResult)
-
-        scoreCard.value.members.find { it.user.userId == scoreCardResult.scoreCardMember.user.userId }?.results = templist!!
-
-    }
-
     fun setCurrentArenaRound(track: ArenaRound){
         currentArenaRound.value = track
         scoreCard.value.arenaRound = currentArenaRound.value
@@ -98,7 +90,7 @@ class RoundViewModel @Inject constructor(
     fun createScoreCard(){
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             createSCloading.value = true
-
+            scoreCard.value.createdBy = loggedInUser.value;
             val result = scoreCardRepository.createScoreCard(scoreCard = scoreCard.value, loggedInUser.value.apiKey)
 
             newScoreCard.value = result
