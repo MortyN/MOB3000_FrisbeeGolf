@@ -1,18 +1,18 @@
-name: Android CI Workflow
+name: Android CI/CD Workflow
 
 on:
   push:
     branches:
-      - release
+      - master
     tags:
-      - 'v1.0.*'
+      - 'v1.1.*'
 
 jobs:
   apk:
     name: Generate APK 
     runs-on: ubuntu-latest
     env:
-      LOCALIP: 192.168.50.240
+      LOCALIP: ${{ secrets.DISKY_SERVER_IP }}
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -21,12 +21,12 @@ jobs:
         with:
           java-version: 1.8
       - name: Build APK
-        run: bash ./gradlew assembleDebug --stacktrace
+        run: bash ./gradlew assemble --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
           name: apk
-          path: app/build/outputs/apk/debug/app-debug.apk 
+          path: app/build/outputs/apk/release/app-release.apk
   release:
     name: Release APK
     needs: apk
