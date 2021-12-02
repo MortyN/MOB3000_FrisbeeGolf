@@ -13,6 +13,6 @@ interface UserAPIService {
     suspend fun toggleFriend(@Body toggleWrapper: ToggleWrapper, @Header("token") idToken: String): UserLink
 
     @Multipart
-    @POST("update")
+    @POST("create")
     suspend fun updateUser(@Part("user") user: User, @Part image: MultipartBody.Part, @Header("token") idToken: String): User
 }

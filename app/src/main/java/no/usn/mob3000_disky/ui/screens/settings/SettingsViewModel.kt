@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import no.usn.mob3000_disky.MainActivityViewModel
 import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.repository.users.UserRepository
 import okhttp3.MediaType
@@ -21,6 +22,7 @@ class SettingsViewModel @Inject constructor(
     private val repository: UserRepository
 ): ViewModel() {
     val loggedInUser = mutableStateOf(User(0L))
+    var imgKey: String = ""
 
     private val exceptionHandler = CoroutineExceptionHandler {_, throwable ->
         throwable.printStackTrace()
@@ -29,7 +31,8 @@ class SettingsViewModel @Inject constructor(
     suspend fun updateUser(file: File) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             var requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-            repository.updateUser(loggedInUser.value, MultipartBody.Part.createFormData("image", file.getName(), requestFile), loggedInUser.value.apiKey)
+            val user = repository.updateUser(loggedInUser.value, MultipartBody.Part.createFormData("image", file.getName(), requestFile), loggedInUser.value.apiKey)
+            loggedInUser.value.imgKey = user.imgKey
         }
     }
 

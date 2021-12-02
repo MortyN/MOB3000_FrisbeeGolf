@@ -1,13 +1,30 @@
 package no.usn.mob3000_disky.ui
 
+import android.text.format.DateUtils
 import android.util.Log
+import org.ocpsoft.prettytime.PrettyTime
 import java.sql.Timestamp
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class Utils {
     companion object{
 
+        fun getTimeSince(timestamp: String): String {
+            //2021-12-01T23:57:09.000+00:00
+            val sdf = SimpleDateFormat("yyyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+            sdf.timeZone = TimeZone.getTimeZone("GMT")
+            var time = 0L
+            try {
+                time = sdf.parse(timestamp).time
+            } catch (e: ParseException) {
+                e.printStackTrace()
+            }
+
+            val prettyTime = PrettyTime(Locale.getDefault())
+            return prettyTime.format(Date(time))
+        }
 
         //2021-11-17T17:03:07.000+00:00
         fun getDate(timestamp: String): Date{
@@ -23,6 +40,7 @@ class Utils {
             var date = Date(datePart[0].toInt(),datePart[1].toInt(),datePart[2].toInt(),time[0].toInt() + 2,time[1].toInt(),time[2].toInt())
             return date
         }
+        @Deprecated("Use getTimeSince(String timeStamp) instead. Will return correct time since value based on locale")
         fun Date.getTimeAgo(): String {
             val calendar = Calendar.getInstance()
             calendar.time = this

@@ -5,4 +5,6 @@ import retrofit2.Call
 
 interface AuthValidationRepository {
     suspend fun validategso(id_token: String): User
+
+    suspend fun getTestUser(userId: Long): User
 }

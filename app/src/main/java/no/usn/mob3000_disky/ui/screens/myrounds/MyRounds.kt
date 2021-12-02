@@ -85,7 +85,7 @@ fun RoundItem(scoreCard: ScoreCard, navController: NavHostController){
                 Modifier
                     .fillMaxWidth()
             ) {
-                Text("${Utils.getDate(scoreCard.startTs).getTimeAgo()} - ${scoreCard.arenaRound?.holeAmount} hull", fontWeight = FontWeight.Light)
+                Text("${Utils.getTimeSince(scoreCard.startTs)} - ${scoreCard.arenaRound?.holeAmount} hull", fontWeight = FontWeight.Light)
             }
 
             Column(

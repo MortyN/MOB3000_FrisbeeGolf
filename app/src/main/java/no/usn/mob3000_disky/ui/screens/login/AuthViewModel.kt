@@ -36,4 +36,14 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+    fun signInTestUser(userId: Long) {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val result = repository.getTestUser(userId)
+            loggedInUser.value = result
+            if (loggedInUser.value!!.userId > 0) {
+                isLoggedIn.value = true
+            }
+        }
+    }
 }

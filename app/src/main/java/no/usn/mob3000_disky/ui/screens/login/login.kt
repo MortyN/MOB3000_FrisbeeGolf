@@ -4,16 +4,24 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ExperimentalGraphicsApi
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavAction
 import androidx.navigation.NavHostController
@@ -28,9 +36,9 @@ import no.usn.mob3000_disky.model.User
 import no.usn.mob3000_disky.ui.theme.Shapes
 
 //https://github.com/hadiyarajesh/ComposeGoogleSignIn/tree/master/app/src/main/java/com/hadiyarajesh/composegoogle
-
 //På grunn av compose brukte jeg litt hjelp av han her.
 
+@ExperimentalUnitApi
 @ExperimentalMaterialApi
 @Composable
 fun SignInButton(
@@ -39,18 +47,19 @@ fun SignInButton(
     icon: Painter,
     isLoading: Boolean = false,
     shape: Shape = Shapes.large,
-    borderColor: Color = Color.LightGray,
     backgroundColor: Color = MaterialTheme.colors.surface,
     progressIndicatorColor: Color = MaterialTheme.colors.primary,
     onClick: () -> Unit
 ) {
     Surface(
-        modifier = Modifier.clickable(
-            enabled = !isLoading,
-            onClick = onClick
-        ).padding(top = 12.dp),
+        modifier = Modifier
+            .clickable(
+                enabled = !isLoading,
+                onClick = onClick
+            )
+            .padding(top = 12.dp)
+            .clip(RoundedCornerShape(10.dp)),
         shape = shape,
-        border = BorderStroke(width = 1.dp, color = borderColor),
         color = backgroundColor
     ) {
         Row(
@@ -67,11 +76,12 @@ fun SignInButton(
             Icon(
                 painter = icon,
                 contentDescription = "SignInButton",
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
+                modifier = Modifier.clip(RoundedCornerShape(50))
             )
             Spacer(modifier = Modifier.width(8.dp))
 
-            Text(text = if (isLoading) loadingText else text)
+            Text(text = if (isLoading) loadingText else text, fontSize = TextUnit(5F, TextUnitType.Em))
             if (isLoading) {
                 Spacer(modifier = Modifier.width(16.dp))
                 CircularProgressIndicator(
@@ -86,6 +96,7 @@ fun SignInButton(
     }
 }
 
+@ExperimentalUnitApi
 @ExperimentalGraphicsApi
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
@@ -119,7 +130,8 @@ fun loginScreen(
         }
     Scaffold (backgroundColor = Color(R.color.green) ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(color = Color(R.color.green)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -133,13 +145,14 @@ fun loginScreen(
                 },
                 onCLick2 = {
                     text = null
-                    authResultLauncher.launch(signInRequestCode)
+                    authViewModel.signInTestUser(6L)
                 }
             )
         }
     }
 }
 
+@ExperimentalUnitApi
 @ExperimentalGraphicsApi
 @ExperimentalMaterialApi
 @Composable
@@ -150,6 +163,9 @@ fun loginView(
 
 ) {
     var isLoading by remember {
+        mutableStateOf(false)
+    }
+    var isLoading2 by remember {
         mutableStateOf(false)
     }
 
@@ -174,10 +190,10 @@ fun loginView(
             SignInButton(
                 text = "Logg inn med test bruker",
                 loadingText = "Logger inn...",
-                isLoading = isLoading,
-                icon = painterResource(id = R.drawable.googleg_standard_color_18),
+                isLoading = isLoading2,
+                icon = painterResource(id = R.drawable.logosmall),
                 onClick = {
-                    isLoading = true
+                    isLoading2 = true
                     onCLick2()
                 }
             )

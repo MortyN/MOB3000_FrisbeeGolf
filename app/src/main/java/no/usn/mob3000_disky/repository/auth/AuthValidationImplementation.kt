@@ -10,4 +10,8 @@ class AuthValidationImplementation constructor(
     override suspend fun validategso(id_token: String): User {
         return authValidationApi.validategso(id_token)
     }
+
+    override suspend fun getTestUser(userId: Long): User {
+        return authValidationApi.getTestUser(userId)
+    }
 }

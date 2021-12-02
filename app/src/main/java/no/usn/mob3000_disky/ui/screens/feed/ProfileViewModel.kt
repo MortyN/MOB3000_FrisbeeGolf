@@ -53,7 +53,7 @@ class ProfileViewModel @Inject constructor(
         postFilter.value = filter
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             loading.value = true
-            val result = postRepository.getFeed(filter, "230198")
+            val result = postRepository.getFeed(filter, loggedInUser.value.apiKey)
             postList.value = result
             postList.value.forEach { it -> it.sortDate = Utils.getDate(it.postedTs) }
             postList.value = postList.value.sortedByDescending { it.sortDate }

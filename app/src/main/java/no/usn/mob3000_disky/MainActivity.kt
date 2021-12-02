@@ -85,6 +85,7 @@ import no.usn.mob3000_disky.ui.theme.appName
 import android.location.LocationManager
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.ui.graphics.ExperimentalGraphicsApi
+import androidx.compose.ui.unit.ExperimentalUnitApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.maps.model.LatLng
@@ -92,6 +93,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import no.usn.mob3000_disky.ui.screens.MyArenas.ArenaHoleMapEditor
 import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
 import no.usn.mob3000_disky.ui.screens.login.loginScreen
+import no.usn.mob3000_disky.ui.screens.settings.SettingsScreen
 import no.usn.mob3000_disky.ui.screens.settings.SettingsViewModel
 import java.lang.Exception
 import kotlin.math.round
@@ -145,6 +147,7 @@ class MainActivity : ComponentActivity() {
         RootNavItem.ArenaHoleMapEditor.route
     )
 
+    @ExperimentalUnitApi
     @ExperimentalGraphicsApi
     @ExperimentalCoroutinesApi
     @ExperimentalFoundationApi
@@ -196,6 +199,7 @@ class MainActivity : ComponentActivity() {
                 friendsViewModel.loggedInUser.value = loggedInUser
                 myRoundViewModel.loggedInUser.value = loggedInUser
                 myArenaViewModel.loggedInUser.value = loggedInUser
+                settingsViewModel.loggedInUser.value = loggedInUser
 
                 Scaffold(
                     scaffoldState = scaffoldState,
@@ -725,6 +729,9 @@ fun DrawerPreview() {
                         navController
                     )
                 }
+            }
+            composable(RootNavItem.Settings.route) {
+                SettingsScreen(settingsViewModel)
             }
         }
     }

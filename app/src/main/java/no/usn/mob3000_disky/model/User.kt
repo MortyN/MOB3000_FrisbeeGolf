@@ -13,7 +13,7 @@ class User(
     val phoneNumber: String = "",
     val password: String = "",
     val apiKey: String = "",
-    val imgKey: String = "",
+    var imgKey: String = "",
     var userLinks: List<UserLink> = ArrayList<UserLink>()
     ): AutoCompleteEntity{
 
