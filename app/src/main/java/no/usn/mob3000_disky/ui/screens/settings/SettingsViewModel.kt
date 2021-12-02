@@ -22,7 +22,6 @@ class SettingsViewModel @Inject constructor(
     private val repository: UserRepository
 ): ViewModel() {
     val loggedInUser = mutableStateOf(User(0L))
-    var imgKey: String = ""
 
     private val exceptionHandler = CoroutineExceptionHandler {_, throwable ->
         throwable.printStackTrace()
