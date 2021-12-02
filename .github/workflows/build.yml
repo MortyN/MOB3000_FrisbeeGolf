@@ -1,9 +1,9 @@
-name: Android CI Workflow
+name: Android CI/CD Workflow
 
 on:
   push:
     branches:
-      - release
+      - master
     tags:
       - 'v1.1.*'
 
