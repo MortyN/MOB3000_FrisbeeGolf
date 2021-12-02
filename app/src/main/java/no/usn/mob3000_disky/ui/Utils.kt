@@ -13,7 +13,7 @@ class Utils {
 
         fun getTimeSince(timestamp: String): String {
             //2021-12-01T23:57:09.000+00:00
-            val sdf = SimpleDateFormat("yyyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
             sdf.timeZone = TimeZone.getTimeZone("GMT")
             var time = 0L
             try {
