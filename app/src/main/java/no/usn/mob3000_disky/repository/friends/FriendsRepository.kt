@@ -6,7 +6,7 @@ import no.usn.mob3000_disky.model.UserLink
 import no.usn.mob3000_disky.model.UserLinkFilter
 
 interface FriendsRepository {
-    suspend fun getFriends(filter: UserLinkFilter): List<UserLink>
+    suspend fun getFriends(filter: UserLinkFilter, idToken: String): List<UserLink>
 
-    suspend fun updateFriend(userLink: UserLink): UserLink
+    suspend fun updateFriend(userLink: UserLink, idToken: String): UserLink
 }

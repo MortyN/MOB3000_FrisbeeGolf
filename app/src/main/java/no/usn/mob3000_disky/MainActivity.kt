@@ -83,10 +83,18 @@ import no.usn.mob3000_disky.ui.theme.HeaderBlue
 import no.usn.mob3000_disky.ui.theme.SelectedBlue
 import no.usn.mob3000_disky.ui.theme.appName
 import android.location.LocationManager
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.ui.graphics.ExperimentalGraphicsApi
+import androidx.compose.ui.unit.ExperimentalUnitApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.maps.model.LatLng
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import no.usn.mob3000_disky.ui.screens.MyArenas.ArenaHoleMapEditor
+import no.usn.mob3000_disky.ui.screens.login.AuthViewModel
+import no.usn.mob3000_disky.ui.screens.login.loginScreen
+import no.usn.mob3000_disky.ui.screens.settings.SettingsScreen
+import no.usn.mob3000_disky.ui.screens.settings.SettingsViewModel
 import java.lang.Exception
 import kotlin.math.round
 
@@ -103,6 +111,8 @@ class MainActivity : ComponentActivity() {
     private val friendsViewModel: FriendsViewModel by viewModels()
     private val myRoundViewModel: MyRoundViewModel by viewModels()
     private val myArenaViewModel: MyArenaViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -115,10 +125,11 @@ class MainActivity : ComponentActivity() {
             }
             permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
                 // Only approximate location access granted.
-            } else -> {
-            // No location access granted.
+            }
+            else -> {
+                // No location access granted.
                 Toast.makeText(this@MainActivity, "DENIED", Toast.LENGTH_LONG).show()
-        }
+            }
         }
     }
 
@@ -136,20 +147,32 @@ class MainActivity : ComponentActivity() {
         RootNavItem.ArenaHoleMapEditor.route
     )
 
+    @ExperimentalUnitApi
+    @ExperimentalGraphicsApi
+    @ExperimentalCoroutinesApi
+    @ExperimentalFoundationApi
     @ExperimentalMaterialApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED)
-        {
+        if (ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
             // Permission is not granted
 
             Toast.makeText(this@MainActivity, "NOT GRANTED1", Toast.LENGTH_LONG).show()
-            locationPermissionRequest.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+            locationPermissionRequest.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
 
-        }else{
+        } else {
 
 //            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 //            fusedLocationClient.lastLocation.addOnSuccessListener {
@@ -164,71 +187,82 @@ class MainActivity : ComponentActivity() {
             val scope = rememberCoroutineScope()
             val navController = rememberNavController()
             val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val loggedInUser = mainActivityViewModel.loggedInUser.value
+            val loggedInUser = authViewModel.loggedInUser.value
 
-            LaunchedEffect(key1 = Unit) {
-                mainActivityViewModel.getLoggedInUser(110)
+            Surface(color = MaterialTheme.colors.background) {
+                loginScreen(authViewModel = authViewModel)
             }
-            Scaffold(
-                scaffoldState = scaffoldState,
+            if (authViewModel.isLoggedIn.value) {
+                myProfileViewModel.loggedInUser.value = loggedInUser
+                roundViewModel.loggedInUser.value = loggedInUser
+                userViewModel.loggedInUser.value = loggedInUser
+                friendsViewModel.loggedInUser.value = loggedInUser
+                myRoundViewModel.loggedInUser.value = loggedInUser
+                myArenaViewModel.loggedInUser.value = loggedInUser
+                settingsViewModel.loggedInUser.value = loggedInUser
 
-                topBar = {
-                    TopBarBackBtn(
-                        scope = scope,
-                        scaffoldState = scaffoldState,
-                        isMenu = !replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
-                        navController = navController
-                    )
-                },
+                Scaffold(
+                    scaffoldState = scaffoldState,
 
-                drawerBackgroundColor = Color(0xFFF5F5F5),
-                drawerGesturesEnabled =
-                !replaceTomAndBottomBar
-                    .contains(currentRoute(navController = navController))
-                    .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
+                    topBar = {
+                        TopBarBackBtn(
+                            scope = scope,
+                            scaffoldState = scaffoldState,
+                            isMenu = !replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
+                            navController = navController
+                        )
 
-                drawerContent = {
-                    Drawer(
-                        scope = scope,
-                        scaffoldState = scaffoldState,
-                        navController = navController,
-                        loggedInUser
-                    )
-                },
-                bottomBar = {
-                    BottomNavigationBar(
-                        navController,
-                        isMenu = replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
-                        currentRoute = currentRoute(navController = navController),
-                        onPreCurrentRound = {
-                            PreCurrentRoundBottomBar(
-                                roundViewModel = roundViewModel,
-                                navController = navController
-                            )
-                        },
+                    },
+
+                    drawerBackgroundColor = Color(0xFFF5F5F5),
+                    drawerGesturesEnabled =
+                    !replaceTomAndBottomBar
+                        .contains(currentRoute(navController = navController))
+                        .or(currentRoute(navController = navController) == RootNavItem.AddRound.route && !scaffoldState.drawerState.isOpen),
+
+                    drawerContent = {
+                        Drawer(
+                            scope = scope,
+                            scaffoldState = scaffoldState,
+                            navController = navController,
+                            loggedInUser
+                        )
+                    },
+                    bottomBar = {
+                        BottomNavigationBar(
+                            navController,
+                            isMenu = replaceTomAndBottomBar.contains(currentRoute(navController = navController)),
+                            currentRoute = currentRoute(navController = navController),
+                            onPreCurrentRound = {
+                                PreCurrentRoundBottomBar(
+                                    roundViewModel = roundViewModel,
+                                    navController = navController
+                                )
+                            },
 //                        onCurrentRound = {
 //                            CurrentRoundBottomBar(
 //                                roundViewModel = roundViewModel,
 //                                navController = navController
 //                            )
 //                        }
-                    )
-                }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    Navigation(
-                        navController = navController,
-                        loggedInUser = loggedInUser,
-                        scaffoldState = scaffoldState,
-                        profileViewModel = myProfileViewModel,
-                        roundViewModel = roundViewModel,
-                        userViewModel = userViewModel,
-                        friendsViewModel = friendsViewModel,
-                        myRoundViewModel = myRoundViewModel,
-                        myArenaViewModel = myArenaViewModel
-                    )
-                }
+                        )
+                    }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        Navigation(
+                            navController = navController,
+                            loggedInUser = loggedInUser,
+                            scaffoldState = scaffoldState,
+                            profileViewModel = myProfileViewModel,
+                            roundViewModel = roundViewModel,
+                            userViewModel = userViewModel,
+                            friendsViewModel = friendsViewModel,
+                            myRoundViewModel = myRoundViewModel,
+                            myArenaViewModel = myArenaViewModel
+                        )
+                    }
 
+                }
             }
         }
     }
@@ -301,6 +335,7 @@ class MainActivity : ComponentActivity() {
             contentColor = Color.White
         )
     }
+
     @Composable
     fun Drawer(
         scope: CoroutineScope,
@@ -489,7 +524,7 @@ fun DrawerPreview() {
         currentRoute: String?,
         isMenu: Boolean
     ) {
-        if(currentRoute != RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}") && isMenu) return
+        if (currentRoute != RoundNavItem.PreCurrentRound.route.plus("/{arena}/{track}") && isMenu) return
 
         val items = listOf(
             RootNavItem.Feed,
@@ -576,12 +611,12 @@ fun DrawerPreview() {
                     navArgument("refresh") { type = NavType.BoolType }
                 )
             ) {
-                    Feed(
-                        loggedInUser,
-                        profileViewModel,
-                        navController,
-                        true
-                    )
+                Feed(
+                    loggedInUser,
+                    profileViewModel,
+                    navController,
+                    true
+                )
             }
             composable(RootNavItem.MyRounds.route) {
                 MyRounds(myRoundViewModel, loggedInUser, navController)
@@ -694,6 +729,9 @@ fun DrawerPreview() {
                         navController
                     )
                 }
+            }
+            composable(RootNavItem.Settings.route) {
+                SettingsScreen(settingsViewModel)
             }
         }
     }

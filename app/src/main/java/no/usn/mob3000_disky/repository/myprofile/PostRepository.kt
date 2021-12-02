@@ -5,11 +5,11 @@ import okhttp3.ResponseBody
 
 interface PostRepository {
 
-    suspend fun getFeed(user: PostFilter): List<Post>
+    suspend fun getFeed(user: PostFilter, idToken: String): List<Post>
 
-    suspend fun createPost(post: Post): Post
+    suspend fun createPost(post: Post, idToken: String): Post
 
-    suspend fun deletePost(postId: Int): ResponseBody
+    suspend fun deletePost(postId: Int, idToken: String): ResponseBody
 
-    suspend fun interactPost(interaction: Interaction): Interaction
+    suspend fun interactPost(interaction: Interaction, idToken: String): Interaction
 }

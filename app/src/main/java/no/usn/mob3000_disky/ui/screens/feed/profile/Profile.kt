@@ -222,7 +222,7 @@ fun PostListItem(
 
                 Column(Modifier.padding(padding)) {
                     Text(post.user.firstName + " " + post.user.lastName)
-                    Text(Utils.getDate(post.postedTs).getTimeAgo())
+                    Text(Utils.getTimeSince(post.postedTs))
                 }
             }
             Column() {

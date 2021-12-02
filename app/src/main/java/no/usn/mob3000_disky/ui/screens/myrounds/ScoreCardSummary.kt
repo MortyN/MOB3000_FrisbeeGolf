@@ -54,7 +54,7 @@ fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRou
                     .fillMaxWidth()
             ) {
                 Text(
-                    "${Utils.getDate(scoreCard.value.startTs).getTimeAgo()} - ${scoreCard.value.arenaRound.holeAmount} hull",
+                    "${Utils.getTimeSince(scoreCard.value.startTs)} - ${scoreCard.value.arenaRound.holeAmount} hull",
                     fontWeight = FontWeight.Light
                 )
             }

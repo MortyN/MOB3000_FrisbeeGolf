@@ -7,15 +7,15 @@ import retrofit2.http.*
 interface PostAPIService {
 
     @POST("get")
-    suspend fun getProfileFeed(@Body user: PostFilter): List<Post>
+    suspend fun getProfileFeed(@Body user: PostFilter, @Header("token") idToken: String): List<Post>
 
     @POST("create")
-    suspend fun createFeedPost(@Body post: Post): Post
+    suspend fun createFeedPost(@Body post: Post, @Header("token") idToken: String): Post
 
     @DELETE("delete/{postId}")
-    suspend fun deleteFeedPost(@Path("postId") postId: Int): ResponseBody
+    suspend fun deleteFeedPost(@Path("postId") postId: Int, @Header("token") idToken: String): ResponseBody
 
     @POST("interact")
-    suspend fun interactPost(@Body interaction: Interaction): Interaction
+    suspend fun interactPost(@Body interaction: Interaction, @Header("token") idToken: String): Interaction
 
 }

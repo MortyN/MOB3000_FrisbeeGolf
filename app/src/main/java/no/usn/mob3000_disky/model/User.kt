@@ -12,11 +12,12 @@ class User(
     val lastName: String = "",
     val phoneNumber: String = "",
     val password: String = "",
-    val imgKey: String = "",
+    val apiKey: String = "",
+    var imgKey: String = "",
     var userLinks: List<UserLink> = ArrayList<UserLink>()
     ): AutoCompleteEntity{
 
-    constructor (userId: Long) : this(userId, "", "", "", "", "", "",  ArrayList<UserLink>()) {
+    constructor (userId: Long) : this(userId, "", "", "", "", "", "", "",  ArrayList<UserLink>()) {
         this.userId = userId
     }
 
