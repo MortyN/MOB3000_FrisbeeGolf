@@ -30,19 +30,22 @@ import no.usn.mob3000_disky.model.*
 import no.usn.mob3000_disky.ui.RootNavItem
 import no.usn.mob3000_disky.ui.Utils
 import no.usn.mob3000_disky.ui.Utils.Companion.getTimeAgo
+import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 
 @Composable
 fun ScoreCardSummary(scoreCardId: Long, loggedInUser: User, mainViewModel: MyRoundViewModel, navController: NavHostController) {
 
-    val scoreCard = remember { mutableStateOf(mainViewModel.scoreCard.value) }
+    val scoreCard = remember { mutableStateOf(ScoreCard(cardId = 0L)) }
     val loading = mainViewModel.loading.value
 
     LaunchedEffect(key1 = Unit) {
-        mainViewModel.getOneScoreCard(scoreCardId)
-    }
 
-    if (mainViewModel.scoreCard.value.cardId != 0L) {
-        scoreCard.value = mainViewModel.scoreCard.value
+        mainViewModel.getOneScoreCard(scoreCardId)
+
+    }
+    scoreCard.value = mainViewModel.scoreCard.value
+    // mainViewModel.scoreCard.value.cardId != 0L
+    if (scoreCard.value.cardId != 0L) {
 
         Column(modifier = Modifier.padding(16.dp)) {
             Row() {

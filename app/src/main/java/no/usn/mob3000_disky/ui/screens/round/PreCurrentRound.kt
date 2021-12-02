@@ -45,7 +45,8 @@ import kotlin.math.round
 @Composable
 fun SwipeableUserList(
     items: List<ScoreCardMember>,
-    dismissed: (listItem: ScoreCardMember) -> Unit
+    dismissed: (listItem: ScoreCardMember) -> Unit,
+    loggedInUser: User
 ) {
     LazyColumn {
         items(items,
@@ -55,11 +56,40 @@ fun SwipeableUserList(
             if (dismissState.isDismissed(EndToStart)){
                 dismissed(item)
             }
+            if(item.user.userId == loggedInUser.userId){
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RectangleShape,
+                    elevation = animateDpAsState(
+                        if (dismissState.dismissDirection != null) 4.dp else 0.dp
+                    ).value
+                ) {
+                    Divider(color = Color.LightGray,modifier = Modifier
+                        .fillMaxWidth()
+                        .width(1.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
+                        Image(
+                            painter = rememberImagePainter(
+                                APIUtils.s3LinkParser(item.user.imgKey),
+                                builder = {
+                                    crossfade(true)
+                                    placeholder(R.drawable.ic_profile)
+                                    scale(coil.size.Scale.FILL)
+                                    transformations(CircleCropTransformation())
+                                    error(R.drawable.ic_profile)
+                                }
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(50.dp)
+                        )
+                        Text(text = "${item.user.firstName} ${item.user.lastName}")
+                    }
+                }
+            }else{
             SwipeToDismiss(
                 state = dismissState,
-                modifier = Modifier
-//                    .padding(vertical = 4.dp),
-                ,
                 directions = setOf(EndToStart),
                 background = {
                     val scale by animateFloatAsState(
@@ -90,7 +120,7 @@ fun SwipeableUserList(
                         Divider(color = Color.LightGray,modifier = Modifier
                             .fillMaxWidth()
                             .width(1.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 4.dp)) {
                             Image(
                                 painter = rememberImagePainter(
                                     APIUtils.s3LinkParser(item.user.imgKey),
@@ -104,14 +134,15 @@ fun SwipeableUserList(
                                 ),
                                 contentDescription = "",
                                 modifier = Modifier
-                                    .height(60.dp)
-                                    .width(60.dp)
+                                    .height(50.dp)
+                                    .width(50.dp).padding(vertical = 2.dp)
                             )
                             Text(text = "${item.user.firstName} ${item.user.lastName}")
                         }
                     }
                 }
             )
+            }
         }
     }
 }
@@ -154,6 +185,9 @@ fun PreCurrentRound(
         roundViewModel.setCurrentArenaRound(track)
         userViewModel.getUserList(UserFilter(null))
         roundViewModel.scoreCard.value.arenaRound = track
+        if(scorecardmembers.find { it.user.userId == loggedInUser.userId } == null){
+            roundViewModel.addSelectedScoreCardMember(ScoreCardMember(user = roundViewModel.loggedInUser.value))
+        }
     }
 
     val addPlayerClicked = remember{ mutableStateOf(false) }
@@ -278,7 +312,7 @@ fun PreCurrentRound(
                 SwipeableUserList(scorecardmembers, dismissed = { userItem ->
                         userViewModel.addUserToList(userItem.user)
                         roundViewModel.removeSelectedScoreCardMember(userItem)
-                })
+                }, roundViewModel.loggedInUser.value)
 
         }
     }
