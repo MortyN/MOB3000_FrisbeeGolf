@@ -1,5 +1,6 @@
 package no.usn.mob3000_disky.ui.screens.round
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -25,10 +26,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import no.usn.mob3000_disky.R
 import coil.transform.CircleCropTransformation
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.libraries.maps.CameraUpdateFactory
 import com.google.android.libraries.maps.model.BitmapDescriptorFactory
 import com.google.android.libraries.maps.model.LatLng
@@ -56,13 +59,19 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
     var currentRoundHole = roundViewModel.currentRoundHole.value
 
     var distance = FloatArray(1)
+
     android.location.Location.distanceBetween(currentRoundHole.startLatitude.toDouble(), currentRoundHole.startLongitude.toDouble(),currentRoundHole.endLatitude.toDouble(), currentRoundHole.endLongitude.toDouble(), distance)
 
     val density = LocalDensity.current
+
     LaunchedEffect(roundViewModel.newScoreCard.value.cardId){
+
         if(roundViewModel.newScoreCard.value.cardId != 0L){
             val scoreCardJson = Gson().toJson(roundViewModel.newScoreCard.value.cardId)
-            navController.navigate(RootNavItem.ScoreCardSummary.route.plus("/$scoreCardJson"))
+            roundViewModel.newScoreCard.value = ScoreCard(cardId = 0L)
+            navController.navigate(RootNavItem.ScoreCardSummary.route.plus("/$scoreCardJson")){
+                popUpTo(RoundNavItem.AddRound.route)
+            }
         }
     }
 
@@ -82,6 +91,8 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
             ) {
                 FloatingActionButton(onClick = {
                     roundViewModel.createScoreCard()
+
+
                 }, modifier = Modifier.padding(10.dp), backgroundColor = BtnAcceptGreen, contentColor = Color.White){
 
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
@@ -125,8 +136,11 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
             }
         }
     }
+
+
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 fun ShowArenaHoleMap(modifier: Modifier = Modifier, arenaRoundHole: ArenaRoundHole) {
     val mapView = rememberMapViewWithLifeCycle()
@@ -140,6 +154,7 @@ fun ShowArenaHoleMap(modifier: Modifier = Modifier, arenaRoundHole: ArenaRoundHo
             CoroutineScope(Dispatchers.Main).launch {
                 val map = mapView.awaitMap()
                 map.clear()
+                map.isMyLocationEnabled = true
                 map.uiSettings.isZoomControlsEnabled = true
 
                 val holeStart =  LatLng(arenaRoundHole.startLatitude, arenaRoundHole.startLongitude)

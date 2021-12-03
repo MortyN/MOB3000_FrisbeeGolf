@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import com.google.android.libraries.maps.model.LatLng
 import com.google.gson.Gson
@@ -32,6 +33,9 @@ class RoundViewModel @Inject constructor(
         throwable.printStackTrace()
     }
 
+    var isCardFinished = mutableStateOf(false)
+        private set
+
     val arenaList: MutableState<List<Arena>> = mutableStateOf(ArrayList())
     val arenaStrList: MutableState<List<String>> = mutableStateOf(ArrayList())
 
@@ -39,9 +43,9 @@ class RoundViewModel @Inject constructor(
         private set
 
     var selectedScoreCardMembers = mutableStateListOf<ScoreCardMember>()
-        private set
 
-    var scoreCard = mutableStateOf(ScoreCard())
+
+    var scoreCard = mutableStateOf(ScoreCard(cardId = 0L))
         private set
 
     var newScoreCard = mutableStateOf(ScoreCard())
@@ -96,7 +100,7 @@ class RoundViewModel @Inject constructor(
             newScoreCard.value = result
 
             createSCloading.value = false
-
+            isCardFinished.value = true
         }
     }
 

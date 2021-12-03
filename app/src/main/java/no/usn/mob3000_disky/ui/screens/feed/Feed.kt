@@ -39,15 +39,15 @@ fun Feed(loggedInUser: User, mainViewModel: ProfileViewModel, navController: Nav
 
     val filter = PostFilter(loggedInUser, true, false)
     val previousFilter = mainViewModel.postFilter.value;
-    var refreshList = isRefresh
+
 
     LaunchedEffect(key1 = Unit) {
-        if(refreshList || previousFilter.user.userId != filter.user.userId
+        if(navController.previousBackStackEntry?.destination?.route == RootNavItem.ScoreCardPost.route.plus("/{scoreCard}") || previousFilter.user.userId != filter.user.userId
             || previousFilter.getFromConnections !== filter.getFromConnections
             || previousFilter.getUserLinks !== filter.getUserLinks)
         {
             mainViewModel.getPosts(filter)
-            refreshList = false
+
         }
     }
 

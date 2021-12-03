@@ -39,7 +39,7 @@ import no.usn.mob3000_disky.ui.RootNavItem
                 onClick = {
                     mainViewModel.shareScoreCard(loggedInUser, scoreCard, textState.value.text)
 
-                    navController.navigate(RootNavItem.Feed.route.plus("/true"))
+                    navController.navigate(RootNavItem.Feed.route)
                 },
                 modifier = Modifier.padding(top = 20.dp)
             ) {

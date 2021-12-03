@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaFilter
+import no.usn.mob3000_disky.model.ScoreCard
+import no.usn.mob3000_disky.model.ScoreCardMember
 import no.usn.mob3000_disky.ui.components.searchbar.AutoCompleteArena
 
 
@@ -45,6 +49,11 @@ fun AddRound(mainViewModel: RoundViewModel, navController: NavHostController) {
     val resultsArenaList = mainViewModel.arenaList.value
     val results = mainViewModel.arenaStrList.value
     val loading = mainViewModel.loading.value
+
+    LaunchedEffect(key1 = Unit){
+        mainViewModel.scoreCard.value = ScoreCard(cardId = 0L)
+        mainViewModel.selectedScoreCardMembers = mutableStateListOf()
+    }
 
     if (resultsArenaList.isEmpty() && !loading) {
         mainViewModel.getArena(
