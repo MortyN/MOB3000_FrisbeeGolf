@@ -68,6 +68,7 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
 
         if(roundViewModel.newScoreCard.value.cardId != 0L){
             val scoreCardJson = Gson().toJson(roundViewModel.newScoreCard.value.cardId)
+            roundViewModel.newScoreCard.value = ScoreCard(cardId = 0L)
             navController.navigate(RootNavItem.ScoreCardSummary.route.plus("/$scoreCardJson")){
                 popUpTo(RoundNavItem.AddRound.route)
             }
@@ -135,6 +136,8 @@ fun CurrentRound(roundViewModel: RoundViewModel, navController: NavHostControlle
             }
         }
     }
+
+
 }
 
 @SuppressLint("MissingPermission")

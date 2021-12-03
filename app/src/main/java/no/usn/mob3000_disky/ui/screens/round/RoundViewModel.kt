@@ -43,7 +43,7 @@ class RoundViewModel @Inject constructor(
         private set
 
     var selectedScoreCardMembers = mutableStateListOf<ScoreCardMember>()
-        private set
+
 
     var scoreCard = mutableStateOf(ScoreCard(cardId = 0L))
         private set
