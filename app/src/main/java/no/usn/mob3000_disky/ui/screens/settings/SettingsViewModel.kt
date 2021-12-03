@@ -24,9 +24,10 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val repository: UserRepository
 ): ViewModel() {
-    val name = mutableStateOf(TextFieldValue(""))
     var imgFile = mutableStateOf(File(""))
     val loggedInUser = mutableStateOf(User(0L))
+    val firstName = mutableStateOf(TextFieldValue(loggedInUser.value.firstName))
+    val lastName = mutableStateOf(TextFieldValue(loggedInUser.value.lastName))
 
     private val exceptionHandler = CoroutineExceptionHandler {_, throwable ->
         throwable.printStackTrace()
@@ -34,12 +35,24 @@ class SettingsViewModel @Inject constructor(
 
     suspend fun updateUser(file: File) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            var requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-            if (name.value.text.isNotEmpty()) {
-                loggedInUser.value.firstName = name.value.text
+            lateinit var user: User
+            val requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+
+            if (firstName.value.text.isNotEmpty()) {
+                loggedInUser.value.firstName = firstName.value.text
             }
-            val user = repository.updateUser(loggedInUser.value, MultipartBody.Part.createFormData("image", file.getName(), requestFile), loggedInUser.value.apiKey)
+
+            if (lastName.value.text.isNotEmpty()) {
+                loggedInUser.value.lastName = lastName.value.text
+            }
+            user = if (file.isFile) {
+                repository.updateUser(loggedInUser.value, MultipartBody.Part.createFormData("image", file.getName(), requestFile), loggedInUser.value.apiKey)
+            } else {
+                repository.updateUserNoImage(loggedInUser.value, loggedInUser.value.apiKey)
+            }
             loggedInUser.value.imgKey = user.imgKey
+            loggedInUser.value.firstName = user.firstName
+            loggedInUser.value.lastName = user.lastName
         }
     }
 
