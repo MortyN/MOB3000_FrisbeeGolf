@@ -8,7 +8,7 @@ import java.util.*
 class User(
     var userId: Long,
     val userName: String = "",
-    val firstName: String = "",
+    var firstName: String = "",
     val lastName: String = "",
     val phoneNumber: String = "",
     val password: String = "",
