@@ -54,26 +54,20 @@ import no.usn.mob3000_disky.ui.theme.SelectedBlue
 @Composable
 fun EditArena(
     loggedInUser: User,
-    arena: Arena?,
     arenaViewModel: MyArenaViewModel,
     navController: NavHostController
 ) {
-    val currentArena =
-        remember { mutableStateOf(arenaViewModel.arenas.value.find { it.arenaId == arena?.arenaId }) }
+    val currentArena = arenaViewModel.currentArena
 
     val name = remember { mutableStateOf(TextFieldValue()) }
     val description = remember { mutableStateOf(TextFieldValue()) }
-    val arenaRounds = remember { mutableStateOf(currentArena.value?.rounds) }
+    val arenaRounds = remember { mutableStateOf(currentArena.value.rounds) }
 
     LaunchedEffect(key1 = Unit) {
-        if (currentArena.value == null) {
-            currentArena.value = Arena(createdBy = loggedInUser)
-        } else {
-            name.value = currentArena.value?.let { TextFieldValue(it.arenaName) }!!
-            description.value = currentArena.value?.let { TextFieldValue(it.description) }!!
-            arenaViewModel.currentArena.value = currentArena.value!!
-        }
+            name.value = TextFieldValue(currentArena.value.arenaName)
+            description.value = TextFieldValue(currentArena.value.description)
     }
+
 
     Scaffold(
         modifier = Modifier.fillMaxHeight(),
@@ -89,7 +83,7 @@ fun EditArena(
             ) {
                 FloatingActionButton(
                     onClick = {
-                        arenaViewModel.saveArena(currentArena.value!!)
+                        arenaViewModel.saveArena(currentArena.value)
 
                     },
                     modifier = Modifier.padding(10.dp),
@@ -110,15 +104,12 @@ fun EditArena(
     ) {
 
         Column() {
-            if (arena != null) {
-                ArenaMap(
-                    arena,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    arenaViewModel = arenaViewModel
-                )
-            }
-
+            ArenaMap(
+                currentArena.value,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                arenaViewModel = arenaViewModel
+            )
 
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -133,7 +124,7 @@ fun EditArena(
                             value = name.value,
                             onValueChange = {
                                 name.value = it
-                                currentArena.value!!.arenaName = it.text
+                                currentArena.value.arenaName = it.text
                             },
                             modifier = Modifier
                                 .padding(top = 30.dp)
@@ -145,7 +136,7 @@ fun EditArena(
                             value = description.value,
                             onValueChange = {
                                 description.value = it
-                                currentArena.value!!.description = it.text
+                                currentArena.value.description = it.text
                             },
                             modifier = Modifier
                                 .height(150.dp)
@@ -164,17 +155,10 @@ fun EditArena(
                                 fontSize = 20.sp
                             )
                             IconButton(onClick = {
-                                if (arenaRounds?.value != null) {
                                     var tempList = ArrayList(arenaRounds.value)
-                                    tempList += ArenaRound()
-                                    arenaRounds.value = tempList
-                                    currentArena.value!!.rounds = tempList
-                                } else {
-                                    var tempList = arrayListOf<ArenaRound>()
                                     tempList += ArenaRound(createdBy = loggedInUser)
-                                    arenaRounds!!.value = tempList
-
-                                }
+                                    arenaRounds.value = tempList
+                                    currentArena.value.rounds = tempList
                             }) {
                                 Box(
                                     modifier = Modifier
@@ -189,10 +173,8 @@ fun EditArena(
                         }
                     }
                 }
-                if (arenaRounds.value != null) {
-                    items(items = arenaRounds.value!!) { a ->
-                        ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
-                    }
+                items(items = arenaRounds.value!!) { a ->
+                    ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
                 }
                 item {
                     Spacer(modifier = Modifier.size(100.dp))
@@ -500,6 +482,8 @@ fun ArenaMap(arena: Arena, modifier: Modifier, arenaViewModel: MyArenaViewModel)
                     fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                     fusedLocationClient.lastLocation.addOnSuccessListener {
                         latLngArena.value = LatLng(it.latitude, it.longitude)
+                        arenaViewModel.currentArena.value.latitude =  it.latitude
+                        arenaViewModel.currentArena.value.longitude = it.longitude
                         markerOptions.position(LatLng(it.latitude, it.longitude)).draggable(true)
                         map.addMarker(markerOptions)
                         map.moveCamera(
@@ -531,6 +515,8 @@ fun ArenaMap(arena: Arena, modifier: Modifier, arenaViewModel: MyArenaViewModel)
                                 markerDragEnd.position.latitude,
                                 markerDragEnd.position.longitude
                             )
+                            arenaViewModel.currentArena.value.latitude =  markerDragEnd.position.latitude
+                            arenaViewModel.currentArena.value.longitude = markerDragEnd.position.longitude
                             arenaViewModel.currentDroppedMarkerLocation.value = latLngArena.value
                         }
                     }

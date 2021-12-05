@@ -143,7 +143,7 @@ class MainActivity : ComponentActivity() {
         RootNavItem.Friends.route,
         RootNavItem.Profile.route.plus("/{user}"),
         RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),
-        RootNavItem.EditArena.route.plus("/{arena}"),
+        RootNavItem.EditArena.route,
         RootNavItem.ArenaHoleMapEditor.route
     )
 
@@ -673,27 +673,9 @@ fun DrawerPreview() {
                 }
             }
 
-            composable(RootNavItem.EditArena.route.plus("/{arena}"),
-                arguments = listOf(
-                    navArgument("arena") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                backStackEntry?.arguments?.getString("arena")?.let { json ->
-                    val arena = Gson().fromJson(json, Arena::class.java)
-                    EditArena(
-                        loggedInUser,
-                        arena,
-                        myArenaViewModel,
-                        navController
-
-                    )
-                }
-            }
-
             composable(RootNavItem.EditArena.route) {
                 EditArena(
                     loggedInUser,
-                    null,
                     myArenaViewModel,
                     navController
                 )

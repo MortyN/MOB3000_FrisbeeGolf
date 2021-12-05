@@ -39,6 +39,7 @@ fun MyArenas(loggedInUser: User, mainViewModel: MyArenaViewModel, navController:
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    mainViewModel.currentArena.value = Arena(createdBy = loggedInUser)
                     navController.navigate(RootNavItem.EditArena.route)
                 },
                 backgroundColor = Color.Blue,
@@ -64,20 +65,20 @@ fun MyArenas(loggedInUser: User, mainViewModel: MyArenaViewModel, navController:
                 .padding(16.dp, 70.dp)
         ) {
             items(items = arenas) { a ->
-                ArenaListItem(a, navController)
+                ArenaListItem(a, navController,mainViewModel)
             }
         }
     }
 }
 
 @Composable
-fun ArenaListItem(arena: Arena, navController: NavHostController){
+fun ArenaListItem(arena: Arena, navController: NavHostController, mainViewModel: MyArenaViewModel){
     Card(elevation = 4.dp,
         modifier = Modifier
             .padding(top = 10.dp)
             .clickable {
-                val arenaJson = Gson().toJson(arena)
-                navController.navigate(RootNavItem.EditArena.route.plus("/$arenaJson"))
+                mainViewModel.currentArena.value = arena
+                navController.navigate(RootNavItem.EditArena.route)
             }
         ) {
 
