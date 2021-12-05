@@ -26,4 +26,8 @@ class UserImplementation
         return userAPI.updateUser(user, image, idToken)
     }
 
+    override suspend fun updateUserNoImage(user: User, idToken: String): User {
+        return userAPI.updateUserNoImage(user, idToken)
+    }
+
 }

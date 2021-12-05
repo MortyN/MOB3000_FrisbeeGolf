@@ -15,4 +15,8 @@ interface UserAPIService {
     @Multipart
     @POST("create")
     suspend fun updateUser(@Part("user") user: User, @Part image: MultipartBody.Part, @Header("token") idToken: String): User
+
+    @Multipart
+    @POST("create")
+    suspend fun updateUserNoImage(@Part("user") user: User, @Header("token") idToken: String): User
 }
