@@ -14,4 +14,6 @@ interface UserRepository {
 
     suspend fun updateUser(user: User, image: MultipartBody.Part, idToken: String): User
 
+    suspend fun updateUserNoImage(user: User, idToken: String): User
+
 }

@@ -35,6 +35,7 @@ android {
 
         debug {
             buildConfigField "String", "API_IP_ADDRESS", "\"$System.env.LOCALIP\""
+            signingConfig signingConfigs.release
         }
 
         release {
