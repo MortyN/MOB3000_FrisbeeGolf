@@ -10,22 +10,20 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
 import no.usn.mob3000_disky.model.Arena
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteBox
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteSearchBarTag
+import no.usn.mob3000_disky.ui.components.searchbox.SearchBox
 import no.usn.mob3000_disky.ui.screens.round.nav.RoundNavItem
 
 @ExperimentalAnimationApi
 @Composable
-fun AutoCompleteArena(arenas: List<Arena>, navController: NavHostController) {
-    AutoCompleteBox(
+fun ArenaSearchBox(arenas: List<Arena>, navController: NavHostController) {
+    SearchBox(
         items = arenas,
         itemContent = { arena ->
-            ArenaAutoCompleteItem(arena)
+            ArenaSearchBoxItem(arena)
         }
     ) {
         var value by remember { mutableStateOf("") }
@@ -40,7 +38,7 @@ fun AutoCompleteArena(arenas: List<Arena>, navController: NavHostController) {
         }
 
         TextSearchBar(
-            modifier = Modifier.testTag(AutoCompleteSearchBarTag),
+            modifier = Modifier,
             value = value,
             label = "Søk etter arena",
             onDoneActionClick = {
@@ -63,7 +61,7 @@ fun AutoCompleteArena(arenas: List<Arena>, navController: NavHostController) {
 }
 
 @Composable
-fun ArenaAutoCompleteItem(arena: Arena) {
+fun ArenaSearchBoxItem(arena: Arena) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

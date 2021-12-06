@@ -1,4 +1,4 @@
-package no.usn.mob3000_disky.ui.components.autocomplete
+package no.usn.mob3000_disky.ui.components.searchbox
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -20,29 +20,28 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
-const val AutoCompleteBoxTag = "AutoCompleteBox"
-
 @ExperimentalAnimationApi
 @Composable
-fun <T : AutoCompleteEntity> AutoCompleteBox(
+fun <T : SearchBoxEntityInterface> SearchBox(
     items: List<T>,
     itemContent: @Composable (T) -> Unit,
-    content: @Composable AutoCompleteScope<T>.() -> Unit
+    content: @Composable SearchBoxScope<T>.() -> Unit
 ) {
-    val autoCompleteState = remember { AutoCompleteState(startItems = items) }
+    val searchBoxState = remember { SearchBoxState(startItems = items) }
 
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        autoCompleteState.content()
-        AnimatedVisibility(visible = autoCompleteState.isSearching) {
+        searchBoxState.content()
+        AnimatedVisibility(visible = searchBoxState.isSearching) {
             LazyColumn(
-                modifier = Modifier.autoComplete(autoCompleteState),
+                //applying base modifier
+                modifier = Modifier.autoComplete(searchBoxState),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(autoCompleteState.filteredItems) { item ->
-                    Box(modifier = Modifier.clickable { autoCompleteState.selectItem(item) }) {
+                items(searchBoxState.filteredItems) { item ->
+                    Box(modifier = Modifier.clickable { searchBoxState.selectItem(item) }) {
                         itemContent(item)
                     }
                 }
@@ -51,19 +50,19 @@ fun <T : AutoCompleteEntity> AutoCompleteBox(
     }
 }
 
+//base modifier for all future references
 private fun Modifier.autoComplete(
-    autoCompleteItemScope: AutoCompleteDesignScope
+    searchBoxItemScope: SearchBoxDesignScope
 ): Modifier = composed {
-    val baseModifier = if (autoCompleteItemScope.shouldWrapContentHeight)
+    val baseModifier = if (searchBoxItemScope.shouldWrapContentHeight)
         wrapContentHeight()
     else
-        heightIn(0.dp, autoCompleteItemScope.boxMaxHeight)
+        heightIn(0.dp, searchBoxItemScope.boxMaxHeight)
 
     baseModifier
-        .testTag(AutoCompleteBoxTag)
-        .fillMaxWidth(autoCompleteItemScope.boxWidthPercentage)
+        .fillMaxWidth(searchBoxItemScope.boxWidthPercentage)
         .border(
-            border = autoCompleteItemScope.boxBorderStroke,
-            shape = autoCompleteItemScope.boxShape
+            border = searchBoxItemScope.boxBorderStroke,
+            shape = searchBoxItemScope.boxShape
         )
 }

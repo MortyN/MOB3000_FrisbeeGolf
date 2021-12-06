@@ -7,26 +7,23 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import no.usn.mob3000_disky.model.User
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteBox
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteSearchBarTag
-import no.usn.mob3000_disky.ui.screens.round.RoundViewModel
+import no.usn.mob3000_disky.ui.components.searchbox.SearchBox
 
 
 @ExperimentalAnimationApi
 @Composable
 fun UserObjectSearchBox(users: List<User>, onItemSelected: (User) -> Unit) {
 
-    AutoCompleteBox(
+    SearchBox(
         items = users,
         itemContent = { user ->
             UserAutoCompleteItem(user)
         }
     ) {
-        var value by remember { mutableStateOf("") }
         val view = LocalView.current
+        var value by remember { mutableStateOf("") }
 
         onItemSelected { user ->
             value = user.firstName
@@ -36,9 +33,9 @@ fun UserObjectSearchBox(users: List<User>, onItemSelected: (User) -> Unit) {
         }
 
         TextSearchBar(
-            modifier = Modifier.testTag(AutoCompleteSearchBarTag),
-            value = value,
+            modifier = Modifier,
             label = "Søk etter bruker",
+            value = value,
             onDoneActionClick = {
                 view.clearFocus()
             },
