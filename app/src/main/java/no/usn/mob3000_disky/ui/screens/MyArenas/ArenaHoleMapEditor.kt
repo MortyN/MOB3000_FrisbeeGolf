@@ -1,7 +1,6 @@
 package no.usn.mob3000_disky.ui.screens.MyArenas
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -11,10 +10,7 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.libraries.maps.CameraUpdateFactory
 import com.google.android.libraries.maps.GoogleMap
@@ -40,7 +36,6 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
     val endLatLngHole = remember { mutableStateOf(LatLng(currentHole.endLatitude, currentHole.endLongitude)) }
 
     val mapView = rememberMapViewWithLifeCycle()
-    val context = LocalContext.current
 
     val startDragMarker = remember { mutableStateOf(
         if(currentHole.startLatitude == 0.0){
@@ -50,10 +45,10 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
         }
     ) }
     val endDragMarker = remember { mutableStateOf(
-        if(currentHole.startLatitude == 0.0){
+        if(currentHole.endLatitude == 0.0){
             LatLng(currentArena.latitude.minus(0.001), currentArena.longitude)
         }else{
-            LatLng(currentHole.startLatitude, currentHole.startLongitude)
+            LatLng(currentHole.endLatitude, currentHole.endLongitude)
         }
     ) }
 
@@ -98,9 +93,11 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
                 map.isMyLocationEnabled = true
 
                 if(startLatLngHole.value.latitude == 0.0 && endLatLngHole.value.latitude == 0.0){
-                    markerOptionsStart.position(LatLng(currentArena.latitude.minus(0.001), currentArena.longitude))
-                    markerOptionsEnd.position(LatLng(currentArena.latitude.minus(0.001), currentArena.longitude.minus(0.001)))
-                }else{
+                    startLatLngHole.value = LatLng(currentArena.latitude.minus(0.001), currentArena.longitude)
+                    endLatLngHole.value = LatLng(currentArena.latitude.minus(0.001), currentArena.longitude.minus(0.001))
+                    markerOptionsStart.position(startLatLngHole.value)
+                    markerOptionsEnd.position(endLatLngHole.value)
+               }else{
                     markerOptionsStart.position(startLatLngHole.value).draggable(true)
                     markerOptionsEnd.position(endLatLngHole.value).draggable(true)
                 }
@@ -114,7 +111,6 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
                     )
                 ).color = Color(85, 85, 85, 255).hashCode()
 
-
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(startLatLngHole.value, 15f))
 
                 val markerDragListener: GoogleMap.OnMarkerDragListener =
@@ -124,20 +120,20 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
                         override fun onMarkerDrag(p0: Marker?) {
 
                         }
-                        //TODO fix positioning
-                        override fun onMarkerDragEnd(markerDragEnd: Marker?) {
-                            when(markerDragEnd?.tag){
+
+                        override fun onMarkerDragEnd(draggedMarker: Marker?) {
+                            when(draggedMarker?.tag){
                                 MARKER_STARTTAG -> {
-                                    startDragMarker.value = markerDragEnd.position
+                                    startDragMarker.value = draggedMarker.position
                                     map.clear()
-                                    markerOptionsStart.position(markerDragEnd.position).draggable(true)
-                                    markerOptionsEnd.position(endLatLngHole.value).draggable(true)
+                                    markerOptionsStart.position(draggedMarker.position).draggable(true)
+                                    markerOptionsEnd.position(endDragMarker.value).draggable(true)
                                 }
                                 MARKER_ENDTAG -> {
-                                    endDragMarker.value = markerDragEnd.position
+                                    endDragMarker.value = draggedMarker.position
                                     map.clear()
-                                    markerOptionsEnd.position(markerDragEnd.position).draggable(true)
-                                    markerOptionsStart.position(startLatLngHole.value).draggable(true)
+                                    markerOptionsEnd.position(draggedMarker.position).draggable(true)
+                                    markerOptionsStart.position(startDragMarker.value).draggable(true)
                                 }
                             }
                             map.addMarker(markerOptionsStart).tag = MARKER_STARTTAG

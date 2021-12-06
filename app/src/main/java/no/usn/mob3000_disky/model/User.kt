@@ -8,7 +8,7 @@ class User(
     var userId: Long,
     val userName: String = "",
     var firstName: String = "",
-    val lastName: String = "",
+    var lastName: String = "",
     val phoneNumber: String = "",
     val password: String = "",
     val apiKey: String = "",
