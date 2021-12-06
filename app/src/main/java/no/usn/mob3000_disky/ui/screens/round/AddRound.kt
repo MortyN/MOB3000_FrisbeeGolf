@@ -17,8 +17,7 @@ import androidx.navigation.NavHostController
 import no.usn.mob3000_disky.model.Arena
 import no.usn.mob3000_disky.model.ArenaFilter
 import no.usn.mob3000_disky.model.ScoreCard
-import no.usn.mob3000_disky.model.ScoreCardMember
-import no.usn.mob3000_disky.ui.components.searchbar.AutoCompleteArena
+import no.usn.mob3000_disky.ui.components.searchbar.ArenaSearchBox
 
 
 @ExperimentalAnimationApi
@@ -72,7 +71,7 @@ fun AddRound(mainViewModel: RoundViewModel, navController: NavHostController) {
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(0.dp, 0.dp, 0.dp, 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                AutoCompleteArena(arenas = resultsArenaList, navController = navController)
+                ArenaSearchBox(arenas = resultsArenaList, navController = navController)
 //                ArenaSearchBox(items = results, navController = navController)
             }
             AddArenaMap(modifier = Modifier

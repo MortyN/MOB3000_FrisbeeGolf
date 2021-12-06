@@ -1,8 +1,7 @@
 package no.usn.mob3000_disky.model
 
 import com.google.gson.annotations.SerializedName
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteEntity
-import java.sql.Timestamp
+import no.usn.mob3000_disky.ui.components.searchbox.SearchBoxEntityInterface
 import java.util.*
 
 class User(
@@ -15,7 +14,7 @@ class User(
     val apiKey: String = "",
     var imgKey: String = "",
     var userLinks: List<UserLink> = ArrayList<UserLink>()
-    ): AutoCompleteEntity{
+    ): SearchBoxEntityInterface{
 
     constructor (userId: Long) : this(userId, "", "", "", "", "", "", "",  ArrayList<UserLink>()) {
         this.userId = userId

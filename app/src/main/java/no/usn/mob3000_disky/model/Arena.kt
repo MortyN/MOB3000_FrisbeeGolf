@@ -1,8 +1,7 @@
 package no.usn.mob3000_disky.model
 
 import com.google.gson.annotations.SerializedName
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteEntity
-import java.sql.Timestamp
+import no.usn.mob3000_disky.ui.components.searchbox.SearchBoxEntityInterface
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -18,7 +17,7 @@ class Arena (
     var longitude: Double = 0.0,
     var rounds: List<ArenaRound> = ArrayList(),
     var active: Boolean = false
-        ):AutoCompleteEntity {
+        ):SearchBoxEntityInterface {
 
     constructor (arenaId: Long) : this() {
         this.arenaId = arenaId

@@ -10,27 +10,24 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteBox
-import no.usn.mob3000_disky.ui.components.autocomplete.AutoCompleteSearchBarTag
-import no.usn.mob3000_disky.ui.components.autocomplete.asAutoCompleteEntities
+import no.usn.mob3000_disky.ui.components.searchbox.SearchBox
+import no.usn.mob3000_disky.ui.components.searchbox.asSearchBoxAutoCompleteEntities
 import java.util.*
 
 @ExperimentalAnimationApi
 @Composable
 fun ArenaSearchBox(items: List<String>, navController: NavHostController) {
 
-    val autoCompleteEntities = items.asAutoCompleteEntities(
+    val autoCompleteEntities = items.asSearchBoxAutoCompleteEntities(
         filter = { item, query ->
             item.lowercase(Locale.getDefault())
                 .startsWith(query.lowercase(Locale.getDefault()))
         }
     )
 
-    AutoCompleteBox(
+    SearchBox(
         items = autoCompleteEntities,
         itemContent = { item ->
             ValueAutoCompleteItem(item.value)
@@ -47,7 +44,7 @@ fun ArenaSearchBox(items: List<String>, navController: NavHostController) {
         }
 
         TextSearchBar(
-            modifier = Modifier.testTag(AutoCompleteSearchBarTag),
+            modifier = Modifier,
             value = value,
             label = "Search by value",
             onDoneActionClick = {

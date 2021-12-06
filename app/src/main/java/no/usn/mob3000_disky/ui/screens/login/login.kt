@@ -145,7 +145,7 @@ fun loginScreen(
                 },
                 onCLick2 = {
                     text = null
-                    authViewModel.signInTestUser(6L)
+                    authViewModel.signInTestUser(110)
                 }
             )
         }
