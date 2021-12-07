@@ -682,7 +682,7 @@ fun DrawerPreview() {
             }
 
             composable(RootNavItem.ArenaHoleMapEditor.route) {
-                ArenaHoleMapEditor(myArenaViewModel)
+                ArenaHoleMapEditor(myArenaViewModel, navController)
             }
 
             composable(RootNavItem.ScoreCardPost.route.plus("/{scoreCard}"),

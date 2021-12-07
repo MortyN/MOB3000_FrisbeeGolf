@@ -2,6 +2,7 @@ package no.usn.mob3000_disky.ui.screens.MyArenas
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -63,7 +64,12 @@ fun EditArena(
     val description = remember { mutableStateOf(TextFieldValue()) }
     val arenaRounds = remember { mutableStateOf(currentArena.value.rounds) }
 
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = Unit) {
+        if(arenaRounds.value == null){
+            arenaRounds.value = listOf()
+        }
             name.value = TextFieldValue(currentArena.value.arenaName)
             description.value = TextFieldValue(currentArena.value.description)
     }
@@ -84,7 +90,8 @@ fun EditArena(
                 FloatingActionButton(
                     onClick = {
                         arenaViewModel.saveArena(currentArena.value)
-
+                        Toast.makeText(context, "Arena Lagret", Toast.LENGTH_LONG).show()
+                        navController.popBackStack()
                     },
                     modifier = Modifier.padding(10.dp),
                     backgroundColor = BtnAcceptGreen,
@@ -156,7 +163,7 @@ fun EditArena(
                             )
                             IconButton(onClick = {
                                     var tempList = ArrayList(arenaRounds.value)
-                                    tempList += ArenaRound(createdBy = loggedInUser)
+                                    tempList += ArenaRound(createdBy = loggedInUser, arena = Arena(arenaId = currentArena.value.arenaId))
                                     arenaRounds.value = tempList
                                     currentArena.value.rounds = tempList
                             }) {
@@ -173,8 +180,10 @@ fun EditArena(
                         }
                     }
                 }
-                items(items = arenaRounds.value!!) { a ->
-                    ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
+                if(arenaRounds.value != null){
+                    items(items = arenaRounds.value) { a ->
+                        ArenaRoundItem(a, navController = navController, myArenaViewModel = arenaViewModel)
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.size(100.dp))
@@ -253,7 +262,7 @@ fun ArenaRoundItem(arenaRound: ArenaRound, navController: NavHostController, myA
                     modifier = Modifier
                         .padding(top = 30.dp)
                         .fillMaxWidth(),
-                    label = { Text("Navn på arena") },
+                    label = { Text("Navn på runde") },
                 )
 
                 Row(
