@@ -28,7 +28,7 @@ class MyArenaViewModel @Inject constructor(
     var currentArenaHole = mutableStateOf(ArenaRoundHole())
        private set
 
-    var currentArena = mutableStateOf(Arena())
+    var currentArena = mutableStateOf(Arena(rounds = listOf()))
         private set
 
     var arenaCreateResult = mutableStateOf(Arena())

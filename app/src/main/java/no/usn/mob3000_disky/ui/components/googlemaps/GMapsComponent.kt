@@ -102,7 +102,7 @@ fun ShowArenaMap(modifier: Modifier = Modifier, arena: Arena, navController: Nav
 }
 
 
-
+//below is boilerplate code to make Composable stateful, source: https://medium.com/geekculture/google-maps-in-jetpack-compose-android-ae7b1ad84e9
 
 @Composable
 fun rememberMapViewWithLifeCycle(): MapView {
@@ -139,25 +139,3 @@ fun rememberMapLifecycleObserver(mapView: MapView): LifecycleEventObserver =
             }
         }
     }
-
-
-//                val pickUp = LatLng(28.7041, 77.1025) //Delhi
-//                val destination = LatLng(12.9716, 77.5946) //Bangalore
-//                map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 6f))
-//                val markerOptions =  MarkerOptions()
-//                    .title("Delhi")
-//                    .position(pickUp)
-//                map.addMarker(markerOptions)
-//                val markerOptionsDestination = MarkerOptions()
-//                    .title("Bangalore")
-//                    .position(destination)
-//                map.addMarker(markerOptionsDestination)
-//
-//                map.addPolyline(
-//                    PolylineOptions().add(
-//                        pickUp,
-//                        LatLng(22.2587, 71.1924), //Root of Gujarat
-//                        LatLng(19.7515, 75.7139), //Root of Maharashtra
-//                        destination
-//                    )
-//                ).color = Color(108, 128, 255, 255).hashCode() //Polyline color

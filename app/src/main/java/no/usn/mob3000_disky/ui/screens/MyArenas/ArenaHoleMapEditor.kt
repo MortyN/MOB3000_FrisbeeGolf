@@ -1,6 +1,7 @@
 package no.usn.mob3000_disky.ui.screens.MyArenas
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -11,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import com.google.android.libraries.maps.CameraUpdateFactory
 import com.google.android.libraries.maps.GoogleMap
 import com.google.android.libraries.maps.model.*
@@ -24,7 +27,7 @@ import no.usn.mob3000_disky.ui.theme.BtnAcceptGreen
 
 @SuppressLint("MissingPermission")
 @Composable
-fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
+fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel, navHostController: NavHostController) {
 
     val MARKER_STARTTAG = 0
     val MARKER_ENDTAG = 1
@@ -36,6 +39,8 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
     val endLatLngHole = remember { mutableStateOf(LatLng(currentHole.endLatitude, currentHole.endLongitude)) }
 
     val mapView = rememberMapViewWithLifeCycle()
+
+    val context = LocalContext.current
 
     val startDragMarker = remember { mutableStateOf(
         if(currentHole.startLatitude == 0.0){
@@ -72,6 +77,9 @@ fun ArenaHoleMapEditor(myArenaViewModel: MyArenaViewModel) {
                     currentHole.endLatitude = endDragMarker.value.latitude
                     currentHole.endLongitude = endDragMarker.value.longitude
 
+                    Toast.makeText(context, "Hull Lagret", Toast.LENGTH_LONG).show()
+
+                    navHostController.popBackStack()
 
                 },
                 backgroundColor = BtnAcceptGreen,
